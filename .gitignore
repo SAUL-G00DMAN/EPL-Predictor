@@ -1,0 +1,33 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*$py.class
+*.so
+.Python
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Frontend artifacts
+node_modules/
+.next/
+out/
+.env*.local
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project data artifacts (optional if large)
+*.log

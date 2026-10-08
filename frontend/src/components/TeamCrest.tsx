@@ -1,0 +1,62 @@
+"use client";
+
+import React, { useState } from "react";
+import { getTeamMetadata } from "@/data/teams";
+
+interface TeamCrestProps {
+  team: string;
+  size?: number;
+  className?: string;
+  showName?: boolean;
+  nameClassName?: string;
+}
+
+export function TeamCrest({
+  team,
+  size = 32,
+  className = "",
+  showName = false,
+  nameClassName = "font-medium text-slate-200",
+}: TeamCrestProps) {
+  const [hasError, setHasError] = useState(false);
+  const meta = getTeamMetadata(team);
+
+  return (
+    <div className={`inline-flex items-center gap-2.5 ${className}`}>
+      <div
+        className="relative flex items-center justify-center shrink-0 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105"
+        style={{
+          width: size,
+          height: size,
+          backgroundColor: hasError ? meta.primaryColor : "transparent",
+        }}
+      >
+        {!hasError ? (
+          <img
+            src={meta.crestUrl}
+            alt={`${team} crest`}
+            width={size}
+            height={size}
+            crossOrigin="anonymous"
+            loading="lazy"
+            onError={() => setHasError(true)}
+            className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+          />
+        ) : (
+          <span
+            className="font-black text-xs uppercase tracking-wider text-white select-none flex items-center justify-center w-full h-full border border-white/20"
+            style={{ backgroundColor: meta.primaryColor }}
+          >
+            {meta.shortName}
+          </span>
+        )}
+      </div>
+
+      {showName && (
+        <span className={`truncate ${nameClassName}`}>
+          {meta.name}
+        </span>
+      )}
+    </div>
+  );
+}
