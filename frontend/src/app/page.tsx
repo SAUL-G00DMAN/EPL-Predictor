@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -34,7 +33,6 @@ type SortDirection = "asc" | "desc";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 export default function HomePage() {
-  const router = useRouter();
   const [data, setData] = useState<TeamProjection[]>(() => getCachedTableData() || []);
   const [loading, setLoading] = useState<boolean>(() => !getCachedTableData());
   const [error, setError] = useState<string | null>(null);
@@ -43,22 +41,6 @@ export default function HomePage() {
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
   const [displayMode, setDisplayMode] = useState<"percentage" | "odds">("percentage");
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Mobile Auto-Redirect to Match Predictor on initial landing
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const isMobile =
-      window.innerWidth < 768 ||
-      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-    const hasNavigatedExplicitly = sessionStorage.getItem("epl_visited_table");
-
-    if (isMobile && !hasNavigatedExplicitly) {
-      sessionStorage.setItem("epl_visited_table", "true");
-      router.replace("/predict");
-    }
-  }, [router]);
 
   const formatCellOdds = (pct: number) => {
     if (!pct || pct <= 0.05) return "-";

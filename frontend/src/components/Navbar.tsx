@@ -75,13 +75,6 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
-                onClick={() => {
-                  if (href === "/") {
-                    try {
-                      sessionStorage.setItem("epl_visited_table", "true");
-                    } catch {}
-                  }
-                }}
                 className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold transition-all duration-200 cursor-pointer ${
                   isSeason
                     ? isActive
@@ -147,13 +140,6 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
-                onClick={() => {
-                  if (href === "/") {
-                    try {
-                      sessionStorage.setItem("epl_visited_table", "true");
-                    } catch {}
-                  }
-                }}
                 className={`shrink-0 whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   isSeason
                     ? isActive
