@@ -75,6 +75,13 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
+                onClick={() => {
+                  if (href === "/") {
+                    try {
+                      sessionStorage.setItem("epl_visited_table", "true");
+                    } catch {}
+                  }
+                }}
                 className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold transition-all duration-200 cursor-pointer ${
                   isSeason
                     ? isActive
@@ -95,6 +102,11 @@ export function Navbar() {
                   }`}
                 />
                 <span>{label}</span>
+                {isSeason && (
+                  <span className="text-[9px] bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse ml-0.5 shrink-0 shadow-xs">
+                    TRY THIS
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -123,38 +135,58 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile nav row */}
-      <div className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth px-3 py-2 w-full border-t border-white/15 bg-[#171728] shadow-lg select-none">
-        {navLinks.map(({ href, label, icon: Icon, iconColor }) => {
-          const isActive =
-            pathname === href || (href !== "/" && pathname.startsWith(href));
-          const isSeason = href === "/season";
+      {/* Mobile nav row with swipe affordance fade gradient */}
+      <div className="md:hidden relative border-t border-white/15 bg-[#171728] shadow-lg select-none">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth px-3 py-2 w-full">
+          {navLinks.map(({ href, label, icon: Icon, iconColor }) => {
+            const isActive =
+              pathname === href || (href !== "/" && pathname.startsWith(href));
+            const isSeason = href === "/season";
 
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`shrink-0 whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-                isSeason
-                  ? isActive
-                    ? "bg-[#E11D48] border border-rose-300 text-white shadow-[0_0_12px_rgba(225,29,72,0.5)] scale-[1.02]"
-                    : "bg-[#38111E] border border-rose-500/70 text-rose-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:bg-[#4C1428] hover:border-rose-400 active:translate-y-[1px]"
-                  : isActive
-                  ? "bg-gradient-to-r from-[#7B16FF] via-[#D8005A] to-[#E90052] text-white shadow-md shadow-[#E90052]/30 border border-white/30 scale-[1.02]"
-                  : "bg-[#222238] border border-slate-600/80 text-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:text-white hover:bg-[#2D2D48] hover:border-slate-400 active:translate-y-[1px]"
-              }`}
-            >
-              <Icon
-                className={`w-3.5 h-3.5 shrink-0 ${
-                  isActive ? "text-white" : isSeason ? "text-rose-300" : iconColor
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => {
+                  if (href === "/") {
+                    try {
+                      sessionStorage.setItem("epl_visited_table", "true");
+                    } catch {}
+                  }
+                }}
+                className={`shrink-0 whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                  isSeason
+                    ? isActive
+                      ? "bg-[#E11D48] border border-rose-300 text-white shadow-[0_0_14px_rgba(225,29,72,0.6)] ring-1 ring-rose-400 scale-[1.02]"
+                      : "bg-[#38111E] border border-rose-500/80 text-rose-100 shadow-[0_0_10px_rgba(225,29,72,0.3)] ring-1 ring-rose-500/40 hover:bg-[#4C1428] hover:border-rose-400 active:translate-y-[1px]"
+                    : isActive
+                    ? "bg-gradient-to-r from-[#7B16FF] via-[#D8005A] to-[#E90052] text-white shadow-md shadow-[#E90052]/30 border border-white/30 scale-[1.02]"
+                    : "bg-[#222238] border border-slate-600/80 text-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:text-white hover:bg-[#2D2D48] hover:border-slate-400 active:translate-y-[1px]"
                 }`}
-              />
-              <span className="whitespace-nowrap">{label}</span>
-            </Link>
-          );
-        })}
-        {/* Right edge scroll spacer so last item is never clipped or glued to boundary */}
-        <div className="w-3 shrink-0" aria-hidden="true" />
+              >
+                <Icon
+                  className={`w-3.5 h-3.5 shrink-0 ${
+                    isActive ? "text-white" : isSeason ? "text-rose-300" : iconColor
+                  }`}
+                />
+                <span className="whitespace-nowrap">{label}</span>
+                {isSeason && (
+                  <span className="text-[9px] bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse ml-0.5 shrink-0 shadow-xs">
+                    TRY THIS
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+          {/* Right edge scroll spacer so last item is never clipped or glued to boundary */}
+          <div className="w-8 shrink-0" aria-hidden="true" />
+        </div>
+
+        {/* Right-edge soft fade gradient mask indicating more scrollable content */}
+        <div
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#171728] via-[#171728]/80 to-transparent z-10"
+          aria-hidden="true"
+        />
       </div>
     </header>
   );

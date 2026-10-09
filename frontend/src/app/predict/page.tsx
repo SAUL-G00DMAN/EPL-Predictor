@@ -566,21 +566,62 @@ function MatchPredictorContent() {
             </div>
           </div>
 
-          {/* VS Center Action */}
-          <div className="md:col-span-1 flex flex-col items-center justify-center my-[-4px] sm:my-0 relative z-10">
-            <button
-              onClick={handleSwap}
-              type="button"
-              title="Swap Home/Away"
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center justify-center font-black text-xs sm:text-sm text-slate-200 shadow-lg hover:scale-110 active:scale-95 transition-all group"
-            >
-              <span className={isSuspense ? "animate-spin" : "group-hover:hidden"}>
-                {isSuspense ? "⚡" : "VS"}
-              </span>
-              {!isSuspense && (
-                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 hidden group-hover:block animate-spin text-slate-300" />
-              )}
-            </button>
+          {/* VS Center Action on Desktop, and Center Bridge + CTA on Mobile */}
+          <div className="md:col-span-1 flex flex-col items-center justify-center my-0 relative z-10 w-full">
+            {/* Desktop-only VS circular button */}
+            <div className="hidden md:flex flex-col items-center justify-center">
+              <button
+                onClick={handleSwap}
+                type="button"
+                title="Swap Home/Away"
+                className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center justify-center font-black text-xs sm:text-sm text-slate-200 shadow-lg hover:scale-110 active:scale-95 transition-all group cursor-pointer"
+              >
+                <span className={isSuspense ? "animate-spin" : "group-hover:hidden"}>
+                  {isSuspense ? "⚡" : "VS"}
+                </span>
+                {!isSuspense && (
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 hidden group-hover:block animate-spin text-slate-300" />
+                )}
+              </button>
+            </div>
+
+            {/* Mobile-only Bridge: Swap VS pill + Centered Simulate CTA */}
+            <div className="flex md:hidden flex-col items-center w-full gap-2.5 my-1.5">
+              <div className="flex items-center justify-center">
+                <button
+                  onClick={handleSwap}
+                  type="button"
+                  title="Swap Home/Away"
+                  className="px-3.5 py-1 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center gap-1.5 font-bold text-xs text-slate-200 shadow-sm active:scale-95 transition-all cursor-pointer"
+                >
+                  <RefreshCw className="w-3 h-3 text-slate-400" />
+                  <span>Swap</span>
+                  <span className="text-emerald-400 font-black">VS</span>
+                </button>
+              </div>
+
+              <button
+                onClick={() => runSimulation()}
+                disabled={loading}
+                className={`w-full min-h-[46px] py-3 px-6 rounded-xl font-black text-sm tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 flex items-center justify-center gap-2 ${
+                  loading
+                    ? "opacity-80 cursor-not-allowed pointer-events-none"
+                    : "cursor-pointer hover:scale-[1.02]"
+                }`}
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-[#0A0A14]" />
+                    <span className="text-[#0A0A14] font-black">Simulating...</span>
+                  </>
+                ) : (
+                  <>
+                    <TrendingUp className="w-4 h-4 text-[#0A0A14]" />
+                    <span className="text-[#0A0A14] font-black">Simulate Matchup</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Away Team Selector */}
@@ -672,7 +713,7 @@ function MatchPredictorContent() {
             <button
               onClick={handleShareMatchup}
               type="button"
-              className="px-3 py-2.5 sm:px-3.5 sm:py-3.5 rounded-xl font-semibold text-xs bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm shrink-0"
+              className="px-3.5 py-2 sm:px-3.5 sm:py-3.5 rounded-xl font-semibold text-xs bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm shrink-0 min-h-[44px]"
               title="Copy shareable link for this matchup"
             >
               {copiedLink ? (
@@ -684,15 +725,16 @@ function MatchPredictorContent() {
                 <>
                   <Share2 className="w-3.5 h-3.5 text-slate-400" />
                   <span className="hidden sm:inline">Share Matchup</span>
-                  <span className="sm:hidden">Share</span>
+                  <span className="sm:hidden">Share Link</span>
                 </>
               )}
             </button>
 
+            {/* Desktop-only Simulate Action at Bottom */}
             <button
               onClick={() => runSimulation()}
               disabled={loading}
-              className={`w-full sm:w-auto flex-1 sm:flex-initial px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-black text-sm sm:text-base tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`hidden md:flex w-auto px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-black text-sm sm:text-base tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 items-center justify-center gap-2 ${
                 loading
                   ? "opacity-80 cursor-not-allowed pointer-events-none"
                   : "cursor-pointer hover:scale-[1.02]"

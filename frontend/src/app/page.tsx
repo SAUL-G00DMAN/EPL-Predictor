@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowUpDown,
   ChevronDown,
   ChevronUp,
   Trophy,
-  TrendingUp,
   AlertTriangle,
   Info,
   ExternalLink,
@@ -34,6 +34,7 @@ type SortDirection = "asc" | "desc";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 export default function HomePage() {
+  const router = useRouter();
   const [data, setData] = useState<TeamProjection[]>(() => getCachedTableData() || []);
   const [loading, setLoading] = useState<boolean>(() => !getCachedTableData());
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +43,22 @@ export default function HomePage() {
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
   const [displayMode, setDisplayMode] = useState<"percentage" | "odds">("percentage");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Mobile Auto-Redirect to Match Predictor on initial landing
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isMobile =
+      window.innerWidth < 768 ||
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    const hasNavigatedExplicitly = sessionStorage.getItem("epl_visited_table");
+
+    if (isMobile && !hasNavigatedExplicitly) {
+      sessionStorage.setItem("epl_visited_table", "true");
+      router.replace("/predict");
+    }
+  }, [router]);
 
   const formatCellOdds = (pct: number) => {
     if (!pct || pct <= 0.05) return "-";
@@ -128,7 +145,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
+    <div className="min-h-screen py-4 sm:py-6 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Streamlined Top Header / Status Badge */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/10 text-slate-200 text-xs font-semibold shadow-sm backdrop-blur-md">
@@ -139,98 +156,6 @@ export default function HomePage() {
           <span>Updated through Matchweek 5 • 2026-27 Season</span>
         </div>
       </div>
-
-      {/* Summary Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {loading ? (
-          [1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="glass-panel p-5 rounded-2xl border border-white/5 animate-pulse space-y-3"
-            >
-              <div className="flex justify-between items-center">
-                <div className="h-3 w-28 bg-white/10 rounded"></div>
-                <div className="w-5 h-5 bg-white/10 rounded-full"></div>
-              </div>
-              <div className="h-8 w-36 bg-white/10 rounded"></div>
-              <div className="h-3 w-24 bg-white/5 rounded"></div>
-            </div>
-          ))
-        ) : (
-          <>
-            {/* 1. Title Favorite */}
-            <div className="glass-panel p-5 rounded-2xl border-l-4 border-l-[#00FF85] bg-gradient-to-br from-[#1E1E34] to-[#122A22]/90 border border-white/15 shadow-xl shadow-[#00FF85]/10 hover:border-[#00FF85]/50 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-xs uppercase font-extrabold tracking-wider text-[#00FF85]">
-                  Title Favorite
-                </span>
-                <div className="w-8 h-8 rounded-lg bg-[#00FF85]/15 flex items-center justify-center border border-[#00FF85]/30">
-                  <Trophy className="w-4 h-4 text-[#00FF85]" />
-                </div>
-              </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black text-white">
-                  {data[0]?.team || "Man City"}
-                </span>
-                <span className="text-base font-black text-[#00FF85] font-mono">
-                  {data[0]?.champion_pct ? `${data[0].champion_pct.toFixed(1)}%` : "68.1%"}
-                </span>
-              </div>
-              <p className="text-xs text-slate-200 mt-1 font-medium">
-                Proj. {data[0]?.avg_points ? data[0].avg_points.toFixed(1) : "--"} pts
-              </p>
-            </div>
-
-            {/* 2. Top 4 Race Cutoff */}
-            <div className="glass-panel p-5 rounded-2xl border-l-4 border-l-[#04F5FF] bg-gradient-to-br from-[#1E1E34] to-[#102434]/90 border border-white/15 shadow-xl shadow-[#04F5FF]/10 hover:border-[#04F5FF]/50 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-xs uppercase font-extrabold tracking-wider text-[#04F5FF]">
-                  Top 4 Race Cutoff
-                </span>
-                <div className="w-8 h-8 rounded-lg bg-[#04F5FF]/15 flex items-center justify-center border border-[#04F5FF]/30">
-                  <TrendingUp className="w-4 h-4 text-[#04F5FF]" />
-                </div>
-              </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black text-white">
-                  {data[3]?.team || "Chelsea"}
-                </span>
-                <span className="text-base font-black text-[#04F5FF] font-mono">
-                  {data[3]?.top4_pct ? `${data[3].top4_pct.toFixed(1)}%` : "26.5%"}
-                </span>
-              </div>
-              <p className="text-xs text-slate-200 mt-1 font-medium">
-                4th spot threshold: ~58 pts
-              </p>
-            </div>
-
-            {/* 3. Highest Relegation Risk */}
-            <div className="glass-panel p-5 rounded-2xl border-l-4 border-l-[#E90052] bg-gradient-to-br from-[#1E1E34] to-[#2E1220]/90 border border-white/15 shadow-xl shadow-[#E90052]/10 hover:border-[#E90052]/50 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-xs uppercase font-extrabold tracking-wider text-[#E90052]">
-                  Highest Relegation Risk
-                </span>
-                <div className="w-8 h-8 rounded-lg bg-[#E90052]/15 flex items-center justify-center border border-[#E90052]/30">
-                  <AlertTriangle className="w-4 h-4 text-[#E90052]" />
-                </div>
-              </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black text-white">
-                  {relegationBattleTeams[0]?.team || data[data.length - 1]?.team || "Sunderland"}
-                </span>
-                <span className="text-base font-black text-[#E90052] font-mono">
-                  {relegationBattleTeams[0]?.relegation_pct
-                    ? `${relegationBattleTeams[0].relegation_pct.toFixed(1)}%`
-                    : data[data.length - 1]?.relegation_pct
-                    ? `${data[data.length - 1].relegation_pct.toFixed(1)}%`
-                    : "28.6%"}
-                </span>
-              </div>
-              <p className="text-xs text-slate-200 mt-1 font-medium">18th - 20th drop zone</p>
-            </div>
-          </>
-        )}
-      </section>
 
       {/* Editorial Feature: Analyst's Take */}
       <section
