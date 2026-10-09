@@ -15,8 +15,7 @@ import { TeamCrest } from "@/components/TeamCrest";
 import { RadarChart } from "@/components/RadarChart";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { getTeamMetadata } from "@/data/teams";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+import { fetchTablePredictions, getCachedTableData } from "@/data/cachedApi";
 
 export default function TeamProfilePage({
   params,
@@ -27,20 +26,27 @@ export default function TeamProfilePage({
   const teamName = decodeURIComponent(unwrappedParams.team);
   const meta = getTeamMetadata(teamName);
 
-  const [tableStats, setTableStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [tableStats, setTableStats] = useState<any>(() => {
+    const cached = getCachedTableData();
+    if (!cached) return null;
+    return (
+      cached.find((r) => r.team.toLowerCase() === teamName.toLowerCase()) || null
+    );
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    const cached = getCachedTableData();
+    if (!cached) return true;
+    return !cached.find((r) => r.team.toLowerCase() === teamName.toLowerCase());
+  });
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/predictions/table?include_bands=true`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.table) {
-          const match = json.table.find(
-            (r: any) => r.team.toLowerCase() === teamName.toLowerCase()
-          );
-          if (match) {
-            setTableStats(match);
-          }
+    fetchTablePredictions()
+      .then((table) => {
+        const match = table.find(
+          (r) => r.team.toLowerCase() === teamName.toLowerCase()
+        );
+        if (match) {
+          setTableStats(match);
         }
         setLoading(false);
       })

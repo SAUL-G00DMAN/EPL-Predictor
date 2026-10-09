@@ -13,11 +13,13 @@ import {
   Share2,
   Check,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import { TeamCrest } from "@/components/TeamCrest";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { MiniPitch } from "@/components/MiniPitch";
-import { TEAMS_DATA } from "@/data/teams";
+import { ScrollIndicator } from "@/components/ScrollIndicator";
+import { TEAMS_DATA, getTeamMetadata } from "@/data/teams";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -165,6 +167,7 @@ function MatchPredictorContent() {
     targetAway: string = awayTeam,
     targetDate: string = matchDate
   ) => {
+    if (loading) return;
     setErrorMessage(null);
 
     if (targetHome === targetAway) {
@@ -191,10 +194,17 @@ function MatchPredictorContent() {
         targetHome
       )}&away_team=${encodeURIComponent(targetAway)}&match_date=${targetDate}`;
 
-      const fetchPromise = fetch(url).then(async (res) => {
-        const json = await res.json();
-        return { ok: res.ok, status: res.status, data: json };
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      clashTimersRef.current.push(timeoutId);
+
+      const fetchPromise = fetch(url, { signal: controller.signal }).then(
+        async (res) => {
+          clearTimeout(timeoutId);
+          const json = await res.json();
+          return { ok: res.ok, status: res.status, data: json };
+        }
+      );
 
       // 0ms - 650ms: Charging inward
       // 650ms - 1200ms: Collision & impact flash shake
@@ -247,7 +257,9 @@ function MatchPredictorContent() {
     } catch {
       if (activeRunIdRef.current === runId) {
         setClashState("idle");
-        setErrorMessage("Network error connecting to prediction API. Make sure backend is running.");
+        setErrorMessage(
+          "Unable to reach prediction service. Please check your connection and try again."
+        );
         setResult(null);
       }
     } finally {
@@ -283,14 +295,20 @@ function MatchPredictorContent() {
     };
   }, []);
 
-  // When either team or date changes: clear result and errors
+  // When either team or date changes: clear result and errors (with auto-swap if same team selected)
   const handleHomeTeamChange = (newHome: string) => {
+    if (newHome === awayTeam) {
+      setAwayTeam(homeTeam);
+    }
     setHomeTeam(newHome);
     setResult(null);
     setErrorMessage(null);
   };
 
   const handleAwayTeamChange = (newAway: string) => {
+    if (newAway === homeTeam) {
+      setHomeTeam(awayTeam);
+    }
     setAwayTeam(newAway);
     setResult(null);
     setErrorMessage(null);
@@ -317,16 +335,37 @@ function MatchPredictorContent() {
     runSimulation(presetHome, presetAway, matchDate);
   };
 
-  // Copy shareable matchup link with URL parameters
-  const handleShareMatchup = () => {
+  // Share matchup link via native Web Share API with clipboard fallback
+  const handleShareMatchup = async () => {
     if (typeof window === "undefined") return;
-    const url = `${window.location.origin}/predict?home=${encodeURIComponent(
+    const shareUrl = `${window.location.origin}/predict?home=${encodeURIComponent(
       homeTeam
     )}&away=${encodeURIComponent(awayTeam)}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2500);
+    const shareData = {
+      title: "EPL Match Predictor",
+      text: `${homeTeam} vs ${awayTeam} Premier League AI Simulation`,
+      url: shareUrl,
+    };
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+      }
+    }
+
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+      }
+    } catch {
+      // clipboard failure fallback
     }
   };
 
@@ -334,6 +373,7 @@ function MatchPredictorContent() {
   const handleReroll = async () => {
     if (rerolling || loading || !result) return;
     setRerolling(true);
+    setErrorMessage(null);
     try {
       const url = `${API_BASE_URL}/predictions/match?home_team=${encodeURIComponent(
         homeTeam
@@ -345,9 +385,15 @@ function MatchPredictorContent() {
         setSimulationKey(runId);
         setLiveScore({ home: 0, away: 0 });
         setResult(data);
+      } else {
+        setErrorMessage(
+          "Unable to reach prediction service. Please check your connection and try again."
+        );
       }
-    } catch (err) {
-      console.error("Re-roll simulation failed:", err);
+    } catch {
+      setErrorMessage(
+        "Unable to reach prediction service. Please check your connection and try again."
+      );
     } finally {
       setRerolling(false);
     }
@@ -378,32 +424,57 @@ function MatchPredictorContent() {
     ? Math.round(Math.exp(-result.expected_goals.home) * 100)
     : 0;
 
+  const homeMeta = getTeamMetadata(homeTeam);
+  const awayMeta = getTeamMetadata(awayTeam);
+
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10">
+    <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-6 sm:space-y-10">
       {/* Header */}
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-2 sm:space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/90 border border-slate-700/80 text-slate-300 text-xs font-semibold uppercase tracking-wider shadow-sm">
           <Swords className="w-3.5 h-3.5 text-emerald-400" />
           <span>Match Intelligence</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-[#F8FAFC] tracking-tight">
-          Head-to-Head AI Predictor
+        <h1 className="text-2xl sm:text-5xl font-black text-[#F8FAFC] tracking-tight">
+          Head-to-Head Predictor
         </h1>
-        <p className="text-[#94A3B8] text-sm sm:text-base max-w-xl mx-auto">
-          Simulate any Premier League matchup using rest-day fatigue tracking,
-          dynamic team and manager Elo ratings, and Dixon-Coles goal rates.
-        </p>
       </div>
 
       {/* Match Selector Card */}
-      <div className="bg-[#151C28] p-6 sm:p-10 rounded-3xl border border-slate-800 shadow-xl space-y-8 relative overflow-hidden">
+      <div className="bg-[#151C28] p-3 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-xl space-y-4 sm:space-y-8 relative overflow-hidden">
+        {/* Subtle Tactical Pitch Lines & Grass Striping Overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-25 overflow-hidden">
+          {/* Mown Lawn Alternating Turf Pattern */}
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_44px,rgba(16,185,129,0.03)_44px,rgba(16,185,129,0.03)_88px)]" />
+          {/* Tactical Pitch Geometry */}
+          <svg
+            className="absolute inset-0 w-full h-full stroke-emerald-400/10"
+            fill="none"
+            strokeWidth="1.25"
+          >
+            {/* Center Halfway Line */}
+            <line x1="50%" y1="0%" x2="50%" y2="100%" strokeDasharray="6 4" />
+            {/* Center Circle & Spot */}
+            <circle cx="50%" cy="50%" r="56" />
+            <circle cx="50%" cy="50%" r="2.5" fill="rgba(16, 185, 129, 0.2)" />
+            {/* Left Box (Home Area) */}
+            <path d="M 0 24% H 13% V 76% H 0" />
+            <path d="M 0 38% H 4.5% V 62% H 0" />
+            <path d="M 13% 43% A 20 20 0 0 1 13% 57%" />
+            {/* Right Box (Away Area) */}
+            <path d="M 100% 24% H 87% V 76% H 100%" />
+            <path d="M 100% 38% H 95.5% V 62% H 100%" />
+            <path d="M 87% 43% A 20 20 0 0 0 87% 57%" />
+          </svg>
+        </div>
+
         {/* Feature 3: Quick Marquee Presets */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-5 border-b border-slate-800">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 pb-3 sm:pb-5 border-b border-slate-800">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
             <span>Featured Clashes:</span>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
             {MARQUEE_PRESETS.map((preset) => {
               const isActive =
                 homeTeam === preset.home && awayTeam === preset.away;
@@ -412,7 +483,7 @@ function MatchPredictorContent() {
                   key={preset.label}
                   type="button"
                   onClick={() => handleSelectPreset(preset.home, preset.away)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
+                  className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
                     isActive
                       ? "bg-emerald-500/20 border-emerald-500/60 text-emerald-300 shadow-sm"
                       : "bg-slate-800/60 border-slate-700/70 text-slate-300 hover:text-white hover:border-slate-600 hover:bg-slate-800"
@@ -426,105 +497,194 @@ function MatchPredictorContent() {
         </div>
 
         {/* Teams and VS Display */}
-        <div className="grid grid-cols-1 md:grid-cols-11 gap-6 items-center">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-11 gap-3 sm:gap-6 items-center">
           {/* Home Team Selector */}
           <div
-            className={`md:col-span-5 flex flex-col items-center text-center space-y-4 p-5 rounded-2xl bg-[#182030] border transition-all duration-300 ${
+            className={`md:col-span-5 flex flex-col items-center text-center space-y-2 sm:space-y-4 p-3 sm:p-5 rounded-2xl bg-[#182030] border transition-all duration-300 relative overflow-hidden ${
               isSuspense ? "border-emerald-500/60 scale-[1.02]" : "border-slate-800/80"
             }`}
           >
-            <span className="text-xs uppercase font-extrabold tracking-wider text-[#94A3B8]">
+            {/* Dynamic Ambient Team Glow */}
+            <div
+              className="absolute -top-12 -left-12 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-all duration-700 opacity-20"
+              style={{ backgroundColor: homeMeta.primaryColor }}
+            />
+
+            <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-[#94A3B8] relative z-10">
               Home Team
             </span>
-            <div className="py-2 transform transition-transform duration-300 hover:scale-105">
-              <TeamCrest team={homeTeam} size={84} />
+            <div className="relative py-1 sm:py-2 transform transition-transform duration-300 hover:scale-105 flex items-center justify-center">
+              {/* Dynamic Radial Crest Glow */}
+              <div
+                className="absolute inset-0 rounded-full blur-xl pointer-events-none transition-all duration-700 opacity-30"
+                style={{ backgroundColor: homeMeta.primaryColor }}
+              />
+              <div className="block sm:hidden relative z-10">
+                <TeamCrest team={homeTeam} size={50} />
+              </div>
+              <div className="hidden sm:block relative z-10">
+                <TeamCrest team={homeTeam} size={84} />
+              </div>
             </div>
             <select
               value={homeTeam}
               onChange={(e) => handleHomeTeamChange(e.target.value)}
-              className="w-full bg-[#0F1520] border border-slate-700 rounded-xl px-4 py-2.5 text-white font-bold text-center text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+              className="w-full min-h-[44px] bg-[#0F1520] border border-slate-700 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-white font-bold text-center text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer relative z-10"
             >
               {teamList.map((team) => (
-                <option key={team} value={team} className="bg-[#0F1520]">
-                  {team}
+                <option
+                  key={team}
+                  value={team}
+                  disabled={team === awayTeam}
+                  className={`bg-[#0F1520] ${team === awayTeam ? "text-slate-500" : "text-white"}`}
+                >
+                  {team} {team === awayTeam ? " (Away Team)" : ""}
                 </option>
               ))}
             </select>
+
+            {/* Recent 5-Match Form Badges (W - D - L) */}
+            <div className="flex items-center justify-center gap-1.5 pt-1 relative z-10">
+              <span className="text-[10px] uppercase font-bold text-slate-400 mr-1 tracking-wider">
+                Form:
+              </span>
+              {homeMeta.form.map((res, i) => (
+                <span
+                  key={i}
+                  className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black uppercase transition-transform hover:scale-110 shadow-xs ${
+                    res === "W"
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      : res === "D"
+                      ? "bg-slate-500/20 text-slate-300 border border-slate-500/40"
+                      : "bg-rose-500/20 text-rose-400 border border-rose-500/40"
+                  }`}
+                  title={res === "W" ? "Win" : res === "D" ? "Draw" : "Loss"}
+                >
+                  {res}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* VS Center Action */}
-          <div className="md:col-span-1 flex flex-col items-center justify-center">
+          <div className="md:col-span-1 flex flex-col items-center justify-center my-[-4px] sm:my-0 relative z-10">
             <button
               onClick={handleSwap}
               type="button"
               title="Swap Home/Away"
-              className="w-14 h-14 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center justify-center font-black text-sm text-slate-200 shadow-lg hover:scale-110 active:scale-95 transition-all group"
+              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center justify-center font-black text-xs sm:text-sm text-slate-200 shadow-lg hover:scale-110 active:scale-95 transition-all group"
             >
               <span className={isSuspense ? "animate-spin" : "group-hover:hidden"}>
                 {isSuspense ? "⚡" : "VS"}
               </span>
               {!isSuspense && (
-                <RefreshCw className="w-5 h-5 hidden group-hover:block animate-spin text-slate-300" />
+                <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 hidden group-hover:block animate-spin text-slate-300" />
               )}
             </button>
           </div>
 
           {/* Away Team Selector */}
           <div
-            className={`md:col-span-5 flex flex-col items-center text-center space-y-4 p-5 rounded-2xl bg-[#182030] border transition-all duration-300 ${
+            className={`md:col-span-5 flex flex-col items-center text-center space-y-2 sm:space-y-4 p-3 sm:p-5 rounded-2xl bg-[#182030] border transition-all duration-300 relative overflow-hidden ${
               isSuspense ? "border-slate-600 scale-[1.02]" : "border-slate-800/80"
             }`}
           >
-            <span className="text-xs uppercase font-extrabold tracking-wider text-[#94A3B8]">
+            {/* Dynamic Ambient Team Glow */}
+            <div
+              className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-all duration-700 opacity-20"
+              style={{ backgroundColor: awayMeta.primaryColor }}
+            />
+
+            <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-[#94A3B8] relative z-10">
               Away Team
             </span>
-            <div className="py-2 transform transition-transform duration-300 hover:scale-105">
-              <TeamCrest team={awayTeam} size={84} />
+            <div className="relative py-1 sm:py-2 transform transition-transform duration-300 hover:scale-105 flex items-center justify-center">
+              {/* Dynamic Radial Crest Glow */}
+              <div
+                className="absolute inset-0 rounded-full blur-xl pointer-events-none transition-all duration-700 opacity-30"
+                style={{ backgroundColor: awayMeta.primaryColor }}
+              />
+              <div className="block sm:hidden relative z-10">
+                <TeamCrest team={awayTeam} size={50} />
+              </div>
+              <div className="hidden sm:block relative z-10">
+                <TeamCrest team={awayTeam} size={84} />
+              </div>
             </div>
             <select
               value={awayTeam}
               onChange={(e) => handleAwayTeamChange(e.target.value)}
-              className="w-full bg-[#0F1520] border border-slate-700 rounded-xl px-4 py-2.5 text-white font-bold text-center text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+              className="w-full min-h-[44px] bg-[#0F1520] border border-slate-700 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-white font-bold text-center text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer relative z-10"
             >
               {teamList.map((team) => (
-                <option key={team} value={team} className="bg-[#0F1520]">
-                  {team}
+                <option
+                  key={team}
+                  value={team}
+                  disabled={team === homeTeam}
+                  className={`bg-[#0F1520] ${team === homeTeam ? "text-slate-500" : "text-white"}`}
+                >
+                  {team} {team === homeTeam ? " (Home Team)" : ""}
                 </option>
               ))}
             </select>
+
+            {/* Recent 5-Match Form Badges (W - D - L) */}
+            <div className="flex items-center justify-center gap-1.5 pt-1 relative z-10">
+              <span className="text-[10px] uppercase font-bold text-slate-400 mr-1 tracking-wider">
+                Form:
+              </span>
+              {awayMeta.form.map((res, i) => (
+                <span
+                  key={i}
+                  className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black uppercase transition-transform hover:scale-110 shadow-xs ${
+                    res === "W"
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      : res === "D"
+                      ? "bg-slate-500/20 text-slate-300 border border-slate-500/40"
+                      : "bg-rose-500/20 text-rose-400 border border-rose-500/40"
+                  }`}
+                  title={res === "W" ? "Win" : res === "D" ? "Draw" : "Loss"}
+                >
+                  {res}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Date Selector, Share Matchup Button, and Simulate Action */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Calendar className="w-4 h-4 text-slate-400" />
-            <span className="text-xs text-[#94A3B8] font-medium">Fixture Date:</span>
+        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+              <span className="text-xs text-[#94A3B8] font-medium">Fixture Date:</span>
+            </div>
             <input
               type="date"
               value={matchDate}
               onChange={(e) => handleDateChange(e.target.value)}
-              className="bg-[#0F1520] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="min-h-[44px] bg-[#0F1520] border border-slate-700 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-emerald-500 cursor-pointer flex items-center"
             />
           </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             {/* Share Matchup Link Button */}
             <button
               onClick={handleShareMatchup}
               type="button"
-              className="px-3.5 py-3 rounded-xl font-semibold text-xs bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+              className="px-3 py-2.5 sm:px-3.5 sm:py-3.5 rounded-xl font-semibold text-xs bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm shrink-0"
               title="Copy shareable link for this matchup"
             >
               {copiedLink ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400">Matchup URL Copied!</span>
+                  <span className="text-emerald-400">Copied!</span>
                 </>
               ) : (
                 <>
                   <Share2 className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Share Matchup</span>
+                  <span className="hidden sm:inline">Share Matchup</span>
+                  <span className="sm:hidden">Share</span>
                 </>
               )}
             </button>
@@ -532,14 +692,16 @@ function MatchPredictorContent() {
             <button
               onClick={() => runSimulation()}
               disabled={loading}
-              className={`flex-1 sm:flex-initial px-8 py-3 rounded-xl font-black text-sm tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${
-                loading ? "animate-pulse" : "hover:scale-[1.02]"
+              className={`w-full sm:w-auto flex-1 sm:flex-initial px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-black text-sm sm:text-base tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 flex items-center justify-center gap-2 ${
+                loading
+                  ? "opacity-80 cursor-not-allowed pointer-events-none"
+                  : "cursor-pointer hover:scale-[1.02]"
               }`}
             >
               {loading ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin text-[#0A0A14]" />
-                  <span className="text-[#0A0A14] font-black">Simulating Match Dynamics...</span>
+                  <span className="text-[#0A0A14] font-black">Simulating...</span>
                 </>
               ) : (
                 <>
@@ -552,11 +714,24 @@ function MatchPredictorContent() {
         </div>
       </div>
 
+      {/* Mobile Scroll-Down Visual Cue */}
+      <ScrollIndicator scrollOffset={350} label="Scroll for Results & Analysis" />
+
       {/* Error Message Box */}
       {errorMessage && (
-        <div className="p-5 rounded-2xl border-l-4 border-l-rose-500 flex items-center gap-3 bg-rose-950/30 border border-rose-900/50 text-rose-200 animate-in fade-in slide-in-from-top-2 duration-300">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-          <p className="text-sm font-medium">{errorMessage}</p>
+        <div className="p-4 sm:p-5 rounded-2xl border-l-4 border-l-rose-500 flex items-center justify-between gap-3 bg-rose-950/40 border border-rose-900/50 text-rose-200 animate-in fade-in slide-in-from-top-2 duration-300 shadow-lg">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+            <p className="text-xs sm:text-sm font-medium">{errorMessage}</p>
+          </div>
+          <button
+            onClick={() => setErrorMessage(null)}
+            type="button"
+            className="text-rose-400 hover:text-white p-1 rounded-lg hover:bg-rose-900/50 transition-colors cursor-pointer shrink-0"
+            title="Dismiss error"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -631,7 +806,7 @@ function MatchPredictorContent() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
-                  AI Match Forecast
+                  Match Forecast
                 </span>
                 <span className="text-slate-600">•</span>
                 <span className="text-xs text-slate-300 font-mono">

@@ -11,6 +11,7 @@ export interface TeamMetadata {
   recentFormPoints: number;
   managerElo: number;
   stadium: string;
+  form: ("W" | "D" | "L")[];
 }
 
 export const PREMIER_LEAGUE_LOGO = "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg";
@@ -29,6 +30,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 12,
     managerElo: 1723,
     stadium: "Emirates Stadium",
+    form: ["W", "W", "W", "D", "W"],
   },
   "Aston Villa": {
     name: "Aston Villa",
@@ -43,6 +45,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 4,
     managerElo: 1565,
     stadium: "Villa Park",
+    form: ["D", "L", "W", "L", "D"],
   },
   Bournemouth: {
     name: "Bournemouth",
@@ -57,6 +60,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 3,
     managerElo: 1521,
     stadium: "Vitality Stadium",
+    form: ["L", "D", "L", "D", "D"],
   },
   Brentford: {
     name: "Brentford",
@@ -71,6 +75,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 9,
     managerElo: 1536,
     stadium: "Gtech Community Stadium",
+    form: ["W", "W", "L", "W", "L"],
   },
   Brighton: {
     name: "Brighton",
@@ -85,6 +90,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 10,
     managerElo: 1572,
     stadium: "Amex Stadium",
+    form: ["W", "W", "D", "W", "D"],
   },
   Chelsea: {
     name: "Chelsea",
@@ -99,6 +105,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 7,
     managerElo: 1556,
     stadium: "Stamford Bridge",
+    form: ["W", "D", "L", "W", "D"],
   },
   "Coventry City": {
     name: "Coventry City",
@@ -113,6 +120,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 3,
     managerElo: 1428,
     stadium: "Coventry Building Society Arena",
+    form: ["L", "D", "L", "D", "D"],
   },
   "Crystal Palace": {
     name: "Crystal Palace",
@@ -127,6 +135,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 4,
     managerElo: 1508,
     stadium: "Selhurst Park",
+    form: ["D", "L", "W", "L", "L"],
   },
   Everton: {
     name: "Everton",
@@ -141,6 +150,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 9,
     managerElo: 1509,
     stadium: "Goodison Park",
+    form: ["W", "D", "W", "D", "D"],
   },
   Fulham: {
     name: "Fulham",
@@ -155,6 +165,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 2,
     managerElo: 1564,
     stadium: "Craven Cottage",
+    form: ["L", "D", "L", "D", "L"],
   },
   "Hull City": {
     name: "Hull City",
@@ -169,6 +180,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 8,
     managerElo: 1509,
     stadium: "MKM Stadium",
+    form: ["W", "D", "W", "D", "L"],
   },
   "Ipswich Town": {
     name: "Ipswich Town",
@@ -183,6 +195,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 6,
     managerElo: 1409,
     stadium: "Portman Road",
+    form: ["W", "D", "L", "D", "D"],
   },
   "Leeds United": {
     name: "Leeds United",
@@ -197,6 +210,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 9,
     managerElo: 1530,
     stadium: "Elland Road",
+    form: ["W", "W", "D", "L", "W"],
   },
   Liverpool: {
     name: "Liverpool",
@@ -211,6 +225,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 9,
     managerElo: 1586,
     stadium: "Anfield",
+    form: ["W", "W", "L", "W", "L"],
   },
   "Man City": {
     name: "Man City",
@@ -225,6 +240,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 15,
     managerElo: 1600,
     stadium: "Etihad Stadium",
+    form: ["W", "W", "W", "W", "W"],
   },
   "Man United": {
     name: "Man United",
@@ -239,6 +255,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 5,
     managerElo: 1584,
     stadium: "Old Trafford",
+    form: ["D", "W", "D", "L", "L"],
   },
   Newcastle: {
     name: "Newcastle",
@@ -253,6 +270,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 8,
     managerElo: 1558,
     stadium: "St. James' Park",
+    form: ["W", "D", "W", "D", "L"],
   },
   "Nott'm Forest": {
     name: "Nott'm Forest",
@@ -267,6 +285,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 5,
     managerElo: 1507,
     stadium: "The City Ground",
+    form: ["D", "W", "D", "L", "L"],
   },
   Sunderland: {
     name: "Sunderland",
@@ -281,6 +300,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 4,
     managerElo: 1500,
     stadium: "Stadium of Light",
+    form: ["D", "L", "W", "L", "L"],
   },
   Tottenham: {
     name: "Tottenham",
@@ -295,6 +315,7 @@ export const TEAMS_DATA: Record<string, TeamMetadata> = {
     recentFormPoints: 2,
     managerElo: 1456,
     stadium: "Tottenham Hotspur Stadium",
+    form: ["L", "D", "L", "D", "L"],
   },
 };
 
@@ -313,6 +334,12 @@ export function getTeamMetadata(name: string): TeamMetadata {
       recentFormPoints: 5,
       managerElo: 1500,
       stadium: "Premier League Stadium",
+      form: ["W", "D", "L", "W", "D"],
     }
   );
+}
+
+export function getTeamForm(name: string): ("W" | "D" | "L")[] {
+  const meta = getTeamMetadata(name);
+  return meta.form || ["W", "D", "L", "W", "D"];
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, Shield, Sparkles, Swords, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
+import { PremierLeagueLion } from "./PremierLeagueLion";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -48,26 +49,11 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-6 sm:gap-8">
         {/* Brand / Logo */}
         <Link href="/" className="flex items-center gap-3.5 group shrink-0">
-          <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#7B16FF] via-[#3D195B] to-[#E90052] p-2 flex items-center justify-center shadow-lg shadow-[#7B16FF]/40 group-hover:scale-105 transition-transform">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="w-full h-full text-white"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-              <path d="M4 22h16" />
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-            </svg>
+          <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#7B16FF] via-[#3D195B] to-[#E90052] p-2 flex items-center justify-center shadow-lg shadow-[#7B16FF]/40 border border-purple-400/30 group-hover:scale-105 group-hover:shadow-[#7B16FF]/60 transition-all duration-300">
+            <PremierLeagueLion className="w-full h-full text-white filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]" />
           </div>
           <div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-1.5">
               <span className="font-extrabold tracking-tight text-lg text-white">
                 PREMIER LEAGUE
               </span>
@@ -138,7 +124,7 @@ export function Navbar() {
       </div>
 
       {/* Mobile nav row */}
-      <div className="md:hidden flex items-center overflow-x-auto no-scrollbar gap-1.5 sm:gap-2 px-2.5 py-2 border-t border-white/15 bg-[#171728] shadow-lg touch-pan-x select-none justify-around sm:justify-center">
+      <div className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth px-3 py-2 w-full border-t border-white/15 bg-[#171728] shadow-lg select-none">
         {navLinks.map(({ href, label, icon: Icon, iconColor }) => {
           const isActive =
             pathname === href || (href !== "/" && pathname.startsWith(href));
@@ -148,25 +134,27 @@ export function Navbar() {
             <Link
               key={href}
               href={href}
-              className={`min-h-[44px] min-w-[62px] flex flex-col items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[10px] font-bold transition-all duration-200 cursor-pointer shrink-0 ${
+              className={`shrink-0 whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                 isSeason
                   ? isActive
-                    ? "bg-[#E11D48] border border-rose-300 text-white shadow-[0_0_12px_rgba(225,29,72,0.5)] scale-105"
+                    ? "bg-[#E11D48] border border-rose-300 text-white shadow-[0_0_12px_rgba(225,29,72,0.5)] scale-[1.02]"
                     : "bg-[#38111E] border border-rose-500/70 text-rose-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:bg-[#4C1428] hover:border-rose-400 active:translate-y-[1px]"
                   : isActive
-                  ? "bg-gradient-to-r from-[#7B16FF] via-[#D8005A] to-[#E90052] text-white shadow-md shadow-[#E90052]/30 border border-white/30 scale-105"
+                  ? "bg-gradient-to-r from-[#7B16FF] via-[#D8005A] to-[#E90052] text-white shadow-md shadow-[#E90052]/30 border border-white/30 scale-[1.02]"
                   : "bg-[#222238] border border-slate-600/80 text-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:text-white hover:bg-[#2D2D48] hover:border-slate-400 active:translate-y-[1px]"
               }`}
             >
               <Icon
-                className={`w-4 h-4 shrink-0 ${
+                className={`w-3.5 h-3.5 shrink-0 ${
                   isActive ? "text-white" : isSeason ? "text-rose-300" : iconColor
                 }`}
               />
-              <span className="truncate max-w-[62px] text-center leading-tight">{label}</span>
+              <span className="whitespace-nowrap">{label}</span>
             </Link>
           );
         })}
+        {/* Right edge scroll spacer so last item is never clipped or glued to boundary */}
+        <div className="w-3 shrink-0" aria-hidden="true" />
       </div>
     </header>
   );

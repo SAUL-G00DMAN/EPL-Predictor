@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { ServerWarmupNotice } from "@/components/ServerWarmupNotice";
+import { PremierLeagueLion } from "@/components/PremierLeagueLion";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,11 +16,56 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Premier League Forecast Engine — 10,000 Monte Carlo Simulations",
+  metadataBase: new URL("https://epl-predictor.vercel.app"),
+  title: "EPL Predictor | Premier League AI Simulation & Analytics",
   description:
-    "Premier League title odds, Champions League qualification, relegation probability, and match prediction powered by XGBoost and Dixon-Coles models.",
+    "Simulate Premier League match outcomes, forecast title odds, and explore team tactical radars powered by Dixon-Coles and XGBoost models.",
+  applicationName: "EPL Predictor",
+  keywords: [
+    "Premier League",
+    "EPL",
+    "Simulation",
+    "AI",
+    "Monte Carlo",
+    "Dixon-Coles",
+    "XGBoost",
+    "Football Analytics",
+    "Expected Goals",
+    "Title Odds",
+  ],
+  authors: [{ name: "Mostafa Ahmed" }],
+  openGraph: {
+    title: "EPL Predictor | Premier League AI Simulation",
+    description:
+      "Premier League match forecasting and season simulation platform powered by 10,000 Monte Carlo runs.",
+    url: "https://epl-predictor.vercel.app",
+    siteName: "EPL Predictor",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Premier League AI Predictor",
+      },
+    ],
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EPL Predictor | Premier League AI Simulation",
+    description:
+      "Premier League match forecasting and season simulation platform powered by 10,000 Monte Carlo runs.",
+    images: ["/og-image.png"],
+  },
   icons: {
-    icon: "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg",
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
@@ -33,10 +79,18 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-ambient text-slate-100 relative selection:bg-[#E90052] selection:text-white">
+      <body className="min-h-full flex flex-col bg-ambient text-slate-100 relative selection:bg-[#E90052] selection:text-white overflow-x-hidden w-full">
+        {/* Premier League Lion Ultra-Subtle Watermark Silhouette */}
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden opacity-[0.035] select-none"
+        >
+          <PremierLeagueLion className="w-[600px] h-[600px] sm:w-[850px] sm:h-[850px] text-white transform -rotate-12 translate-x-12 translate-y-8" />
+        </div>
+
         <Navbar />
         <ServerWarmupNotice />
-        <main className="flex-1 relative z-10">{children}</main>
+        <main className="flex-1 relative z-10 w-full overflow-x-hidden">{children}</main>
 
         {/* Professional Developer Signature Footer */}
         <footer className="border-t border-slate-800 bg-[#0c0c16]/95 backdrop-blur-md py-8 mt-12 text-slate-400 text-sm">

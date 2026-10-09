@@ -16,23 +16,11 @@ import {
 } from "lucide-react";
 import { TeamCrest } from "@/components/TeamCrest";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
-
-interface TeamProjection {
-  rank: number;
-  team: string;
-  champion_pct: number;
-  top4_pct: number;
-  relegation_pct: number;
-  avg_points: number;
-  avg_position: number;
-  current_rank?: number;
-  points_p10?: number;
-  points_p50?: number;
-  points_p90?: number;
-  position_p10?: number;
-  position_p50?: number;
-  position_p90?: number;
-}
+import {
+  TeamProjection,
+  fetchTablePredictions,
+  getCachedTableData,
+} from "@/data/cachedApi";
 
 type SortField =
   | "rank"
@@ -46,8 +34,8 @@ type SortDirection = "asc" | "desc";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 export default function HomePage() {
-  const [data, setData] = useState<TeamProjection[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<TeamProjection[]>(() => getCachedTableData() || []);
+  const [loading, setLoading] = useState<boolean>(() => !getCachedTableData());
   const [error, setError] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>("rank");
   const [sortDir, setSortDir] = useState<SortDirection>("asc");
@@ -62,13 +50,9 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/predictions/table?include_bands=true`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((json) => {
-        setData(json.table || []);
+    fetchTablePredictions()
+      .then((table) => {
+        setData(table);
         setLoading(false);
       })
       .catch(() => {
@@ -630,7 +614,7 @@ export default function HomePage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search your club..."
-                className="w-full bg-white/5 hover:bg-white/10 focus:bg-[#12121C] border border-white/10 focus:border-[#04F5FF] rounded-xl pl-8.5 pr-7 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none transition-all"
+                className="w-full min-h-[44px] sm:min-h-0 bg-white/5 hover:bg-white/10 focus:bg-[#12121C] border border-white/10 focus:border-[#04F5FF] rounded-xl pl-8.5 pr-7 py-2 sm:py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none transition-all flex items-center"
               />
               {searchQuery && (
                 <button

@@ -16,8 +16,7 @@ import {
 import { TeamCrest } from "@/components/TeamCrest";
 import { RadarChart } from "@/components/RadarChart";
 import { TEAMS_DATA, getTeamMetadata, TeamMetadata } from "@/data/teams";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+import { fetchTablePredictions, getCachedTableData } from "@/data/cachedApi";
 
 function computeRadarMetrics(meta: TeamMetadata) {
   const normElo = Math.min(Math.max(((meta.elo - 1300) / 480) * 100, 10), 100);
@@ -65,22 +64,27 @@ function computeRadarMetrics(meta: TeamMetadata) {
 }
 
 export default function TeamsIndexPage() {
-  const [tableData, setTableData] = useState<Record<string, any>>({});
+  const [tableData, setTableData] = useState<Record<string, any>>(() => {
+    const cached = getCachedTableData();
+    if (!cached) return {};
+    const map: Record<string, any> = {};
+    cached.forEach((row: any) => {
+      map[row.team] = row;
+    });
+    return map;
+  });
   const [compareOpen, setCompareOpen] = useState<boolean>(true);
   const [teamA, setTeamA] = useState<string>("Arsenal");
   const [teamB, setTeamB] = useState<string>("Man City");
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/predictions/table?include_bands=true`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.table) {
-          const map: Record<string, any> = {};
-          json.table.forEach((row: any) => {
-            map[row.team] = row;
-          });
-          setTableData(map);
-        }
+    fetchTablePredictions()
+      .then((table) => {
+        const map: Record<string, any> = {};
+        table.forEach((row: any) => {
+          map[row.team] = row;
+        });
+        setTableData(map);
       })
       .catch(() => {});
   }, []);

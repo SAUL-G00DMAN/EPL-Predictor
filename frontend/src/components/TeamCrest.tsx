@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getTeamMetadata } from "@/data/teams";
 
 interface TeamCrestProps {
@@ -21,6 +21,11 @@ export function TeamCrest({
   const [hasError, setHasError] = useState(false);
   const meta = getTeamMetadata(team);
 
+  // Reset error state if team or crest URL changes
+  useEffect(() => {
+    setHasError(false);
+  }, [team, meta.crestUrl]);
+
   return (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
       <div
@@ -31,14 +36,15 @@ export function TeamCrest({
           backgroundColor: hasError ? meta.primaryColor : "transparent",
         }}
       >
-        {!hasError ? (
+        {!hasError && meta.crestUrl ? (
           <img
             src={meta.crestUrl}
             alt={`${team} crest`}
             width={size}
             height={size}
-            crossOrigin="anonymous"
             loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
             onError={() => setHasError(true)}
             className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
           />

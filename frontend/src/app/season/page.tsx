@@ -16,24 +16,11 @@ import {
 import { TeamCrest } from "@/components/TeamCrest";
 import { TEAMS_DATA } from "@/data/teams";
 import { toPng } from "html-to-image";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
-interface TeamProjection {
-  rank: number;
-  team: string;
-  champion_pct: number;
-  top4_pct: number;
-  relegation_pct: number;
-  avg_points: number;
-  avg_position: number;
-  points_p10?: number;
-  points_p50?: number;
-  points_p90?: number;
-  position_p10?: number;
-  position_p50?: number;
-  position_p90?: number;
-}
+import {
+  TeamProjection,
+  fetchTablePredictions,
+  getCachedTableData,
+} from "@/data/cachedApi";
 
 function drawFallbackCanvas(
   team: TeamProjection,
@@ -98,7 +85,7 @@ function drawFallbackCanvas(
 
   ctx.fillStyle = "#94A3B8";
   ctx.font = "bold 16px 'Inter', sans-serif, system-ui";
-  ctx.fillText("OFFICIAL AI SEASON PROJECTION", 60, 210);
+  ctx.fillText("OFFICIAL SEASON PROJECTION", 60, 210);
 
   // Projected Rank Hero Block
   ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
@@ -194,8 +181,8 @@ function drawFallbackCanvas(
 }
 
 export default function YourSeasonPage() {
-  const [table, setTable] = useState<TeamProjection[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [table, setTable] = useState<TeamProjection[]>(() => getCachedTableData() || []);
+  const [loading, setLoading] = useState<boolean>(() => !getCachedTableData());
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [storyBeat, setStoryBeat] = useState<number>(0); // 0: picker, 1: finish, 2: rival, 3: range, 4: share
   const [suspenseActive, setSuspenseActive] = useState<boolean>(false);
@@ -204,12 +191,9 @@ export default function YourSeasonPage() {
   const exportCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/predictions/table?include_bands=true`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.table) {
-          setTable(json.table);
-        }
+    fetchTablePredictions()
+      .then((data) => {
+        setTable(data);
         setLoading(false);
       })
       .catch(() => {
@@ -972,7 +956,7 @@ export default function YourSeasonPage() {
                     {teamData.team}
                   </h2>
                   <div className="text-sm text-slate-400 font-medium">
-                    Official AI Season Projection
+                    Official Season Projection
                   </div>
                 </div>
               </div>
