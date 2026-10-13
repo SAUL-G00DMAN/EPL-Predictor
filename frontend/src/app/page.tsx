@@ -135,7 +135,7 @@ export default function HomePage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span>Updated through Matchweek 5 • 2026-27 Season</span>
+          <span>Updated through Gameweek 6 • Gameweek 7 Slate (32 Fixtures Remaining)</span>
         </div>
       </div>
 
@@ -148,31 +148,31 @@ export default function HomePage() {
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-[#00FF85] animate-pulse shrink-0" />
             <h3 className="text-xs uppercase tracking-wider font-extrabold text-[#00FF85]">
-              رؤية المحلل • ملاحظات الجولة 5
+              رؤية المحلل • ملاحظات ختام الجولة 6
             </h3>
           </div>
           <span className="text-[11px] text-slate-400 font-medium">
-            قراءة تكتيكية ونسب احتمالات
+            قراءة تكتيكية ونسب احتمالات (10,000 محاكاة)
           </span>
         </div>
         <p className="text-slate-100 text-sm sm:text-base leading-relaxed font-sans font-medium">
-          مانشستر سيتي يتصدر الترشيحات بنسبة{" "}
+          مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
           <span dir="ltr" className="text-[#00FF85] font-semibold">
-            68.1%
+            78.2%
           </span>{" "}
-          لحسم اللقب، لكن توزيعات محاكاة{" "}
-          <span dir="ltr" className="text-[#04F5FF] font-mono">
-            Monte Carlo
-          </span>{" "}
-          تظهر تقلبات حساسة في هوامش الحسم: المواجهات المباشرة ضد{" "}
+          لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
           <span dir="ltr" className="text-white font-medium">
             Arsenal
           </span>{" "}
-          و{" "}
-          <span dir="ltr" className="text-white font-medium">
-            Liverpool
+          بنسبة{" "}
+          <span dir="ltr" className="text-[#04F5FF] font-semibold">
+            19.5%
           </span>{" "}
-          تمثل مواجهات بست نقاط كفيلة بتقليص الفارق المتوقع لأدنى مستوياته.
+          كأقرب الملاحقين وفق محاكاة{" "}
+          <span dir="ltr" className="text-[#04F5FF] font-mono">
+            Monte Carlo
+          </span>
+          ، مع اشتعال صراع المربع الذهبي بين برايتون، تشيلسي، وبرينتفورد.
         </p>
       </section>
 
@@ -773,9 +773,9 @@ export default function HomePage() {
                                   {/* Tooltip on hover */}
                                   <span className="absolute bottom-full left-0 mb-2 hidden group-hover/delta:block w-52 p-2.5 rounded-xl bg-[#121222] border border-white/20 text-[10px] font-sans font-normal text-slate-200 shadow-2xl z-50 pointer-events-none normal-case tracking-normal text-left whitespace-normal backdrop-blur-md">
                                     <span className="font-semibold text-white block mb-0.5">
-                                      MW5: #{row.current_rank ?? row.rank} → Proj: #{row.rank}
+                                      GW6: #{row.current_rank ?? row.rank} → Proj: #{row.rank}
                                     </span>
-                                    Projected season trajectory: AI forecast vs current Matchweek 5 standing.
+                                    Projected season trajectory: AI forecast vs official Gameweek 6 standing.
                                   </span>
                                 </span>
                               );
@@ -963,8 +963,41 @@ export default function HomePage() {
                       {/* Expanded Confidence Bands Visual */}
                       {isExpanded && (
                         <tr className="bg-black/40 border-b border-white/10">
-                          <td colSpan={7} className="p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/[0.03] p-5 rounded-2xl border border-white/5">
+                          <td colSpan={7} className="p-4 sm:p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 bg-white/[0.03] p-4 sm:p-5 rounded-2xl border border-white/5">
+                              {/* Official Gameweek 6 Standings Snapshot */}
+                              <div className="md:col-span-2 flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/10 text-xs">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="font-extrabold text-white uppercase tracking-wider text-[11px] bg-white/10 px-2 py-0.5 rounded">
+                                    Official GW6 Record
+                                  </span>
+                                  <span className="text-slate-300">
+                                    Table Rank: <strong className="text-white">#{row.current_rank ?? row.rank}</strong>
+                                  </span>
+                                  <span className="text-slate-500">•</span>
+                                  <span className="text-slate-300">
+                                    Matches Played: <strong className="text-white">{row.played ?? 6}</strong>
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-2.5 sm:gap-4 font-mono text-[11px]">
+                                  <span className="text-slate-300"><strong className="text-emerald-400">{row.wins ?? 0}</strong>W</span>
+                                  <span className="text-slate-300"><strong className="text-amber-400">{row.draws ?? 0}</strong>D</span>
+                                  <span className="text-slate-300"><strong className="text-rose-400">{row.losses ?? 0}</strong>L</span>
+                                  <span className="text-slate-600 hidden sm:inline">|</span>
+                                  <span className="text-slate-300">GF: <strong className="text-white">{row.gf ?? 0}</strong></span>
+                                  <span className="text-slate-300">GA: <strong className="text-white">{row.ga ?? 0}</strong></span>
+                                  <span className="text-slate-300">
+                                    GD: <strong className={((row.gd ?? 0) >= 0) ? "text-[#00FF85]" : "text-[#E90052]"}>
+                                      {((row.gd ?? 0) > 0) ? `+${row.gd}` : (row.gd ?? 0)}
+                                    </strong>
+                                  </span>
+                                  <span className="text-slate-600 hidden sm:inline">|</span>
+                                  <span className="px-2.5 py-0.5 rounded-md bg-[#00FF85]/15 border border-[#00FF85]/35 text-[#00FF85] font-black">
+                                    {row.points ?? 0} Pts
+                                  </span>
+                                </div>
+                              </div>
+
                               {/* Points Confidence Band */}
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between text-xs text-slate-300 font-semibold">

@@ -16,7 +16,7 @@ export function Navbar() {
     accuracy?: number;
   }>({
     loaded: true,
-    remainingFixtures: 330,
+    remainingFixtures: 320,
   });
 
   useEffect(() => {

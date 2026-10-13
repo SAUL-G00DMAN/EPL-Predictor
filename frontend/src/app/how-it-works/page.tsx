@@ -118,7 +118,7 @@ const STEPS: StepItem[] = [
     number: "05",
     shortTitle: "Monte Carlo Sim",
     fullTitle: "10,000-Run Monte Carlo Simulation",
-    badge: "3,300,000 Simulated Fixtures",
+    badge: "3,200,000 Simulated Fixtures",
     icon: GitBranch,
     explanationArabic: (
       <>

@@ -50,28 +50,29 @@ OUTCOME_DESCRIPTIONS = {
 }
 
 
-CURRENT_MW5_STANDINGS = {
+CURRENT_MW6_STANDINGS = {
     "Man City": 1,
     "Arsenal": 2,
     "Brighton": 3,
     "Brentford": 4,
-    "Leeds United": 5,
-    "Liverpool": 6,
-    "Everton": 7,
+    "Everton": 5,
+    "Chelsea": 6,
+    "Leeds United": 7,
     "Hull City": 8,
-    "Newcastle": 9,
-    "Chelsea": 10,
-    "Ipswich Town": 11,
-    "Man United": 12,
-    "Nott'm Forest": 13,
-    "Sunderland": 14,
-    "Crystal Palace": 15,
+    "Liverpool": 9,
+    "Ipswich Town": 10,
+    "Newcastle": 11,
+    "Crystal Palace": 12,
+    "Man United": 13,
+    "Coventry City": 14,
+    "Nott'm Forest": 15,
     "Aston Villa": 16,
-    "Bournemouth": 17,
-    "Coventry City": 18,
-    "Fulham": 19,
-    "Tottenham": 20,
+    "Sunderland": 17,
+    "Bournemouth": 18,
+    "Tottenham": 19,
+    "Fulham": 20,
 }
+CURRENT_MW5_STANDINGS = CURRENT_MW6_STANDINGS
 
 
 def compute_current_standings(actual_played: pd.DataFrame, teams: list[str]) -> dict[str, int]:
@@ -122,8 +123,8 @@ async def lifespan(app: FastAPI):
                 predictor.actual_played, predictor.get_team_list()
             )
         except Exception as e:
-            logger.warning("Could not compute dynamic standings; using static MW5 map: %s", e)
-            app.state.current_standings = CURRENT_MW5_STANDINGS
+            logger.warning("Could not compute dynamic standings; using static MW6 map: %s", e)
+            app.state.current_standings = CURRENT_MW6_STANDINGS
         logger.info(
             "EPLPredictor initialized successfully with %d teams and %d remaining fixtures.",
             len(predictor.get_team_list()),
