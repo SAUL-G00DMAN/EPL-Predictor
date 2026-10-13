@@ -6,8 +6,6 @@ import {
   ArrowUpDown,
   ChevronDown,
   ChevronUp,
-  Trophy,
-  AlertTriangle,
   Info,
   ExternalLink,
   Search,
@@ -86,17 +84,17 @@ export default function HomePage() {
     return sortedData.filter((row) => row.team.toLowerCase().includes(q));
   }, [sortedData, searchQuery]);
 
-  // Featured widget: Top 4 teams strictly ranked by Champion_%
-  const titleRaceTeams = useMemo(() => {
+  // Mini-podium: Top 3 title favorites
+  const top3TitleTeams = useMemo(() => {
+    if (!data || data.length < 3) {
+      return [
+        { team: "Man City", champion_pct: 78.21 },
+        { team: "Arsenal", champion_pct: 19.51 },
+        { team: "Liverpool", champion_pct: 1.6 },
+      ];
+    }
     return [...data]
       .sort((a, b) => b.champion_pct - a.champion_pct)
-      .slice(0, 4);
-  }, [data]);
-
-  // Featured widget: Bottom 3 teams strictly ranked by Relegation_%
-  const relegationBattleTeams = useMemo(() => {
-    return [...data]
-      .sort((a, b) => b.relegation_pct - a.relegation_pct)
       .slice(0, 3);
   }, [data]);
 
@@ -139,363 +137,138 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Editorial Feature: Analyst's Take */}
-      <section
-        dir="rtl"
-        className="bg-[#181829] border border-slate-700/80 border-r-4 border-r-[#00FF85] rounded-2xl p-4 sm:p-6 shadow-lg relative overflow-hidden text-right"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-white/10">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-[#00FF85] animate-pulse shrink-0" />
-            <h3 className="text-xs uppercase tracking-wider font-extrabold text-[#00FF85]">
-              رؤية المحلل • ملاحظات ختام الجولة 6
-            </h3>
-          </div>
-          <span className="text-[11px] text-slate-400 font-medium">
-            قراءة تكتيكية ونسب احتمالات (10,000 محاكاة)
-          </span>
-        </div>
-        <p className="text-slate-100 text-sm sm:text-base leading-relaxed font-sans font-medium">
-          مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
-          <span dir="ltr" className="text-[#00FF85] font-semibold">
-            78.2%
-          </span>{" "}
-          لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
-          <span dir="ltr" className="text-white font-medium">
-            Arsenal
-          </span>{" "}
-          بنسبة{" "}
-          <span dir="ltr" className="text-[#04F5FF] font-semibold">
-            19.5%
-          </span>{" "}
-          كأقرب الملاحقين وفق محاكاة{" "}
-          <span dir="ltr" className="text-[#04F5FF] font-mono">
-            Monte Carlo
-          </span>
-          ، مع اشتعال صراع المربع الذهبي بين برايتون، تشيلسي، وبرينتفورد.
-        </p>
-      </section>
-
-      {/* Featured Highlights: Title Race & Relegation Battle */}
-      {loading ? (
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Title Race Podium Skeleton */}
-          <div className="lg:col-span-7 glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 space-y-5 animate-pulse">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-white/10"></div>
-                <div className="space-y-1.5">
-                  <div className="h-4 w-28 bg-white/10 rounded"></div>
-                  <div className="h-3 w-48 bg-white/5 rounded"></div>
-                </div>
-              </div>
+      {/* Editorial Feature: Analyst's Take + Compact Top 3 Mini-Podium */}
+      <section className="bg-[#181829] border border-slate-700/80 border-r-4 border-r-[#00FF85] rounded-2xl p-4 sm:p-5 shadow-lg relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5 sm:gap-6">
+          {/* Left Side: Compact Top 3 Mini-Podium */}
+          <div className="order-2 lg:order-1 flex-1 lg:max-w-[420px] bg-[#0c0d18]/70 border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-inner shrink-0">
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/5">
+              <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#00FF85] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00FF85] animate-pulse"></span>
+                Top 3 Title Favorites
+              </span>
+              <span className="text-[10px] font-mono text-slate-400">
+                10,000 Sims
+              </span>
             </div>
 
-            <div className="flex flex-col space-y-3 pt-2">
-              <div className="grid grid-cols-3 items-end gap-2 sm:gap-4 px-1 sm:px-2 min-h-[220px]">
-                {/* #2 Silver skeleton */}
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-white/10"></div>
-                  <div className="h-3 w-16 bg-white/10 rounded"></div>
-                  <div className="w-full h-24 sm:h-28 rounded-t-2xl bg-white/5 border-t border-x border-white/10"></div>
-                </div>
-
-                {/* #1 Gold center skeleton */}
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/30"></div>
-                  <div className="h-4 w-20 bg-amber-500/20 rounded"></div>
-                  <div className="w-full h-36 sm:h-44 rounded-t-2xl bg-amber-500/10 border-t-2 border-x border-amber-500/30"></div>
-                </div>
-
-                {/* #3 Bronze skeleton */}
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-white/10"></div>
-                  <div className="h-3 w-16 bg-white/10 rounded"></div>
-                  <div className="w-full h-18 sm:h-22 rounded-t-2xl bg-white/5 border-t border-x border-white/10"></div>
-                </div>
-              </div>
-
-              {/* #4 skeleton */}
-              <div className="h-12 w-full rounded-xl bg-white/[0.02] border border-white/5"></div>
-            </div>
-          </div>
-
-          {/* Relegation Battle Skeleton */}
-          <div className="lg:col-span-5 glass-panel p-6 sm:p-7 rounded-3xl border border-[#E90052]/20 space-y-5 animate-pulse">
-            <div className="flex items-center gap-3 pb-3 border-b border-white/10">
-              <div className="w-10 h-10 rounded-2xl bg-[#E90052]/20"></div>
-              <div className="space-y-1.5">
-                <div className="h-4 w-32 bg-[#E90052]/20 rounded"></div>
-                <div className="h-3 w-40 bg-white/5 rounded"></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {[1, 2, 3].map((idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-2xl bg-[#E90052]/[0.04] border border-[#E90052]/20 flex flex-col items-center space-y-3"
-                >
-                  <div className="w-11 h-11 rounded-full bg-white/10"></div>
-                  <div className="h-3 w-16 bg-white/10 rounded"></div>
-                  <div className="h-5 w-12 bg-[#E90052]/30 rounded"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : data.length > 0 ? (
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Part 1: Title Race (Top 4 by Champion_%) */}
-          <div className="lg:col-span-7 glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 glow-cyan flex flex-col justify-between space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#00FF85]/15 border border-[#00FF85]/30 flex items-center justify-center shadow-lg shadow-[#00FF85]/10">
-                  <Trophy className="w-5 h-5 text-[#00FF85]" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-                    Title Race
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00FF85]/15 text-[#00FF85] border border-[#00FF85]/30">
-                      Top 4 Contenders
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Ranked by Monte Carlo Champion probability (Champion_%)
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Podium Visual: #2 (Left), #1 (Center, Tallest, Gold), #3 (Right) */}
-            <div className="flex flex-col space-y-3 pt-2">
-              <div className="grid grid-cols-3 items-end gap-2 sm:gap-4 px-1 sm:px-2 min-h-[220px]">
-                {/* #2 Platform (Left) */}
-                {titleRaceTeams[1] && (
-                  <Link
-                    href={`/teams/${encodeURIComponent(titleRaceTeams[1].team)}`}
-                    className="group flex flex-col items-center text-center animate-podium-2 cursor-pointer"
-                  >
-                    <div className="flex flex-col items-center space-y-1 pb-2 transition-transform duration-300 group-hover:-translate-y-1">
-                      <div className="relative">
-                        <TeamCrest team={titleRaceTeams[1].team} size={46} />
-                        <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-slate-300 text-slate-900 font-mono font-black text-[10px] flex items-center justify-center border border-white shadow">
-                          2
-                        </span>
-                      </div>
-                      <h4 className="text-xs sm:text-sm font-bold text-white truncate max-w-[90px] sm:max-w-[125px] group-hover:text-[#04F5FF] transition-colors">
-                        {titleRaceTeams[1].team}
-                      </h4>
-                      <span className="text-sm sm:text-base font-black text-slate-200 font-mono">
-                        {titleRaceTeams[1].champion_pct.toFixed(1)}%
-                      </span>
-                    </div>
-
-                    <div className="w-full h-24 sm:h-28 rounded-t-2xl bg-gradient-to-t from-slate-800/90 via-slate-700/40 to-slate-700/20 border-t-2 border-x border-slate-400/40 shadow-lg flex flex-col items-center justify-start pt-2 sm:pt-3">
-                      <span className="text-xl sm:text-2xl font-black font-mono text-slate-300/70">
-                        2nd
-                      </span>
-                      <span className="text-[9px] uppercase tracking-widest text-slate-400 font-bold mt-0.5">
-                        Silver
-                      </span>
-                    </div>
-                  </Link>
-                )}
-
-                {/* #1 Platform (Center - Tallest & Warm Gold Glow) */}
-                {titleRaceTeams[0] && (
-                  <Link
-                    href={`/teams/${encodeURIComponent(titleRaceTeams[0].team)}`}
-                    className="group flex flex-col items-center text-center animate-podium-1 relative z-10 cursor-pointer"
-                  >
-                    <div className="flex flex-col items-center space-y-1.5 pb-2.5 transition-transform duration-300 group-hover:-translate-y-1.5">
-                      <div className="relative">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-amber-400">
-                          <Trophy className="w-4 h-4 fill-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
-                        </div>
-                        <div className="p-1 rounded-full ring-2 ring-amber-400/80 shadow-[0_0_20px_rgba(245,158,11,0.5)] bg-[#12121C]">
-                          <TeamCrest team={titleRaceTeams[0].team} size={54} />
-                        </div>
-                        <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-xs flex items-center justify-center border-2 border-white shadow-lg">
-                          1
-                        </span>
-                      </div>
-                      <h4 className="text-sm sm:text-base font-black text-white truncate max-w-[110px] sm:max-w-[150px] group-hover:text-amber-300 transition-colors">
-                        {titleRaceTeams[0].team}
-                      </h4>
-                      <span className="text-lg sm:text-xl font-black text-amber-300 font-mono drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]">
-                        {titleRaceTeams[0].champion_pct.toFixed(1)}%
-                      </span>
-                      <span className="text-[9px] uppercase tracking-wider text-amber-300/90 font-bold bg-amber-400/15 px-2 py-0.5 rounded-full border border-amber-400/30">
-                        Favorite
-                      </span>
-                    </div>
-
-                    <div className="w-full h-32 sm:h-38 rounded-t-2xl bg-gradient-to-t from-amber-950/80 via-amber-500/25 to-amber-400/20 border-t-2 border-x border-amber-400/80 glow-gold shadow-2xl flex flex-col items-center justify-start pt-2 sm:pt-3">
-                      <span className="text-2xl sm:text-3xl font-black font-mono text-amber-300 drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]">
-                        1st
-                      </span>
-                      <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-200 font-black mt-0.5">
-                        Champion
-                      </span>
-                    </div>
-                  </Link>
-                )}
-
-                {/* #3 Platform (Right) */}
-                {titleRaceTeams[2] && (
-                  <Link
-                    href={`/teams/${encodeURIComponent(titleRaceTeams[2].team)}`}
-                    className="group flex flex-col items-center text-center animate-podium-3 cursor-pointer"
-                  >
-                    <div className="flex flex-col items-center space-y-1 pb-2 transition-transform duration-300 group-hover:-translate-y-1">
-                      <div className="relative">
-                        <TeamCrest team={titleRaceTeams[2].team} size={42} />
-                        <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[10px] flex items-center justify-center border border-amber-400 shadow">
-                          3
-                        </span>
-                      </div>
-                      <h4 className="text-xs sm:text-sm font-bold text-white truncate max-w-[90px] sm:max-w-[125px] group-hover:text-[#00FF85] transition-colors">
-                        {titleRaceTeams[2].team}
-                      </h4>
-                      <span className="text-sm sm:text-base font-black text-amber-200/90 font-mono">
-                        {titleRaceTeams[2].champion_pct.toFixed(1)}%
-                      </span>
-                    </div>
-
-                    <div className="w-full h-18 sm:h-22 rounded-t-2xl bg-gradient-to-t from-amber-950/60 via-amber-900/30 to-amber-800/15 border-t-2 border-x border-amber-700/50 shadow-lg flex flex-col items-center justify-start pt-2">
-                      <span className="text-lg sm:text-xl font-black font-mono text-amber-500/80">
-                        3rd
-                      </span>
-                      <span className="text-[9px] uppercase tracking-widest text-amber-400/80 font-bold">
-                        Bronze
-                      </span>
-                    </div>
-                  </Link>
-                )}
-              </div>
-
-              {/* #4 Entry: Lower "just missed it" entry below the podium */}
-              {titleRaceTeams[3] && (
+            <div className="grid grid-cols-3 gap-2 text-center">
+              {/* #2 Platform (Left - Arsenal) */}
+              {top3TitleTeams[1] && (
                 <Link
-                  href={`/teams/${encodeURIComponent(titleRaceTeams[3].team)}`}
-                  className="group animate-podium-4 flex items-center justify-between p-2.5 sm:p-3 px-3.5 sm:px-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/10 hover:border-[#04F5FF]/30 transition-all duration-200 cursor-pointer"
+                  href={`/teams/${encodeURIComponent(top3TitleTeams[1].team)}`}
+                  className="group flex flex-col items-center p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-slate-400/40 transition-all cursor-pointer"
                 >
-                  <div className="flex items-center gap-2.5 sm:gap-3">
-                    <span className="font-mono text-[10px] font-bold text-slate-400 px-1.5 py-0.5 rounded bg-white/5 border border-white/10">
-                      #4
+                  <div className="relative mb-1">
+                    <TeamCrest team={top3TitleTeams[1].team} size={30} />
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-slate-300 text-slate-900 font-mono font-black text-[9px] flex items-center justify-center border border-white shadow">
+                      2
                     </span>
-                    <TeamCrest team={titleRaceTeams[3].team} size={28} />
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-white group-hover:text-[#04F5FF] transition-colors">
-                        {titleRaceTeams[3].team}
-                      </span>
-                      <span className="text-[10px] text-slate-400 hidden sm:inline">
-                        (just missed the podium)
-                      </span>
+                  </div>
+                  <span className="text-xs font-bold text-white truncate max-w-[80px] group-hover:text-[#04F5FF] transition-colors">
+                    {top3TitleTeams[1].team}
+                  </span>
+                  <span className="text-xs font-black text-slate-200 font-mono">
+                    {top3TitleTeams[1].champion_pct.toFixed(1)}%
+                  </span>
+                  <span className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">
+                    Silver
+                  </span>
+                </Link>
+              )}
+
+              {/* #1 Platform (Center - Man City Gold Favorite) */}
+              {top3TitleTeams[0] && (
+                <Link
+                  href={`/teams/${encodeURIComponent(top3TitleTeams[0].team)}`}
+                  className="group flex flex-col items-center p-2 rounded-xl bg-amber-500/[0.08] hover:bg-amber-500/[0.14] border border-amber-400/40 hover:border-amber-400/70 shadow-sm shadow-amber-500/10 transition-all cursor-pointer relative"
+                >
+                  <div className="relative mb-1">
+                    <div className="p-0.5 rounded-full ring-1.5 ring-amber-400 bg-[#12121C]">
+                      <TeamCrest team={top3TitleTeams[0].team} size={32} />
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-                      Champion:
-                    </span>
-                    <span className="font-mono font-black text-xs sm:text-sm text-[#04F5FF]">
-                      {titleRaceTeams[3].champion_pct.toFixed(1)}%
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-[9px] flex items-center justify-center border border-white shadow">
+                      1
                     </span>
                   </div>
+                  <span className="text-xs font-black text-white truncate max-w-[85px] group-hover:text-amber-300 transition-colors">
+                    {top3TitleTeams[0].team}
+                  </span>
+                  <span className="text-xs font-black text-amber-300 font-mono drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
+                    {top3TitleTeams[0].champion_pct.toFixed(1)}%
+                  </span>
+                  <span className="text-[8px] uppercase tracking-wider text-amber-300/90 font-black bg-amber-400/20 px-1 rounded border border-amber-400/30">
+                    Favorite
+                  </span>
+                </Link>
+              )}
+
+              {/* #3 Platform (Right - Liverpool Bronze) */}
+              {top3TitleTeams[2] && (
+                <Link
+                  href={`/teams/${encodeURIComponent(top3TitleTeams[2].team)}`}
+                  className="group flex flex-col items-center p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-amber-700/40 transition-all cursor-pointer"
+                >
+                  <div className="relative mb-1">
+                    <TeamCrest team={top3TitleTeams[2].team} size={30} />
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[9px] flex items-center justify-center border border-amber-400 shadow">
+                      3
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-white truncate max-w-[80px] group-hover:text-[#00FF85] transition-colors">
+                    {top3TitleTeams[2].team}
+                  </span>
+                  <span className="text-xs font-black text-amber-200/90 font-mono">
+                    {top3TitleTeams[2].champion_pct.toFixed(1)}%
+                  </span>
+                  <span className="text-[8px] uppercase tracking-wider text-amber-400/80 font-bold">
+                    Bronze
+                  </span>
                 </Link>
               )}
             </div>
           </div>
 
-          {/* Part 2: Relegation Battle (Bottom 3 by Relegation_%) */}
-          <div className="lg:col-span-5 glass-panel p-6 sm:p-7 rounded-3xl border border-[#E90052]/30 bg-[#E90052]/[0.02] glow-magenta flex flex-col justify-between space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#E90052]/15 border border-[#E90052]/40 flex items-center justify-center shadow-lg shadow-[#E90052]/10">
-                  <AlertTriangle className="w-5 h-5 text-[#E90052]" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-                    Relegation Battle
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E90052]/15 text-[#E90052] border border-[#E90052]/30">
-                      Drop Zone
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    3 teams with highest simulated relegation probability
-                  </p>
-                </div>
+          {/* Right Side: Editorial Analysis (dir="rtl") */}
+          <div dir="rtl" className="order-1 lg:order-2 flex-1 text-right">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-[#00FF85] animate-pulse shrink-0" />
+                <h3 className="text-xs uppercase tracking-wider font-extrabold text-[#00FF85]">
+                  رؤية المحلل • ملاحظات ختام الجولة 6
+                </h3>
               </div>
+              <span className="text-[11px] text-slate-400 font-medium">
+                قراءة تكتيكية ونسب احتمالات (10,000 محاكاة)
+              </span>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {relegationBattleTeams.map((t, idx) => (
-                <Link
-                  key={t.team}
-                  href={`/teams/${encodeURIComponent(t.team)}`}
-                  className="group relative p-4 rounded-2xl bg-[#E90052]/[0.06] hover:bg-[#E90052]/[0.12] border border-[#E90052]/25 hover:border-[#E90052]/60 transition-all duration-200 flex flex-col items-center text-center space-y-2.5 shadow-sm"
-                >
-                  <div className="absolute top-2.5 left-2.5 text-[10px] font-mono font-black text-[#E90052] px-1.5 py-0.5 rounded bg-[#E90052]/15 border border-[#E90052]/30">
-                    {idx === 0 ? "20th" : idx === 1 ? "19th" : "18th"}
-                  </div>
-                  <div className="pt-2 transform group-hover:scale-110 transition-transform duration-200">
-                    <TeamCrest team={t.team} size={46} />
-                  </div>
-                  <div className="w-full">
-                    <h4 className="text-xs font-bold text-white truncate group-hover:text-[#E90052] transition-colors">
-                      {t.team}
-                    </h4>
-                    <div className="mt-1 flex flex-col items-center">
-                      <span className="text-lg font-black text-[#E90052] font-mono">
-                        {t.relegation_pct.toFixed(1)}%
-                      </span>
-                      <span className="text-[9px] uppercase tracking-wider text-red-300/80 font-bold">
-                        Relegation %
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <p className="text-slate-100 text-sm leading-relaxed font-sans font-medium">
+              مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
+              <span dir="ltr" className="text-[#00FF85] font-semibold">
+                78.2%
+              </span>{" "}
+              لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
+              <span dir="ltr" className="text-white font-medium">
+                Arsenal
+              </span>{" "}
+              بنسبة{" "}
+              <span dir="ltr" className="text-[#04F5FF] font-semibold">
+                19.5%
+              </span>{" "}
+              كأقرب الملاحقين وفق محاكاة{" "}
+              <span dir="ltr" className="text-[#04F5FF] font-mono">
+                Monte Carlo
+              </span>
+              ، مع اشتعال صراع المربع الذهبي بين برايتون، تشيلسي، وبرينتفورد.
+            </p>
           </div>
-        </section>
-      ) : null}
-
-      {/* Feature: Magnetic Visual Scroll Nudge / Affordance */}
-      <div className="flex flex-col items-center justify-center pt-2 pb-1 relative z-10">
-        <button
-          type="button"
-          onClick={() => {
-            document.getElementById("simulated-table")?.scrollIntoView({ behavior: "smooth" });
-          }}
-          className="relative bg-[#161628]/90 hover:bg-[#1E1E36] border border-white/15 hover:border-[#00FF85]/60 px-5 sm:px-6 py-2.5 rounded-full shadow-lg shadow-black/50 transition-all duration-300 group cursor-pointer flex items-center gap-2.5 sm:gap-3 mx-auto animate-bounce hover:animate-none"
-        >
-          {/* Ambient cyan/emerald glow pulse behind it */}
-          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#04F5FF]/30 via-[#00FF85]/30 to-[#04F5FF]/30 blur-md opacity-75 group-hover:opacity-100 transition-opacity -z-10 animate-pulse pointer-events-none" />
-
-          {/* Glowing badge */}
-          <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-[#00FF85]/15 border border-[#00FF85]/40 text-[#00FF85] shadow-[0_0_10px_rgba(0,255,133,0.2)] shrink-0">
-            TABLE &amp; PROJECTIONS
-          </span>
-
-          {/* Label */}
-          <span className="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
-            Explore Full 20-Club Table &amp; Confidence Bands
-          </span>
-
-          {/* Downward Chevron */}
-          <ChevronDown className="w-4 h-4 text-[#00FF85] group-hover:translate-y-1 transition-transform drop-shadow-[0_0_6px_rgba(0,255,133,0.8)] shrink-0" />
-        </button>
-
-        {/* Visual Connector Gradient Line */}
-        <div className="w-[1px] h-8 bg-gradient-to-b from-[#00FF85]/50 to-transparent mx-auto mt-2" />
-      </div>
+        </div>
+      </section>
 
       {/* Main Projections Table */}
       <section
         id="simulated-table"
-        className="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl scroll-mt-24"
+        className="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl scroll-mt-24 mt-4 sm:mt-6"
       >
         <div className="p-6 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -942,7 +715,7 @@ export default function HomePage() {
                                 title="Floor to Ceiling finish range across 10,000 simulations (P10 - P90)"
                                 className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300 hover:border-[#04F5FF]/30 transition-colors"
                               >
-                                {row.points_p10.toFixed(0)} – {row.points_p90.toFixed(0)} pts
+                                {Math.min(row.points_p10, row.points_p90).toFixed(0)} – {Math.max(row.points_p10, row.points_p90).toFixed(0)} pts
                               </span>
                             )}
                             <button
@@ -1009,14 +782,16 @@ export default function HomePage() {
                                     </div>
                                   </div>
                                   <span className="px-2.5 py-0.5 rounded-full bg-[#04F5FF]/10 text-[#04F5FF] font-mono text-xs font-bold border border-[#04F5FF]/20">
-                                    {row.points_p10?.toFixed(0)} – {row.points_p90?.toFixed(0)} Pts
+                                    {Math.min(row.points_p10 || 0, row.points_p90 || 0)?.toFixed(0)} – {Math.max(row.points_p10 || 0, row.points_p90 || 0)?.toFixed(0)} Pts
                                   </span>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                                   <div className="p-2 rounded-xl bg-white/[0.02] border border-white/5 space-y-0.5">
                                     <span className="text-[10px] text-slate-400 block font-medium">Floor / Worst Case</span>
-                                    <span className="font-mono font-bold text-slate-300 text-sm">{row.points_p10?.toFixed(0)} pts</span>
+                                    <span className="font-mono font-bold text-slate-300 text-sm">
+                                      {Math.min(row.points_p10 || 0, row.points_p90 || 0)?.toFixed(0)} pts
+                                    </span>
                                     <span className="text-[9px] text-slate-500 block font-mono">P10</span>
                                   </div>
                                   <div className="p-2 rounded-xl bg-[#04F5FF]/10 border border-[#04F5FF]/30 space-y-0.5">
@@ -1026,7 +801,9 @@ export default function HomePage() {
                                   </div>
                                   <div className="p-2 rounded-xl bg-[#00FF85]/10 border border-[#00FF85]/30 space-y-0.5">
                                     <span className="text-[10px] text-[#00FF85] block font-bold">Ceiling / Best Case</span>
-                                    <span className="font-mono font-black text-white text-sm">{row.points_p90?.toFixed(0)} pts</span>
+                                    <span className="font-mono font-black text-white text-sm">
+                                      {Math.max(row.points_p10 || 0, row.points_p90 || 0)?.toFixed(0)} pts
+                                    </span>
                                     <span className="text-[9px] text-[#00FF85]/80 block font-mono">P90</span>
                                   </div>
                                 </div>
@@ -1037,12 +814,12 @@ export default function HomePage() {
                                     className="absolute h-full bg-gradient-to-r from-[#3D195B] via-[#04F5FF] to-[#00FF85] rounded-full"
                                     style={{
                                       left: `${Math.max(
-                                        ((row.points_p10 || 20) / 100) * 100,
+                                        ((Math.min(row.points_p10 || 20, row.points_p90 || 20)) / 100) * 100,
                                         0
                                       )}%`,
                                       width: `${Math.min(
-                                        (((row.points_p90 || 80) -
-                                          (row.points_p10 || 20)) /
+                                        (((Math.max(row.points_p10 || 80, row.points_p90 || 80)) -
+                                          (Math.min(row.points_p10 || 20, row.points_p90 || 20))) /
                                           100) *
                                           100,
                                         100
@@ -1052,8 +829,14 @@ export default function HomePage() {
                                 </div>
                                 <p className="text-[11px] text-slate-400">
                                   80% of simulations finish between{" "}
-                                  <strong className="text-white">{row.points_p10?.toFixed(0)}</strong> (worst case) and{" "}
-                                  <strong className="text-white">{row.points_p90?.toFixed(0)}</strong> points (best case).
+                                  <strong className="text-white">
+                                    {Math.min(row.points_p10 || 0, row.points_p90 || 0)?.toFixed(0)}
+                                  </strong>{" "}
+                                  (worst case) and{" "}
+                                  <strong className="text-white">
+                                    {Math.max(row.points_p10 || 0, row.points_p90 || 0)?.toFixed(0)}
+                                  </strong>{" "}
+                                  points (best case).
                                 </p>
                               </div>
 
@@ -1068,14 +851,16 @@ export default function HomePage() {
                                     </div>
                                   </div>
                                   <span className="px-2.5 py-0.5 rounded-full bg-[#00FF85]/10 text-[#00FF85] font-mono text-xs font-bold border border-[#00FF85]/20">
-                                    #{row.position_p10?.toFixed(0)} – #{row.position_p90?.toFixed(0)}
+                                    #{Math.min(row.position_p10 || 1, row.position_p90 || 20)?.toFixed(0)} – #{Math.max(row.position_p10 || 1, row.position_p90 || 20)?.toFixed(0)}
                                   </span>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                                   <div className="p-2 rounded-xl bg-[#00FF85]/10 border border-[#00FF85]/30 space-y-0.5">
                                     <span className="text-[10px] text-[#00FF85] block font-bold">Ceiling / Best Case</span>
-                                    <span className="font-mono font-black text-white text-sm">#{row.position_p10?.toFixed(0)}</span>
+                                    <span className="font-mono font-black text-white text-sm">
+                                      #{Math.min(row.position_p10 || 1, row.position_p90 || 20)?.toFixed(0)}
+                                    </span>
                                     <span className="text-[9px] text-[#00FF85]/80 block font-mono">P10</span>
                                   </div>
                                   <div className="p-2 rounded-xl bg-[#04F5FF]/10 border border-[#04F5FF]/30 space-y-0.5">
@@ -1085,7 +870,9 @@ export default function HomePage() {
                                   </div>
                                   <div className="p-2 rounded-xl bg-white/[0.02] border border-white/5 space-y-0.5">
                                     <span className="text-[10px] text-slate-400 block font-medium">Floor / Worst Case</span>
-                                    <span className="font-mono font-bold text-slate-300 text-sm">#{row.position_p90?.toFixed(0)}</span>
+                                    <span className="font-mono font-bold text-slate-300 text-sm">
+                                      #{Math.max(row.position_p10 || 1, row.position_p90 || 20)?.toFixed(0)}
+                                    </span>
                                     <span className="text-[9px] text-slate-500 block font-mono">P90</span>
                                   </div>
                                 </div>

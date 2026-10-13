@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useId } from "react";
 
 export interface RadarMetric {
   label: string;
@@ -25,20 +25,30 @@ export function RadarChart({
   secondaryMetrics,
   secondaryColor = "#E90052",
 }: RadarChartProps) {
-  const center = size / 2;
-  const radius = center - 52;
-  const numAxes = metrics.length;
+  const reactId = useId();
+  const cleanId = reactId.replace(/[^a-zA-Z0-9_-]/g, "");
+  const primaryGlowId = `radarGlowPrimary_${cleanId}`;
+  const secondaryGlowId = `radarGlowSecondary_${cleanId}`;
+
+  // Dedicated coordinate geometry with ample safety margin around all 5 labels
+  const viewBoxWidth = 380;
+  const viewBoxHeight = 320;
+  const centerX = viewBoxWidth / 2; // 190
+  const centerY = 155;
+  const radius = 70; // Outer grid boundary (68-72px sweet spot)
+  const labelRadius = 104; // Spaced safely outside the vertices
+  const numAxes = metrics.length || 5;
   const angleStep = (Math.PI * 2) / numAxes;
 
   // Grid levels (20%, 40%, 60%, 80%, 100%)
   const levels = [0.2, 0.4, 0.6, 0.8, 1.0];
 
-  const getCoordinates = (valueNormalized: number, index: number) => {
+  const getCoordinates = (valueNormalized: number, index: number, customR: number = radius) => {
     // Start from top (- PI/2)
     const angle = index * angleStep - Math.PI / 2;
-    const r = radius * (valueNormalized / 100);
-    const x = center + r * Math.cos(angle);
-    const y = center + r * Math.sin(angle);
+    const r = customR * (valueNormalized / 100);
+    const x = centerX + r * Math.cos(angle);
+    const y = centerY + r * Math.sin(angle);
     return { x, y };
   };
 
@@ -61,16 +71,15 @@ export function RadarChart({
     : null;
 
   return (
-    <div className="relative flex items-center justify-center max-w-full overflow-hidden">
+    <div className="relative flex items-center justify-center max-w-full overflow-visible px-2 py-1">
       <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="max-w-full h-auto overflow-visible select-none"
+        viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+        className="w-full max-w-full h-auto overflow-visible select-none"
+        style={{ maxWidth: size || 340 }}
       >
         <defs>
           <radialGradient
-            id="radarGlowPrimary"
+            id={primaryGlowId}
             cx="50%"
             cy="50%"
             r="50%"
@@ -81,7 +90,7 @@ export function RadarChart({
             <stop offset="100%" stopColor={primaryColor} stopOpacity="0.08" />
           </radialGradient>
           <radialGradient
-            id="radarGlowSecondary"
+            id={secondaryGlowId}
             cx="50%"
             cy="50%"
             r="50%"
@@ -99,7 +108,7 @@ export function RadarChart({
             .map((_, i) => {
               const angle = i * angleStep - Math.PI / 2;
               const r = radius * level;
-              return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
+              return `${centerX + r * Math.cos(angle)},${centerY + r * Math.sin(angle)}`;
             })
             .join(" ");
 
@@ -117,14 +126,14 @@ export function RadarChart({
         {/* Axis spokes */}
         {Array.from({ length: numAxes }).map((_, i) => {
           const angle = i * angleStep - Math.PI / 2;
-          const x2 = center + radius * Math.cos(angle);
-          const y2 = center + radius * Math.sin(angle);
+          const x2 = centerX + radius * Math.cos(angle);
+          const y2 = centerY + radius * Math.sin(angle);
 
           return (
             <line
               key={i}
-              x1={center}
-              y1={center}
+              x1={centerX}
+              y1={centerY}
               x2={x2}
               y2={y2}
               stroke="rgba(255, 255, 255, 0.12)"
@@ -134,21 +143,21 @@ export function RadarChart({
           );
         })}
 
-        {/* Secondary team data polygon (Team B - Magenta) */}
+        {/* Secondary team data polygon (Team B) */}
         {dataPointsSecondary && (
           <polygon
             points={dataPointsSecondary}
-            fill="url(#radarGlowSecondary)"
+            fill={`url(#${secondaryGlowId})`}
             stroke={secondaryColor}
             strokeWidth="2.5"
             className="transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(233,0,82,0.4)]"
           />
         )}
 
-        {/* Primary team data polygon (Team A - Cyan) */}
+        {/* Primary team data polygon (Team A) */}
         <polygon
           points={dataPointsPrimary}
-          fill="url(#radarGlowPrimary)"
+          fill={`url(#${primaryGlowId})`}
           stroke={primaryColor}
           strokeWidth="2.5"
           className="transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(4,245,255,0.4)]"
@@ -163,7 +172,7 @@ export function RadarChart({
                 key={`sec-${i}`}
                 cx={x}
                 cy={y}
-                r="4.5"
+                r="4"
                 fill={secondaryColor}
                 stroke="#07070b"
                 strokeWidth="2"
@@ -180,7 +189,7 @@ export function RadarChart({
               key={`pri-${i}`}
               cx={x}
               cy={y}
-              r="4.5"
+              r="4"
               fill={primaryColor}
               stroke="#07070b"
               strokeWidth="2"
@@ -189,12 +198,11 @@ export function RadarChart({
           );
         })}
 
-        {/* Axis labels */}
+        {/* Axis labels with 100% boundary safety (Manager Elo & Attack have ~50px clearance) */}
         {metrics.map((m, i) => {
           const angle = i * angleStep - Math.PI / 2;
-          const labelRadius = radius + 32;
-          const x = center + labelRadius * Math.cos(angle);
-          const y = center + labelRadius * Math.sin(angle);
+          const x = centerX + labelRadius * Math.cos(angle);
+          const y = centerY + labelRadius * Math.sin(angle);
 
           if (secondaryMetrics && secondaryMetrics[i]) {
             return (
@@ -206,10 +214,10 @@ export function RadarChart({
                 dominantBaseline="middle"
                 className="text-[11px] font-bold select-none"
               >
-                <tspan x={x} dy="-0.4em" className="fill-white font-extrabold text-xs">
+                <tspan x={x} dy="-0.45em" className="fill-white font-extrabold text-xs">
                   {m.label}
                 </tspan>
-                <tspan x={x} dy="1.3em" className="font-mono text-[10px]">
+                <tspan x={x} dy="1.35em" className="font-mono text-[10px]">
                   <tspan fill={primaryColor} className="font-bold">
                     {m.rawValue}
                   </tspan>
@@ -231,13 +239,13 @@ export function RadarChart({
               dominantBaseline="middle"
               className="text-[11px] font-bold fill-slate-300 select-none"
             >
-              <tspan x={x} dy="-0.3em" className="fill-white font-extrabold">
+              <tspan x={x} dy="-0.4em" className="fill-white font-extrabold text-xs">
                 {m.label}
               </tspan>
               <tspan
                 x={x}
-                dy="1.2em"
-                className="fill-[#04F5FF] font-mono text-[10px]"
+                dy="1.3em"
+                className="fill-[#00FF85] font-mono text-[10px] font-bold"
               >
                 {m.rawValue}
               </tspan>

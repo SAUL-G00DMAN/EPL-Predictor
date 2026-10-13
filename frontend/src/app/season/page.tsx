@@ -108,7 +108,7 @@ function drawFallbackCanvas(
   ctx.fillStyle = "#94A3B8";
   ctx.font = "15px 'Inter', sans-serif, system-ui";
   ctx.fillText(
-    `Range Band (P10 - P90): #${Math.round(team.position_p10 || 1)} to #${Math.round(team.position_p90 || 20)}`,
+    `Range Band: #${Math.round(Math.min(team.position_p10 || 1, team.position_p90 || 20))} to #${Math.round(Math.max(team.position_p10 || 1, team.position_p90 || 20))}`,
     85,
     445
   );
@@ -257,7 +257,7 @@ export default function YourSeasonPage() {
     const shareText = `🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League 2026-27 AI Season Prediction for ${teamData.team}:\n\n` +
       `🏆 Projected Finish: #${Math.round(teamData.avg_position)} (${teamData.avg_points.toFixed(1)} pts)\n` +
       `🔥 Arch-Rival: ${rivalData.team} (#${Math.round(rivalData.avg_position)})\n` +
-      `📈 Ceiling (P10): #${Math.round(teamData.position_p10 || 1)} | 📉 Floor (P90): #${Math.round(teamData.position_p90 || 20)}\n\n` +
+      `📈 Ceiling: #${Math.round(Math.min(teamData.position_p10 || 1, teamData.position_p90 || 20))} (${Math.max(teamData.points_p10 || 0, teamData.points_p90 || 0).toFixed(0)} pts) | 📉 Floor: #${Math.round(Math.max(teamData.position_p10 || 1, teamData.position_p90 || 20))} (${Math.min(teamData.points_p10 || 0, teamData.points_p90 || 0).toFixed(0)} pts)\n\n` +
       `Simulated across 10,000 Monte Carlo season runs at Premier League AI!`;
 
     if (navigator.clipboard) {
@@ -639,38 +639,38 @@ export default function YourSeasonPage() {
 
               {/* Contrasting Split Cards */}
               <div className="grid grid-cols-2 gap-3 pt-2 text-left">
-                {/* Best Case (P10) - Bright, Hopeful */}
+                {/* Best Case (Ceiling) - Bright, Hopeful */}
                 <div className="p-4 rounded-2xl bg-gradient-to-b from-[#00FF85]/15 to-transparent border border-[#00FF85]/30 space-y-2 glow-green">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-black tracking-wider text-[#00FF85]">
-                      Best Case (P10)
+                      Best Case (Ceiling)
                     </span>
                     <Sparkles className="w-3.5 h-3.5 text-[#00FF85]" />
                   </div>
                   <div className="text-3xl font-black font-mono text-white">
-                    #{Math.round(teamData.position_p10 || 1)}
+                    #{Math.round(Math.min(teamData.position_p10 || 1, teamData.position_p90 || 20))}
                   </div>
                   <div className="text-xs font-mono font-bold text-[#00FF85]">
-                    {teamData.points_p10?.toFixed(0)} Points
+                    {Math.max(teamData.points_p10 || 0, teamData.points_p90 || 0).toFixed(0)} Points
                   </div>
                   <p className="text-[10px] text-slate-300 leading-snug">
                     Ideal campaign: Peak clinical finishing, defensive resilience, and winning the high-leverage fixtures.
                   </p>
                 </div>
 
-                {/* Worst Case (P90) - Dark, Ominous */}
+                {/* Worst Case (Floor) - Dark, Ominous */}
                 <div className="p-4 rounded-2xl bg-gradient-to-b from-[#E90052]/15 to-transparent border border-[#E90052]/30 space-y-2 glow-magenta">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-black tracking-wider text-[#E90052]">
-                      Worst Case (P90)
+                      Worst Case (Floor)
                     </span>
                     <AlertTriangle className="w-3.5 h-3.5 text-[#E90052]" />
                   </div>
                   <div className="text-3xl font-black font-mono text-white">
-                    #{Math.round(teamData.position_p90 || 20)}
+                    #{Math.round(Math.max(teamData.position_p10 || 1, teamData.position_p90 || 20))}
                   </div>
                   <div className="text-xs font-mono font-bold text-[#E90052]">
-                    {teamData.points_p90?.toFixed(0)} Points
+                    {Math.min(teamData.points_p10 || 0, teamData.points_p90 || 0).toFixed(0)} Points
                   </div>
                   <p className="text-[10px] text-slate-300 leading-snug">
                     Cold run: Squad fatigue, fixture congestion, and conceding soft low-xG goals in key derbies.
@@ -681,11 +681,11 @@ export default function YourSeasonPage() {
               {/* Summary Band Visual */}
               <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5 text-xs">
                 <div className="flex justify-between text-slate-400 text-[11px]">
-                  <span>P10: #{Math.round(teamData.position_p10 || 1)}</span>
+                  <span>Ceiling: #{Math.round(Math.min(teamData.position_p10 || 1, teamData.position_p90 || 20))}</span>
                   <span className="text-white font-bold">
                     Median: #{Math.round(teamData.position_p50 || teamData.avg_position)}
                   </span>
-                  <span>P90: #{Math.round(teamData.position_p90 || 20)}</span>
+                  <span>Floor: #{Math.round(Math.max(teamData.position_p10 || 1, teamData.position_p90 || 20))}</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full relative overflow-hidden">
                   <div
@@ -809,8 +809,8 @@ export default function YourSeasonPage() {
                   </span>
                 </div>
                 <div className="text-slate-400 font-mono">
-                  Range: #{Math.round(teamData.position_p10 || 1)} - #
-                  {Math.round(teamData.position_p90 || 20)}
+                  Range: #{Math.round(Math.min(teamData.position_p10 || 1, teamData.position_p90 || 20))} - #
+                  {Math.round(Math.max(teamData.position_p10 || 1, teamData.position_p90 || 20))}
                 </div>
               </div>
 
@@ -982,8 +982,8 @@ export default function YourSeasonPage() {
                       {teamData.avg_points.toFixed(1)} Points
                     </div>
                     <div className="text-xs text-slate-400 font-medium">
-                      P10 - P90 Band: #{Math.round(teamData.position_p10 || 1)} to #
-                      {Math.round(teamData.position_p90 || 20)}
+                      Position Band: #{Math.round(Math.min(teamData.position_p10 || 1, teamData.position_p90 || 20))} to #
+                      {Math.round(Math.max(teamData.position_p10 || 1, teamData.position_p90 || 20))}
                     </div>
                   </div>
                 </div>

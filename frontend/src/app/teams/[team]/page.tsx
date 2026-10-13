@@ -7,6 +7,7 @@ import {
   Trophy,
   TrendingUp,
   AlertTriangle,
+  Sparkles,
   User,
   MapPin,
   Swords,
@@ -289,15 +290,58 @@ export default function TeamProfilePage({
 
               {/* Confidence Bands Detail */}
               <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4">
-                <div className="text-xs uppercase font-bold tracking-wider text-slate-300">
-                  P10 / P50 / P90 Confidence Bands
+                <div className="flex items-center justify-between">
+                  <div className="text-xs uppercase font-bold tracking-wider text-slate-300">
+                    Ceiling vs. Floor (Confidence Bands)
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    80% Range Band (10,000 Sims)
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 text-xs font-mono">
+                {/* Best Case vs Worst Case Split */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Best Case (Ceiling) */}
+                  <div className="p-3.5 rounded-xl bg-[#00FF85]/10 border border-[#00FF85]/30 space-y-1">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-black text-[#00FF85]">
+                      <span>Best Case (Ceiling)</span>
+                      <Sparkles className="w-3 h-3 text-[#00FF85]" />
+                    </div>
+                    <div className="text-xl font-black font-mono text-white">
+                      #{Math.round(Math.min(tableStats.position_p10 ?? 1, tableStats.position_p90 ?? 20))}
+                    </div>
+                    <div className="text-xs font-mono font-bold text-[#00FF85]">
+                      {Math.max(tableStats.points_p10 ?? 0, tableStats.points_p90 ?? 0).toFixed(0)} Points
+                    </div>
+                    <div className="text-[10px] text-slate-400 font-sans">
+                      Top 10% simulation finish
+                    </div>
+                  </div>
+
+                  {/* Worst Case (Floor) */}
+                  <div className="p-3.5 rounded-xl bg-[#E90052]/10 border border-[#E90052]/30 space-y-1">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-black text-[#E90052]">
+                      <span>Worst Case (Floor)</span>
+                      <AlertTriangle className="w-3 h-3 text-[#E90052]" />
+                    </div>
+                    <div className="text-xl font-black font-mono text-white">
+                      #{Math.round(Math.max(tableStats.position_p10 ?? 1, tableStats.position_p90 ?? 20))}
+                    </div>
+                    <div className="text-xs font-mono font-bold text-[#E90052]">
+                      {Math.min(tableStats.points_p10 ?? 0, tableStats.points_p90 ?? 0).toFixed(0)} Points
+                    </div>
+                    <div className="text-[10px] text-slate-400 font-sans">
+                      Bottom 10% downside scenario
+                    </div>
+                  </div>
+                </div>
+
+                {/* Range summary */}
+                <div className="grid grid-cols-2 gap-3 text-xs font-mono">
                   <div className="p-3 rounded-xl bg-white/[0.03] space-y-1">
-                    <div className="text-slate-400 text-[11px]">Points Range</div>
-                    <div className="text-base font-bold text-white">
-                      {tableStats.points_p10?.toFixed(0)} - {tableStats.points_p90?.toFixed(0)}
+                    <div className="text-slate-400 text-[10px] uppercase font-bold">Points Range (Low to High)</div>
+                    <div className="text-sm font-bold text-white">
+                      {Math.min(tableStats.points_p10 ?? 0, tableStats.points_p90 ?? 0).toFixed(0)} – {Math.max(tableStats.points_p10 ?? 0, tableStats.points_p90 ?? 0).toFixed(0)} pts
                     </div>
                     <div className="text-[10px] text-[#00FF85]">
                       Median: {tableStats.points_p50?.toFixed(0)} pts
@@ -305,9 +349,9 @@ export default function TeamProfilePage({
                   </div>
 
                   <div className="p-3 rounded-xl bg-white/[0.03] space-y-1">
-                    <div className="text-slate-400 text-[11px]">Position Range</div>
-                    <div className="text-base font-bold text-white">
-                      #{tableStats.position_p10?.toFixed(0)} - #{tableStats.position_p90?.toFixed(0)}
+                    <div className="text-slate-400 text-[10px] uppercase font-bold">Position Range (Best to Worst)</div>
+                    <div className="text-sm font-bold text-white">
+                      #{Math.round(Math.min(tableStats.position_p10 ?? 1, tableStats.position_p90 ?? 20))} to #{Math.round(Math.max(tableStats.position_p10 ?? 1, tableStats.position_p90 ?? 20))}
                     </div>
                     <div className="text-[10px] text-[#04F5FF]">
                       Median Finish: #{tableStats.position_p50?.toFixed(0)}

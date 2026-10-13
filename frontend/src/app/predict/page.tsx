@@ -19,6 +19,7 @@ import { TeamCrest } from "@/components/TeamCrest";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { MiniPitch } from "@/components/MiniPitch";
 import { ScrollIndicator } from "@/components/ScrollIndicator";
+import { HeadToHeadComparison } from "@/components/HeadToHeadComparison";
 import { TEAMS_DATA, getTeamMetadata } from "@/data/teams";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -43,9 +44,7 @@ interface MatchResult {
 }
 
 const MARQUEE_PRESETS = [
-  { home: "Arsenal", away: "Chelsea", label: "Arsenal vs Chelsea" },
-  { home: "Liverpool", away: "Man City", label: "Liverpool vs Man City" },
-  { home: "Man United", away: "Tottenham", label: "Man United vs Tottenham" },
+  { home: "Man City", away: "Chelsea", label: "Man City vs Chelsea" },
 ];
 
 /**
@@ -127,7 +126,7 @@ function RollingScorePill({
 function MatchPredictorContent() {
   const searchParams = useSearchParams();
   const [teamList, setTeamList] = useState<string[]>(Object.keys(TEAMS_DATA));
-  const [homeTeam, setHomeTeam] = useState<string>("Arsenal");
+  const [homeTeam, setHomeTeam] = useState<string>("Man City");
   const [awayTeam, setAwayTeam] = useState<string>("Chelsea");
   const [matchDate, setMatchDate] = useState<string>(
     new Date().toISOString().split("T")[0]
@@ -755,6 +754,9 @@ function MatchPredictorContent() {
           </div>
         </div>
       </div>
+
+      {/* Feature: Tactical Radar & Head-to-Head Battle Comparison Studio */}
+      <HeadToHeadComparison teamA={homeTeam} teamB={awayTeam} />
 
       {/* Mobile Scroll-Down Visual Cue */}
       <ScrollIndicator scrollOffset={350} label="Scroll for Results & Analysis" />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Shield,
@@ -14,54 +14,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import { TeamCrest } from "@/components/TeamCrest";
-import { RadarChart } from "@/components/RadarChart";
-import { TEAMS_DATA, getTeamMetadata, TeamMetadata } from "@/data/teams";
+import { HeadToHeadComparison } from "@/components/HeadToHeadComparison";
+import { TEAMS_DATA } from "@/data/teams";
 import { fetchTablePredictions, getCachedTableData } from "@/data/cachedApi";
-
-function computeRadarMetrics(meta: TeamMetadata) {
-  const normElo = Math.min(Math.max(((meta.elo - 1300) / 480) * 100, 10), 100);
-  const normAtk = Math.min(
-    Math.max(((meta.attackRating - -0.5) / 2.3) * 100, 10),
-    100
-  );
-  // Defense is negative (e.g. -1.4 is better than -0.6)
-  const normDef = Math.min(
-    Math.max(((-meta.defenceRating - 0.5) / 1.0) * 100, 10),
-    100
-  );
-  const normForm = Math.min(
-    Math.max((meta.recentFormPoints / 15) * 100, 10),
-    100
-  );
-  const normMgr = Math.min(
-    Math.max(((meta.managerElo - 1400) / 350) * 100, 10),
-    100
-  );
-
-  return [
-    { label: "Elo Rating", value: normElo, rawValue: `${meta.elo.toFixed(0)}` },
-    {
-      label: "Attack (xG)",
-      value: normAtk,
-      rawValue: `${meta.attackRating.toFixed(2)}`,
-    },
-    {
-      label: "Defence",
-      value: normDef,
-      rawValue: `${Math.abs(meta.defenceRating).toFixed(2)}`,
-    },
-    {
-      label: "Recent Form",
-      value: normForm,
-      rawValue: `${meta.recentFormPoints}/15`,
-    },
-    {
-      label: "Manager Elo",
-      value: normMgr,
-      rawValue: `${meta.managerElo.toFixed(0)}`,
-    },
-  ];
-}
 
 export default function TeamsIndexPage() {
   const [tableData, setTableData] = useState<Record<string, any>>(() => {
@@ -74,8 +29,8 @@ export default function TeamsIndexPage() {
     return map;
   });
   const [compareOpen, setCompareOpen] = useState<boolean>(true);
-  const [teamA, setTeamA] = useState<string>("Arsenal");
-  const [teamB, setTeamB] = useState<string>("Man City");
+  const [teamA, setTeamA] = useState<string>("Man City");
+  const [teamB, setTeamB] = useState<string>("Chelsea");
 
   useEffect(() => {
     fetchTablePredictions()
@@ -91,14 +46,6 @@ export default function TeamsIndexPage() {
 
   const teams = Object.values(TEAMS_DATA);
   const allTeamNames = Object.keys(TEAMS_DATA);
-
-  const metaA = getTeamMetadata(teamA);
-  const metaB = getTeamMetadata(teamB);
-  const statsA = tableData[teamA];
-  const statsB = tableData[teamB];
-
-  const metricsA = useMemo(() => computeRadarMetrics(metaA), [metaA]);
-  const metricsB = useMemo(() => computeRadarMetrics(metaB), [metaB]);
 
   const handleSwap = () => {
     const prevA = teamA;
@@ -233,220 +180,13 @@ export default function TeamsIndexPage() {
             </div>
           </div>
 
-          {/* Main Comparison Arena: Radar on Left, Specs Table on Right */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center relative z-10">
-            {/* Left: Superimposed Dual Radar Chart */}
-            <div className="lg:col-span-5 flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/[0.02] border border-white/10 max-w-full overflow-hidden">
-              <div className="flex items-center gap-5 mb-2 text-xs font-bold">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#04F5FF] shadow-[0_0_8px_rgba(4,245,255,0.8)]" />
-                  <span className="text-white">{teamA}</span>
-                </div>
-                <span className="text-slate-500 font-mono text-[11px]">VS</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#E90052] shadow-[0_0_8px_rgba(233,0,82,0.8)]" />
-                  <span className="text-white">{teamB}</span>
-                </div>
-              </div>
-
-              <RadarChart
-                metrics={metricsA}
-                secondaryMetrics={metricsB}
-                primaryColor="#04F5FF"
-                secondaryColor="#E90052"
-                size={280}
-              />
-
-              <p className="text-[10px] text-slate-400 mt-2 text-center">
-                Normalized 0–100 scale across 5 Dixon-Coles & Elo dimensions
-              </p>
-            </div>
-
-            {/* Right: Side-by-Side Spec Comparison Table */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-3 max-w-full overflow-hidden">
-              <div className="overflow-x-auto w-full select-none -webkit-overflow-scrolling-touch rounded-xl border border-white/10">
-                <table className="w-full text-left text-xs sm:text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-white/10 bg-white/[0.03] text-slate-400 font-semibold select-none">
-                      <th className="py-2 px-3 sm:px-4">Metric</th>
-                      <th className="py-2 px-3 sm:px-4 text-center text-[#04F5FF]">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <TeamCrest team={teamA} size={18} />
-                          <span className="font-extrabold">{teamA}</span>
-                        </div>
-                      </th>
-                      <th className="py-2 px-3 sm:px-4 text-center text-[#E90052]">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <TeamCrest team={teamB} size={18} />
-                          <span className="font-extrabold">{teamB}</span>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5 font-mono text-xs">
-                    {/* Simulated Finish */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium flex items-center gap-1.5">
-                        <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                        Simulated Finish
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-bold text-white">
-                        {statsA ? `#${statsA.rank} (${statsA.avg_points.toFixed(1)} pts)` : "--"}
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-bold text-white">
-                        {statsB ? `#${statsB.rank} (${statsB.avg_points.toFixed(1)} pts)` : "--"}
-                      </td>
-                    </tr>
-
-                    {/* Title Probability */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Title Probability
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-extrabold text-[#00FF85]">
-                        {statsA ? `${statsA.champion_pct.toFixed(1)}%` : "--"}
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-extrabold text-[#00FF85]">
-                        {statsB ? `${statsB.champion_pct.toFixed(1)}%` : "--"}
-                      </td>
-                    </tr>
-
-                    {/* Top 4 Probability */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Top 4 (UCL)
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-bold text-[#04F5FF]">
-                        {statsA ? `${statsA.top4_pct.toFixed(1)}%` : "--"}
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-bold text-[#04F5FF]">
-                        {statsB ? `${statsB.top4_pct.toFixed(1)}%` : "--"}
-                      </td>
-                    </tr>
-
-                    {/* Relegation Probability */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Relegation Risk
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-bold text-[#E90052]">
-                        {statsA ? `${statsA.relegation_pct.toFixed(1)}%` : "--"}
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center font-bold text-[#E90052]">
-                        {statsB ? `${statsB.relegation_pct.toFixed(1)}%` : "--"}
-                      </td>
-                    </tr>
-
-                    {/* Attack Rating */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Attack Rating (xG)
-                      </td>
-                      <td
-                        className={`py-2 px-3 sm:px-4 text-center font-bold ${
-                          metaA.attackRating >= metaB.attackRating
-                            ? "text-[#04F5FF]"
-                            : "text-slate-400"
-                        }`}
-                      >
-                        {metaA.attackRating.toFixed(2)}
-                      </td>
-                      <td
-                        className={`py-2 px-3 sm:px-4 text-center font-bold ${
-                          metaB.attackRating >= metaA.attackRating
-                            ? "text-[#E90052]"
-                            : "text-slate-400"
-                        }`}
-                      >
-                        {metaB.attackRating.toFixed(2)}
-                      </td>
-                    </tr>
-
-                    {/* Defence Rating */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Defence Rating (Lower = Better)
-                      </td>
-                      <td
-                        className={`py-2 px-3 sm:px-4 text-center font-bold ${
-                          metaA.defenceRating <= metaB.defenceRating
-                            ? "text-[#04F5FF]"
-                            : "text-slate-400"
-                        }`}
-                      >
-                        {metaA.defenceRating.toFixed(2)}
-                      </td>
-                      <td
-                        className={`py-2 px-3 sm:px-4 text-center font-bold ${
-                          metaB.defenceRating <= metaA.defenceRating
-                            ? "text-[#E90052]"
-                            : "text-slate-400"
-                        }`}
-                      >
-                        {metaB.defenceRating.toFixed(2)}
-                      </td>
-                    </tr>
-
-                    {/* Club Elo */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Club Elo
-                      </td>
-                      <td
-                        className={`py-2 px-3 sm:px-4 text-center font-bold ${
-                          metaA.elo >= metaB.elo ? "text-[#04F5FF]" : "text-slate-400"
-                        }`}
-                      >
-                        {metaA.elo.toFixed(0)}
-                      </td>
-                      <td
-                        className={`py-2 px-3 sm:px-4 text-center font-bold ${
-                          metaB.elo >= metaA.elo ? "text-[#E90052]" : "text-slate-400"
-                        }`}
-                      >
-                        {metaB.elo.toFixed(0)}
-                      </td>
-                    </tr>
-
-                    {/* Manager & Manager Elo */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 px-3 sm:px-4 text-slate-300 font-sans font-medium">
-                        Manager & Elo
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center text-xs text-slate-200 font-sans">
-                        <div className="font-bold text-white">{metaA.manager}</div>
-                        <div className="font-mono text-[10px] text-slate-400">
-                          Elo: {metaA.managerElo.toFixed(0)}
-                        </div>
-                      </td>
-                      <td className="py-2 px-3 sm:px-4 text-center text-xs text-slate-200 font-sans">
-                        <div className="font-bold text-white">{metaB.manager}</div>
-                        <div className="font-mono text-[10px] text-slate-400">
-                          Elo: {metaB.managerElo.toFixed(0)}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Quick links to profiles */}
-              <div className="flex items-center justify-end gap-2.5 pt-1">
-                <Link
-                  href={`/teams/${encodeURIComponent(teamA)}`}
-                  className="px-3 py-1 rounded-lg text-xs font-bold bg-[#04F5FF]/10 hover:bg-[#04F5FF]/20 text-[#04F5FF] border border-[#04F5FF]/30 transition-all flex items-center gap-1.5"
-                >
-                  View {teamA} Profile <ArrowRight className="w-3 h-3" />
-                </Link>
-                <Link
-                  href={`/teams/${encodeURIComponent(teamB)}`}
-                  className="px-3 py-1 rounded-lg text-xs font-bold bg-[#E90052]/10 hover:bg-[#E90052]/20 text-[#E90052] border border-[#E90052]/30 transition-all flex items-center gap-1.5"
-                >
-                  View {teamB} Profile <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          </div>
+          {/* Main Comparison Arena: Streamlined 5 Battle Stats + Radar */}
+          <HeadToHeadComparison
+            teamA={teamA}
+            teamB={teamB}
+            showHeader={false}
+            className="border-0 p-0 shadow-none bg-transparent"
+          />
         </section>
       )}
 

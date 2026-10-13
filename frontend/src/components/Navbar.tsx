@@ -45,10 +45,10 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 glass-panel border-b border-white/15 bg-[#141424]/90 backdrop-blur-md shadow-lg shadow-black/40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-6 sm:gap-8">
+    <header className="sticky top-0 z-50 overflow-visible border-b border-white/15 bg-[#141424]/90 backdrop-blur-md shadow-lg shadow-black/40 w-full">
+      <div className="flex items-center justify-between gap-2 sm:gap-4 w-full max-w-7xl mx-auto px-4 sm:px-6 h-18">
         {/* Brand / Logo */}
-        <Link href="/" className="flex items-center gap-3.5 group shrink-0">
+        <Link href="/" className="flex items-center gap-3 group shrink-0">
           <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#7B16FF] via-[#3D195B] to-[#E90052] p-2 flex items-center justify-center shadow-lg shadow-[#7B16FF]/40 border border-purple-400/30 group-hover:scale-105 group-hover:shadow-[#7B16FF]/60 transition-all duration-300">
             <PremierLeagueLion className="w-full h-full text-white filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]" />
           </div>
@@ -64,8 +64,8 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Navigation Tabs - High Affordance 3D Solid Buttons */}
-        <nav className="hidden md:flex items-center gap-1.5 lg:gap-2 bg-[#171728]/95 p-1.5 rounded-2xl border border-white/15 shadow-xl shrink-0">
+        {/* Navigation Tabs - Flexible container with shrink min-w-0 */}
+        <nav className="hidden md:flex items-center gap-1 sm:gap-1.5 bg-[#171728]/95 p-1 rounded-2xl border border-white/15 shadow-xl shrink min-w-0 overflow-x-auto no-scrollbar">
           {navLinks.map(({ href, label, icon: Icon, iconColor }) => {
             const isActive =
               pathname === href || (href !== "/" && pathname.startsWith(href));
@@ -75,18 +75,18 @@ export function Navbar() {
               <Link
                 key={href}
                 href={href}
-                className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-bold transition-all duration-200 cursor-pointer ${
+                className={`group flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer shrink-0 ${
                   isSeason
                     ? isActive
                       ? "bg-[#E11D48] border border-rose-300 text-white shadow-[0_0_18px_rgba(225,29,72,0.5)] scale-[1.03]"
                       : "bg-[#38111E] border border-rose-500/70 text-rose-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:bg-[#4C1428] hover:border-rose-400 active:translate-y-[1px]"
                     : isActive
                     ? "bg-gradient-to-r from-[#7B16FF] via-[#D8005A] to-[#E90052] text-white shadow-lg shadow-[#E90052]/40 border border-white/30 scale-[1.03]"
-                    : "bg-[#222238] border border-slate-600/80 text-slate-100 font-bold shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:bg-[#2D2D48] hover:border-slate-400 hover:text-white active:translate-y-[1px] transition-all"
+                    : "bg-[#222238] border border-slate-600/80 text-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.4)] hover:bg-[#2D2D48] hover:border-slate-400 hover:text-white active:translate-y-[1px] transition-all"
                 }`}
               >
                 <Icon
-                  className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${
+                  className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 shrink-0 ${
                     isActive
                       ? "text-white"
                       : isSeason
@@ -94,35 +94,21 @@ export function Navbar() {
                       : iconColor
                   }`}
                 />
-                <span>{label}</span>
-                {isSeason && (
-                  <span className="text-[9px] bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse ml-0.5 shrink-0 shadow-xs">
-                    TRY THIS
-                  </span>
-                )}
+                <span className="whitespace-nowrap">{label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Live Model Status Badge (Separated with generous spacing & divider) */}
-        <div className="flex items-center gap-3 ml-auto sm:ml-0 shrink-0">
-          {/* Subtle Vertical Divider between Nav and Status */}
-          <div className="hidden lg:block h-6 w-[1px] bg-white/15 mx-2" />
-
+        {/* Live Model Status Badge (Anchored cleanly to far right with ml-auto) */}
+        <div className="ml-auto shrink-0 flex items-center pl-2">
           {/* Diagnostic Status Pill */}
-          <div className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#1c1c30] border border-white/20 shadow-sm">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF85] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00FF85]"></span>
-            </span>
-            <div className="text-xs">
-              <span className="text-slate-300">Model: </span>
-              <span className="font-semibold text-[#00FF85]">Live</span>
-              <span className="text-slate-400 mx-1">•</span>
-              <span className="text-slate-200 font-mono font-medium">
-                {modelStatus.remainingFixtures} fixtures left
-              </span>
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1c1c30] border border-white/20 shadow-sm shrink-0 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <div className="text-xs whitespace-nowrap flex items-center gap-1">
+              <span className="text-slate-300">Model:</span>
+              <span className="font-medium text-emerald-400">Live</span>
+              <span className="hidden xl:inline text-slate-400">• {modelStatus.remainingFixtures} fixtures left</span>
             </div>
           </div>
         </div>
@@ -156,11 +142,6 @@ export function Navbar() {
                   }`}
                 />
                 <span className="whitespace-nowrap">{label}</span>
-                {isSeason && (
-                  <span className="text-[9px] bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse ml-0.5 shrink-0 shadow-xs">
-                    TRY THIS
-                  </span>
-                )}
               </Link>
             );
           })}
