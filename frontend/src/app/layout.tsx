@@ -94,12 +94,12 @@ export default function RootLayout({
         <main className="flex-1 relative z-10 w-full overflow-x-hidden">{children}</main>
 
         {/* Professional Developer Signature Footer */}
-        <footer className="border-t border-slate-800 bg-[#0c0c16]/95 backdrop-blur-md py-8 mt-12 text-slate-400 text-sm">
+        <footer className="border-t border-[#23293B] bg-[#0B0E14]/95 backdrop-blur-md py-8 mt-12 text-slate-400 text-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Left side */}
             <div className="space-y-1.5 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2 font-semibold text-slate-200">
-                <span className="w-2 h-2 rounded-full bg-[#00FF85]" />
+                <span className="w-2 h-2 rounded-full bg-[#00FF87]" />
                 <span>Premier League 2026-27 Forecast Engine</span>
                 <span className="text-slate-600 hidden sm:inline">•</span>
                 <span className="text-xs text-slate-400 font-mono hidden sm:inline">

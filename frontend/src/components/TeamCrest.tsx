@@ -29,11 +29,10 @@ export function TeamCrest({
   return (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
       <div
-        className="relative flex items-center justify-center shrink-0 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105"
+        className="relative flex items-center justify-center shrink-0 transition-transform duration-300 hover:scale-105"
         style={{
           width: size,
           height: size,
-          backgroundColor: hasError ? meta.primaryColor : "transparent",
         }}
       >
         {!hasError && meta.crestUrl ? (
@@ -50,7 +49,7 @@ export function TeamCrest({
           />
         ) : (
           <span
-            className="font-black text-xs uppercase tracking-wider text-white select-none flex items-center justify-center w-full h-full border border-white/20"
+            className="font-black text-xs uppercase tracking-wider text-white select-none flex items-center justify-center w-full h-full rounded-full border border-white/20"
             style={{ backgroundColor: meta.primaryColor }}
           >
             {meta.shortName}

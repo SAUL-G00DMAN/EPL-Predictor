@@ -1,76 +1,128 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --pl-purple: #3d195b;
-    --pl-magenta: #e90052;
-    --pl-cyan: #04f5ff;
-    --pl-green: #00ff85;
-    --bg-dark: #0b0b16;
-    --bg-card: rgba(30, 30, 52, 0.85);
-    --border-glow: rgba(61, 25, 91, 0.5);
-  }
+@theme {
+  --color-pl-base: var(--pl-base);
+  --color-pl-surface: var(--pl-surface);
+  --color-pl-surface-card: var(--pl-surface-card);
+  --color-pl-border: var(--pl-border);
+  --color-pl-border-subtle: var(--pl-border-subtle);
+  --color-pl-purple: var(--pl-purple);
+  --color-pl-purple-accent: var(--pl-purple-accent);
+  --color-pl-purple-highlight: var(--pl-purple-highlight);
+  --color-pl-mint: var(--pl-mint);
+  --color-pl-mint-subtle: var(--pl-mint-subtle);
+  --color-pl-berry: var(--pl-berry);
+  --color-pl-berry-light: var(--pl-berry-light);
+  --color-pl-berry-subtle: var(--pl-berry-subtle);
+  --color-pl-text-primary: var(--pl-text-primary);
+  --color-pl-text-secondary: var(--pl-text-secondary);
+  --color-pl-text-muted: var(--pl-text-muted);
+}
 
+:root {
+  /* Official Premier League & FPL Dark Theme Tokens (Default) */
+  --pl-base: #0B0E14;             /* PL Midnight Deep Slate Base */
+  --pl-surface: #141824;          /* Official PL Broadcast Surface / Card */
+  --pl-surface-card: #1A1F30;     /* Elevated Interactive Surface */
+  --pl-border: #23293B;           /* Ultra-fine Slate Border */
+  --pl-border-subtle: rgba(255, 255, 255, 0.08); /* Secondary Border */
+
+  --pl-purple: #38003C;           /* Iconic Official Premier League Purple */
+  --pl-purple-accent: #7B1FA2;    /* Refined purple accent for dark surfaces */
+  --pl-purple-highlight: #9C27B0; /* Highlight Purple */
+
+  --pl-mint: #00FF87;             /* Iconic FPL Mint / Cyan-Green */
+  --pl-mint-subtle: rgba(0, 255, 135, 0.12);
+
+  --pl-berry: #E90052;            /* Official PL Highlight Magenta / Berry */
+  --pl-berry-light: #FF2E7E;      /* Bright berry for dark backgrounds */
+  --pl-berry-subtle: rgba(233, 0, 82, 0.15);
+
+  --pl-text-primary: #F8FAFC;
+  --pl-text-secondary: #94A3B8;
+  --pl-text-muted: #64748B;
+
+  /* Legacy aliases for backward compatibility */
+  --bg-dark: var(--pl-base);
+  --bg-card: var(--pl-surface);
+  --border-glow: rgba(56, 0, 60, 0.5);
+}
+
+/* Architecture for Future Light Mode Swapping */
+:root[data-theme='light'],
+.light {
+  --pl-base: #F8FAFC;
+  --pl-surface: #FFFFFF;
+  --pl-surface-card: #F1F5F9;
+  --pl-border: #E2E8F0;
+  --pl-border-subtle: rgba(0, 0, 0, 0.06);
+
+  --pl-purple: #38003C;
+  --pl-purple-accent: #5E0065;
+  --pl-purple-highlight: #7B1FA2;
+
+  --pl-mint: #00875A;
+  --pl-mint-subtle: rgba(0, 135, 90, 0.12);
+
+  --pl-berry: #D8004C;
+  --pl-berry-light: #E90052;
+  --pl-berry-subtle: rgba(216, 0, 76, 0.1);
+
+  --pl-text-primary: #0F172A;
+  --pl-text-secondary: #475569;
+  --pl-text-muted: #94A3B8;
+
+  --bg-dark: var(--pl-base);
+  --bg-card: var(--pl-surface);
+  --border-glow: rgba(56, 0, 60, 0.15);
+}
+
+@layer base {
   html,
   body {
-    background-color: #0b0b16;
-    color: #f8fafc;
+    background-color: var(--pl-base, #0B0E14);
+    color: var(--pl-text-primary, #F8FAFC);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     overflow-x: hidden;
     max-width: 100vw;
   }
 }
 
-/* Custom glow utilities */
+/* Custom subtle glow utilities */
 .glow-purple {
-  box-shadow: 0 0 25px -5px rgba(61, 25, 91, 0.6);
+  box-shadow: 0 0 25px -5px rgba(56, 0, 60, 0.6);
 }
 
 .glow-magenta {
-  box-shadow: 0 0 25px -5px rgba(233, 0, 82, 0.6);
+  box-shadow: 0 0 25px -5px rgba(233, 0, 82, 0.45);
 }
 
 .glow-green {
-  box-shadow: 0 0 25px -5px rgba(0, 255, 133, 0.5);
+  box-shadow: 0 0 20px -5px rgba(0, 255, 135, 0.35);
 }
 
 .glow-cyan {
-  box-shadow: 0 0 25px -5px rgba(4, 245, 255, 0.5);
+  box-shadow: 0 0 20px -5px rgba(0, 255, 135, 0.35);
 }
 
-.text-glow-cyan {
-  text-shadow: 0 0 12px rgba(4, 245, 255, 0.6);
-}
-
-.text-glow-green {
-  text-shadow: 0 0 12px rgba(0, 255, 133, 0.6);
-}
-
-.text-glow-magenta {
-  text-shadow: 0 0 12px rgba(233, 0, 82, 0.6);
-}
-
-/* Ambient dynamic background - Brightened & Energized */
+/* Ambient dynamic background - Authentic PL Studio Atmosphere (No artificial neon blobs) */
 .bg-ambient {
   background: 
-    radial-gradient(circle at 50% 0%, rgba(61, 25, 91, 0.45) 0%, transparent 55%),
-    radial-gradient(circle at 15% 15%, rgba(4, 245, 255, 0.22) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(233, 0, 82, 0.25) 0%, transparent 45%),
-    radial-gradient(circle at 50% 75%, rgba(123, 22, 255, 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 80% 85%, rgba(0, 255, 133, 0.18) 0%, transparent 40%),
-    #0b0b16;
+    radial-gradient(ellipse 85% 45% at 50% -10%, rgba(56, 0, 60, 0.4) 0%, transparent 75%),
+    radial-gradient(circle at 100% 0%, rgba(56, 0, 60, 0.2) 0%, transparent 50%),
+    #0B0E14;
 }
 
-/* Glassmorphism cards - Lighter richer slate tone */
+/* Glassmorphism cards - Authentic PL Broadcast Card */
 .glass-panel {
-  background: rgba(30, 30, 52, 0.88);
+  background: rgba(20, 24, 36, 0.92);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
 
 .glass-panel:hover {
-  border-color: rgba(4, 245, 255, 0.45);
+  border-color: rgba(123, 31, 162, 0.35);
 }
 
 /* Animated bar styles */

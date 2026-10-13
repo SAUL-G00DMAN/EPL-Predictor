@@ -10,9 +10,11 @@ import {
   ExternalLink,
   Search,
   X,
+  Minus,
 } from "lucide-react";
 import { TeamCrest } from "@/components/TeamCrest";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { getTeamMomentum } from "@/data/teams";
 import {
   TeamProjection,
   fetchTablePredictions,
@@ -128,23 +130,23 @@ export default function HomePage() {
     <div className="min-h-screen py-4 sm:py-6 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
       {/* Streamlined Top Header / Status Badge */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/10 text-slate-200 text-xs font-semibold shadow-sm backdrop-blur-md">
+        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#141824] border border-[#23293B] text-slate-200 text-xs font-semibold shadow-sm backdrop-blur-md">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF87] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00FF87]"></span>
           </span>
-          <span>Updated through Gameweek 6 • Gameweek 7 Slate (32 Fixtures Remaining)</span>
+          <span>Updated through Gameweek 6 • 320 Fixtures Remaining</span>
         </div>
       </div>
 
       {/* Editorial Feature: Analyst's Take + Compact Top 3 Mini-Podium */}
-      <section className="bg-[#181829] border border-slate-700/80 border-r-4 border-r-[#00FF85] rounded-2xl p-4 sm:p-5 shadow-lg relative overflow-hidden">
+      <section className="bg-gradient-to-l from-[#38003C]/25 via-[#141824]/95 to-[#141824] border border-[#23293B] border-r-4 border-r-[#7B1FA2] rounded-2xl p-4 sm:p-5 shadow-xl relative overflow-hidden backdrop-blur-md">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-5 sm:gap-6">
           {/* Left Side: Compact Top 3 Mini-Podium */}
-          <div className="order-2 lg:order-1 flex-1 lg:max-w-[420px] bg-[#0c0d18]/70 border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-inner shrink-0">
+          <div className="order-2 lg:order-1 flex-1 lg:max-w-[420px] bg-[#0B0E14]/85 border border-[#23293B] rounded-2xl p-3 sm:p-3.5 shadow-inner shrink-0">
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/5">
-              <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#00FF85] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00FF85] animate-pulse"></span>
+              <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-300 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse"></span>
                 Top 3 Title Favorites
               </span>
               <span className="text-[10px] font-mono text-slate-400">
@@ -157,15 +159,17 @@ export default function HomePage() {
               {top3TitleTeams[1] && (
                 <Link
                   href={`/teams/${encodeURIComponent(top3TitleTeams[1].team)}`}
-                  className="group flex flex-col items-center p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-slate-400/40 transition-all cursor-pointer"
+                  className="group flex flex-col items-center p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-slate-400/40 transition-all cursor-pointer"
                 >
                   <div className="relative mb-1">
-                    <TeamCrest team={top3TitleTeams[1].team} size={30} />
+                    <div className="p-1 rounded-xl border border-slate-400/30 bg-[#12141F]">
+                      <TeamCrest team={top3TitleTeams[1].team} size={30} />
+                    </div>
                     <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-slate-300 text-slate-900 font-mono font-black text-[9px] flex items-center justify-center border border-white shadow">
                       2
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-white truncate max-w-[80px] group-hover:text-[#04F5FF] transition-colors">
+                  <span className="text-xs font-bold text-white truncate max-w-[80px] group-hover:text-slate-200 transition-colors">
                     {top3TitleTeams[1].team}
                   </span>
                   <span className="text-xs font-black text-slate-200 font-mono">
@@ -181,23 +185,23 @@ export default function HomePage() {
               {top3TitleTeams[0] && (
                 <Link
                   href={`/teams/${encodeURIComponent(top3TitleTeams[0].team)}`}
-                  className="group flex flex-col items-center p-2 rounded-xl bg-amber-500/[0.08] hover:bg-amber-500/[0.14] border border-amber-400/40 hover:border-amber-400/70 shadow-sm shadow-amber-500/10 transition-all cursor-pointer relative"
+                  className="group flex flex-col items-center p-2 rounded-xl bg-amber-500/[0.06] hover:bg-amber-500/[0.12] border border-amber-400/30 hover:border-amber-400/60 shadow-sm transition-all cursor-pointer relative"
                 >
                   <div className="relative mb-1">
-                    <div className="p-0.5 rounded-full ring-1.5 ring-amber-400 bg-[#12121C]">
+                    <div className="p-1 rounded-xl border border-amber-400/50 bg-[#12141F]">
                       <TeamCrest team={top3TitleTeams[0].team} size={32} />
                     </div>
-                    <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-[9px] flex items-center justify-center border border-white shadow">
+                    <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-[9px] flex items-center justify-center border border-white/90 shadow">
                       1
                     </span>
                   </div>
                   <span className="text-xs font-black text-white truncate max-w-[85px] group-hover:text-amber-300 transition-colors">
                     {top3TitleTeams[0].team}
                   </span>
-                  <span className="text-xs font-black text-amber-300 font-mono drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
+                  <span className="text-xs font-black text-amber-300 font-mono">
                     {top3TitleTeams[0].champion_pct.toFixed(1)}%
                   </span>
-                  <span className="text-[8px] uppercase tracking-wider text-amber-300/90 font-black bg-amber-400/20 px-1 rounded border border-amber-400/30">
+                  <span className="text-[8px] uppercase tracking-wider text-amber-300/90 font-black bg-amber-400/15 px-1.5 py-0.2 rounded border border-amber-400/25">
                     Favorite
                   </span>
                 </Link>
@@ -207,15 +211,17 @@ export default function HomePage() {
               {top3TitleTeams[2] && (
                 <Link
                   href={`/teams/${encodeURIComponent(top3TitleTeams[2].team)}`}
-                  className="group flex flex-col items-center p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-amber-700/40 transition-all cursor-pointer"
+                  className="group flex flex-col items-center p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-amber-700/40 transition-all cursor-pointer"
                 >
                   <div className="relative mb-1">
-                    <TeamCrest team={top3TitleTeams[2].team} size={30} />
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[9px] flex items-center justify-center border border-amber-400 shadow">
+                    <div className="p-1 rounded-xl border border-amber-700/30 bg-[#12141F]">
+                      <TeamCrest team={top3TitleTeams[2].team} size={30} />
+                    </div>
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[9px] flex items-center justify-center border border-amber-400/80 shadow">
                       3
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-white truncate max-w-[80px] group-hover:text-[#00FF85] transition-colors">
+                  <span className="text-xs font-bold text-white truncate max-w-[80px] group-hover:text-amber-200 transition-colors">
                     {top3TitleTeams[2].team}
                   </span>
                   <span className="text-xs font-black text-amber-200/90 font-mono">
@@ -232,9 +238,9 @@ export default function HomePage() {
           {/* Right Side: Editorial Analysis (dir="rtl") */}
           <div dir="rtl" className="order-1 lg:order-2 flex-1 text-right">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-white/10">
-              <div className="flex items-center gap-2.5">
-                <span className="w-2 h-2 rounded-full bg-[#00FF85] animate-pulse shrink-0" />
-                <h3 className="text-xs uppercase tracking-wider font-extrabold text-[#00FF85]">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#00FF87] shrink-0" />
+                <h3 className="text-xs uppercase tracking-wider font-extrabold text-white">
                   رؤية المحلل • ملاحظات ختام الجولة 6
                 </h3>
               </div>
@@ -244,19 +250,19 @@ export default function HomePage() {
             </div>
             <p className="text-slate-100 text-sm leading-relaxed font-sans font-medium">
               مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
-              <span dir="ltr" className="text-[#00FF85] font-semibold">
+              <span dir="ltr" className="text-[#00FF87] font-bold">
                 78.2%
               </span>{" "}
               لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
-              <span dir="ltr" className="text-white font-medium">
+              <span dir="ltr" className="text-white font-semibold">
                 Arsenal
               </span>{" "}
               بنسبة{" "}
-              <span dir="ltr" className="text-[#04F5FF] font-semibold">
+              <span dir="ltr" className="text-slate-200 font-bold">
                 19.5%
               </span>{" "}
               كأقرب الملاحقين وفق محاكاة{" "}
-              <span dir="ltr" className="text-[#04F5FF] font-mono">
+              <span dir="ltr" className="text-slate-300 font-mono text-xs">
                 Monte Carlo
               </span>
               ، مع اشتعال صراع المربع الذهبي بين برايتون، تشيلسي، وبرينتفورد.
@@ -268,7 +274,7 @@ export default function HomePage() {
       {/* Main Projections Table */}
       <section
         id="simulated-table"
-        className="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl scroll-mt-24 mt-4 sm:mt-6"
+        className="glass-panel rounded-3xl overflow-hidden border border-[#23293B] shadow-2xl scroll-mt-24 mt-4 sm:mt-6"
       >
         <div className="p-6 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -391,11 +397,12 @@ export default function HomePage() {
           <div className="overflow-x-auto w-full select-none -webkit-overflow-scrolling-touch">
             <table className="w-full text-left text-sm border-collapse min-w-[680px]">
               <thead>
-                <tr className="border-b border-white/15 text-[11px] uppercase tracking-wider text-slate-300 bg-[#161628]/90 font-bold select-none">
+                <tr className="border-b border-[#23293B] text-[11px] uppercase tracking-wider text-slate-300 bg-[#141824] font-bold select-none">
                   {/* Sticky Rank Header */}
                   <th
-                    className="py-3.5 px-3 sm:px-4 cursor-pointer hover:text-white sticky left-0 z-30 bg-[#1E1E34] w-16 sm:w-20 select-none"
+                    className="py-3.5 px-2 sm:px-3 cursor-pointer hover:text-white sticky left-0 z-30 bg-[#141824] w-16 sm:w-20 select-none"
                     onClick={() => handleSort("rank")}
+                    title="Rank & Momentum Trajectory (Simulated vs Official GW6)"
                   >
                     <div className="flex items-center gap-1 text-slate-300 hover:text-white">
                       # <ArrowUpDown className="w-3 h-3" />
@@ -404,7 +411,7 @@ export default function HomePage() {
 
                   {/* Sticky Team Header */}
                   <th
-                    className="py-3.5 px-3 sm:px-4 cursor-pointer hover:text-white sticky left-16 sm:left-20 z-30 bg-[#1E1E34] border-r border-white/15 shadow-[4px_0_12px_rgba(0,0,0,0.5)] min-w-[150px] sm:min-w-[200px] select-none"
+                    className="py-3.5 px-3 sm:px-4 cursor-pointer hover:text-white sticky left-16 sm:left-20 z-30 bg-[#141824] border-r border-[#23293B] shadow-[4px_0_12px_rgba(0,0,0,0.5)] min-w-[150px] sm:min-w-[200px] select-none"
                     onClick={() => handleSort("team")}
                   >
                     <div className="flex items-center gap-1 text-slate-300 hover:text-white">
@@ -462,7 +469,7 @@ export default function HomePage() {
                   <tr>
                     <td
                       colSpan={7}
-                      className="py-12 px-4 text-center text-slate-400 space-y-2 bg-[#1E1E34]"
+                      className="py-12 px-4 text-center text-slate-400 space-y-2 bg-[#141824]"
                     >
                       <p className="text-sm font-semibold text-slate-300">
                         No clubs found matching &ldquo;{searchQuery}&rdquo;
@@ -470,7 +477,7 @@ export default function HomePage() {
                       <button
                         type="button"
                         onClick={() => setSearchQuery("")}
-                        className="text-xs text-[#04F5FF] hover:underline font-medium cursor-pointer"
+                        className="text-xs text-[#00FF87] hover:underline font-medium cursor-pointer"
                       >
                         Clear search filter
                       </button>
@@ -487,10 +494,10 @@ export default function HomePage() {
                       .includes(searchQuery.toLowerCase().trim());
 
                   const stickyBg = isExpanded
-                    ? "bg-[#252540]"
+                    ? "bg-[#1E2538]"
                     : isSearchMatch
-                    ? "bg-[#152e3c]"
-                    : "bg-[#1E1E34]";
+                    ? "bg-[#1A2636]"
+                    : "bg-[#141824]";
 
                   return (
                     <React.Fragment key={row.team}>
@@ -498,57 +505,99 @@ export default function HomePage() {
                         onClick={() =>
                           setExpandedTeam(isExpanded ? null : row.team)
                         }
-                        className={`hover:bg-white/[0.05] transition-colors cursor-pointer group ${
+                        className={`hover:bg-white/[0.04] transition-colors cursor-pointer group ${
                           isExpanded
-                            ? "bg-white/[0.05]"
+                            ? "bg-white/[0.04]"
                             : isSearchMatch
-                            ? "bg-[#04F5FF]/[0.08] ring-1 ring-[#04F5FF]/50"
+                            ? "bg-[#00FF87]/[0.08] ring-1 ring-[#00FF87]/40"
                             : ""
                         }`}
                       >
-                        {/* Sticky Rank + Projected Movement Delta */}
+                        {/* Sticky Rank + Momentum & Trajectory Indicator */}
                         <td
-                          className={`py-4 px-3 sm:px-4 font-mono font-bold sticky left-0 z-20 ${stickyBg} group-hover:bg-[#282845] transition-colors w-16 sm:w-20`}
+                          className={`py-4 px-2 sm:px-3 font-mono font-bold sticky left-0 z-20 ${stickyBg} group-hover:bg-[#1E2538] transition-colors w-16 sm:w-20`}
                         >
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <span className="text-slate-200 text-xs sm:text-sm font-black w-4 text-right shrink-0">
+                          <div className="flex items-center gap-1 sm:gap-1.5">
+                            <span className="text-slate-200 text-xs sm:text-sm font-black w-3.5 sm:w-4 text-right shrink-0">
                               {row.rank}
                             </span>
                             {(() => {
-                              const delta =
-                                row.current_rank != null
-                                  ? row.current_rank - row.rank
-                                  : 0;
-                              let badgeStyle =
-                                "text-slate-400 bg-white/5 border-white/10";
-                              let text = "—";
-
-                              if (delta > 0) {
-                                badgeStyle =
-                                  "text-[#00FF85] bg-[#00FF85]/15 border-[#00FF85]/35 shadow-xs shadow-[#00FF85]/20";
-                                text = `↑ +${delta}`;
-                              } else if (delta < 0) {
-                                badgeStyle =
-                                  "text-[#E90052] bg-[#E90052]/15 border-[#E90052]/35 shadow-xs shadow-[#E90052]/20";
-                                text = `↓ -${Math.abs(delta)}`;
-                              }
+                              const momentum = getTeamMomentum(
+                                row.team,
+                                row.rank,
+                                row.current_rank
+                              );
 
                               return (
                                 <span
                                   className="group/delta relative inline-block cursor-help shrink-0"
                                   onClick={(e) => e.stopPropagation()}
+                                  title={`${momentum.title}: ${momentum.description}`}
                                 >
                                   <span
-                                    className={`inline-flex items-center justify-center text-[10px] font-black px-1.5 py-0.5 rounded border transition-transform group-hover/delta:scale-105 ${badgeStyle}`}
+                                    className={`inline-flex items-center justify-center gap-0.5 text-[9px] sm:text-[10px] font-black px-1 sm:px-1.5 py-0.5 rounded-md border transition-transform group-hover/delta:scale-105 shadow-xs ${momentum.badgeStyle}`}
                                   >
-                                    {text}
+                                    {momentum.type === "positive" && (
+                                      <ChevronUp className="w-3 h-3 stroke-[3] text-emerald-400 shrink-0" />
+                                    )}
+                                    {momentum.type === "negative" && (
+                                      <ChevronDown className="w-3 h-3 stroke-[3] text-rose-400 shrink-0" />
+                                    )}
+                                    {momentum.type === "steady" && (
+                                      <Minus className="w-2.5 h-2.5 stroke-[3] text-slate-400 shrink-0" />
+                                    )}
+                                    <span>{momentum.label}</span>
                                   </span>
-                                  {/* Tooltip on hover */}
-                                  <span className="absolute bottom-full left-0 mb-2 hidden group-hover/delta:block w-52 p-2.5 rounded-xl bg-[#121222] border border-white/20 text-[10px] font-sans font-normal text-slate-200 shadow-2xl z-50 pointer-events-none normal-case tracking-normal text-left whitespace-normal backdrop-blur-md">
-                                    <span className="font-semibold text-white block mb-0.5">
-                                      GW6: #{row.current_rank ?? row.rank} → Proj: #{row.rank}
-                                    </span>
-                                    Projected season trajectory: AI forecast vs official Gameweek 6 standing.
+
+                                  {/* Sleek Rich Tooltip */}
+                                  <span className="absolute bottom-full left-0 mb-2 hidden group-hover/delta:block w-56 sm:w-64 p-3 rounded-xl bg-[#121222]/95 border border-white/20 text-[10px] sm:text-[11px] font-sans font-normal text-slate-200 shadow-2xl z-50 pointer-events-none normal-case tracking-normal text-left whitespace-normal backdrop-blur-md">
+                                    <div className="flex items-center justify-between gap-1.5 border-b border-white/10 pb-1.5 mb-1.5">
+                                      <span className="font-extrabold text-white text-xs flex items-center gap-1">
+                                        {momentum.type === "positive" && (
+                                          <span className="text-emerald-400">🟢</span>
+                                        )}
+                                        {momentum.type === "negative" && (
+                                          <span className="text-rose-400">🔴</span>
+                                        )}
+                                        {momentum.type === "steady" && (
+                                          <span className="text-slate-400">⚪</span>
+                                        )}
+                                        {momentum.title}
+                                      </span>
+                                      <span
+                                        className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${momentum.badgeStyle}`}
+                                      >
+                                        {momentum.label}
+                                      </span>
+                                    </div>
+
+                                    <p className="text-slate-300 leading-relaxed mb-2">
+                                      {momentum.description}
+                                    </p>
+
+                                    {/* 5-Match Form sequence */}
+                                    <div className="flex items-center justify-between pt-1.5 border-t border-white/10 text-[9px]">
+                                      <span className="text-slate-400 font-medium">Recent 5 Form:</span>
+                                      <div className="flex items-center gap-1 font-mono font-bold">
+                                        {momentum.formHistory.map((res, i) => (
+                                          <span
+                                            key={i}
+                                            className={`w-3.5 h-3.5 rounded flex items-center justify-center text-[8px] font-black text-white ${
+                                              res === "W"
+                                                ? "bg-emerald-500"
+                                                : res === "D"
+                                                ? "bg-amber-500 text-black"
+                                                : "bg-rose-500"
+                                            }`}
+                                          >
+                                            {res}
+                                          </span>
+                                        ))}
+                                        <span className="text-slate-400 ml-1">
+                                          ({momentum.recentFormPoints} pts)
+                                        </span>
+                                      </div>
+                                    </div>
                                   </span>
                                 </span>
                               );
@@ -558,14 +607,14 @@ export default function HomePage() {
 
                         {/* Sticky Team name + crest */}
                         <td
-                          className={`py-4 px-3 sm:px-4 font-bold text-white sticky left-16 sm:left-20 z-20 ${stickyBg} group-hover:bg-[#282845] transition-colors border-r border-white/15 shadow-[4px_0_12px_rgba(0,0,0,0.5)] min-w-[150px] sm:min-w-[200px]`}
+                          className={`py-4 px-3 sm:px-4 font-bold text-white sticky left-16 sm:left-20 z-20 ${stickyBg} group-hover:bg-[#1E2538] transition-colors border-r border-[#23293B] shadow-[4px_0_12px_rgba(0,0,0,0.5)] min-w-[150px] sm:min-w-[200px]`}
                         >
                           <div className="flex items-center gap-3">
                             <TeamCrest team={row.team} size={30} />
                             <Link
                               href={`/teams/${encodeURIComponent(row.team)}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="hover:text-[#04F5FF] transition-colors flex items-center gap-1.5 group/link truncate"
+                              className="hover:text-[#00FF87] transition-colors flex items-center gap-1.5 group/link truncate"
                             >
                               <span className="truncate">{row.team}</span>
                               <ExternalLink className="w-3 h-3 text-slate-500 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0" />
@@ -744,6 +793,20 @@ export default function HomePage() {
                                   <span className="font-extrabold text-white uppercase tracking-wider text-[11px] bg-white/10 px-2 py-0.5 rounded">
                                     Official GW6 Record
                                   </span>
+                                  {(() => {
+                                    const m = getTeamMomentum(row.team, row.rank, row.current_rank);
+                                    return (
+                                      <span
+                                        className={`inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full border ${m.badgeStyle}`}
+                                      >
+                                        {m.type === "positive" && <ChevronUp className="w-3 h-3 stroke-[3]" />}
+                                        {m.type === "negative" && <ChevronDown className="w-3 h-3 stroke-[3]" />}
+                                        {m.type === "steady" && <Minus className="w-2.5 h-2.5 stroke-[3]" />}
+                                        {m.title}
+                                      </span>
+                                    );
+                                  })()}
+                                  <span className="text-slate-500">•</span>
                                   <span className="text-slate-300">
                                     Table Rank: <strong className="text-white">#{row.current_rank ?? row.rank}</strong>
                                   </span>

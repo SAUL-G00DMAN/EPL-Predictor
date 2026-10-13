@@ -343,3 +343,124 @@ export function getTeamForm(name: string): ("W" | "D" | "L")[] {
   const meta = getTeamMetadata(name);
   return meta.form || ["W", "D", "L", "W", "D"];
 }
+
+export interface TeamMomentum {
+  type: "positive" | "negative" | "steady";
+  label: string;
+  delta: number;
+  recentFormPoints: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  formHistory: ("W" | "D" | "L")[];
+  title: string;
+  description: string;
+  badgeStyle: string;
+}
+
+/**
+ * Calculates momentum trend based on simulated rank trajectory and recent form:
+ * - Positive Momentum: delta > 0 (climbing trajectory) or recentFormPoints >= 10 (hot winning form)
+ * - Negative Momentum: recentFormPoints <= 4 (cold/struggling form) or delta < 0 (slipping trajectory)
+ * - Neutral / Steady: delta === 0 (consistent standing)
+ */
+export function getTeamMomentum(
+  teamName: string,
+  simulatedRank: number,
+  currentRank?: number
+): TeamMomentum {
+  const meta = getTeamMetadata(teamName);
+  const curRank = currentRank ?? simulatedRank;
+  const delta = curRank - simulatedRank;
+  const formPts = meta.recentFormPoints ?? 0;
+  const form = meta.form || [];
+  const wins = form.filter((f) => f === "W").length;
+  const draws = form.filter((f) => f === "D").length;
+  const losses = form.filter((f) => f === "L").length;
+
+  // 1. Struggling Form (form <= 4 pts) -> Negative Momentum
+  // Matches prompt: Teams on a downward trend / struggling form (e.g. Tottenham, Fulham, Bournemouth)
+  if (formPts <= 4) {
+    return {
+      type: "negative",
+      label: delta < 0 ? `${delta}` : "Cold",
+      delta,
+      recentFormPoints: formPts,
+      wins,
+      draws,
+      losses,
+      formHistory: form,
+      title: "Negative Momentum",
+      description: `Cold form: ${wins}W ${draws}D ${losses}L (${formPts} pts in last 5). GW6 #${curRank} → Proj #${simulatedRank}.`,
+      badgeStyle: "text-rose-400 bg-rose-500/10 border border-rose-500/20",
+    };
+  }
+
+  // 2. High Winning Form (form >= 10 pts) -> Positive Momentum
+  // Matches prompt: Teams on an upward trajectory / recent winning form (e.g. Man City, Brighton)
+  if (formPts >= 10) {
+    return {
+      type: "positive",
+      label: delta > 0 ? `+${delta}` : "Hot",
+      delta,
+      recentFormPoints: formPts,
+      wins,
+      draws,
+      losses,
+      formHistory: form,
+      title: "Positive Momentum",
+      description: `Winning streak: ${wins}W ${draws > 0 ? `${draws}D ` : ""}${losses > 0 ? `${losses}L ` : ""}(${formPts} pts in last 5). GW6 #${curRank} → Proj #${simulatedRank}.`,
+      badgeStyle: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
+    };
+  }
+
+  // 3. Upward Trajectory (delta > 0) -> Positive Momentum
+  // Matches prompt: Teams on an upward trajectory (e.g. Liverpool, Chelsea)
+  if (delta > 0) {
+    return {
+      type: "positive",
+      label: `+${delta}`,
+      delta,
+      recentFormPoints: formPts,
+      wins,
+      draws,
+      losses,
+      formHistory: form,
+      title: `Trending Up: +${delta} spots`,
+      description: `Ascending trajectory: GW6 #${curRank} → Proj #${simulatedRank} (${formPts} pts in last 5).`,
+      badgeStyle: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
+    };
+  }
+
+  // 4. Downward Trajectory (delta < 0) -> Negative Momentum
+  if (delta < 0) {
+    return {
+      type: "negative",
+      label: `${delta}`,
+      delta,
+      recentFormPoints: formPts,
+      wins,
+      draws,
+      losses,
+      formHistory: form,
+      title: `Trending Down: ${delta} spots`,
+      description: `Projected slip: GW6 #${curRank} → Proj #${simulatedRank} (${formPts} pts in last 5).`,
+      badgeStyle: "text-rose-400 bg-rose-500/10 border border-rose-500/20",
+    };
+  }
+
+  // 5. Neutral / Steady (delta === 0)
+  return {
+    type: "steady",
+    label: "—",
+    delta: 0,
+    recentFormPoints: formPts,
+    wins,
+    draws,
+    losses,
+    formHistory: form,
+    title: "Steady Trajectory",
+    description: `Consistent performance: Holding rank #${simulatedRank} with ${formPts} pts in last 5 matches.`,
+    badgeStyle: "text-slate-400 bg-slate-800/40 border border-white/10",
+  };
+}

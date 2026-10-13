@@ -798,7 +798,7 @@ function MatchPredictorContent() {
                     : "translate-x-16 sm:translate-x-32 scale-110"
                 }`}
               >
-                <div className="p-2 sm:p-2.5 rounded-full bg-slate-800 border-2 border-slate-700 shadow-lg bg-[#182030]">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-800 border-2 border-slate-700 shadow-lg bg-[#182030]">
                   <TeamCrest team={homeTeam} size={64} />
                 </div>
                 <span className="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase">
@@ -821,7 +821,7 @@ function MatchPredictorContent() {
                     : "-translate-x-16 sm:-translate-x-32 scale-110"
                 }`}
               >
-                <div className="p-2 sm:p-2.5 rounded-full bg-slate-800 border-2 border-slate-700 shadow-lg bg-[#182030]">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-800 border-2 border-slate-700 shadow-lg bg-[#182030]">
                   <TeamCrest team={awayTeam} size={64} />
                 </div>
                 <span className="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase">
