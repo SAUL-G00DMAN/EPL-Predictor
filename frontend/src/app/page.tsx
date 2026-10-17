@@ -30,9 +30,11 @@ import {
 import {
   initAudio,
   playMechanicalClick,
+  playSimulationCrunch,
   playOdometerTick,
   playLockInSound,
   playExploreUnlock,
+  soundFx,
   isAudioMuted,
   toggleAudioMuted,
 } from "@/lib/soundFx";
@@ -56,6 +58,52 @@ const CRUNCH_LOGS = [
   "Computing title, UCL Top 4, and relegation distributions...",
   "Telemetry verified: 10,000/10,000 seasons simulated successfully!",
 ];
+
+interface CrunchTelemetryProps {
+  crunchCount: number;
+  crunchLogIndex: number;
+}
+
+const CrunchTelemetryView = React.memo(function CrunchTelemetryView({
+  crunchCount,
+  crunchLogIndex,
+}: CrunchTelemetryProps) {
+  return (
+    <div className="py-2 space-y-3">
+      {/* Big Live Monospace Odometer with Tabular Figures */}
+      <div className="flex items-baseline justify-center gap-2 font-mono tabular-nums">
+        <span className="text-4xl sm:text-5xl font-mono font-black tabular-nums tracking-wider text-[#00FF87] light:text-[#047857]">
+          {crunchCount.toLocaleString()}
+        </span>
+        <span className="text-slate-400 light:text-slate-600 font-mono text-sm sm:text-base font-bold tabular-nums">
+          / 10,000 SIMS
+        </span>
+      </div>
+
+      {/* Clean Architectural Linear Progress Bar (GPU-Accelerated scaleX) */}
+      <div className="w-full bg-slate-800/80 light:bg-slate-200 rounded-full h-1.5 overflow-hidden">
+        <div
+          className="w-full h-full bg-[#00FF87] light:bg-[#047857] rounded-full transition-transform duration-75 ease-out"
+          style={{
+            transform: `scaleX(${Math.min(1, crunchCount / 10000)})`,
+            transformOrigin: "left",
+            willChange: "transform",
+          }}
+        />
+      </div>
+
+      {/* Terminal Log Ticker */}
+      <div className="flex items-center justify-center gap-2 text-xs font-mono text-slate-300 light:text-slate-700 bg-[#090A0C] light:bg-slate-100 py-2 px-3 rounded-xl border border-white/[0.07] light:border-slate-200">
+        {crunchCount >= 10000 ? (
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] shrink-0" />
+        ) : (
+          <Cpu className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] animate-pulse shrink-0" />
+        )}
+        <span className="truncate">{CRUNCH_LOGS[crunchLogIndex]}</span>
+      </div>
+    </div>
+  );
+});
 
 const formatCellOdds = (pct: number) => {
   if (!pct || pct <= 0.05) return "-";
@@ -103,12 +151,14 @@ export default function HomePage() {
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [phase, setPhase] = useState<SimulationPhase>("idle"); // strictly default to 'idle' to eliminate table flash
+  const [simulationsRun, setSimulationsRun] = useState<boolean>(false);
   const [crunchCount, setCrunchCount] = useState<number>(0);
   const [crunchLogIndex, setCrunchLogIndex] = useState<number>(0);
   const [revealing, setRevealing] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
-  const simulationsRun = phase === "revealed";
+  const animFrameRef = React.useRef<number | null>(null);
+  const logIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -117,37 +167,51 @@ export default function HomePage() {
       const hasCompleted = localStorage.getItem("epl_simulations_completed");
       if (hasCompleted === "true") {
         setPhase("revealed");
+        setSimulationsRun(true);
         document.documentElement.classList.add("epl-sims-completed");
       } else {
+        setPhase("idle");
+        setSimulationsRun(false);
         document.documentElement.classList.remove("epl-sims-completed");
       }
     } catch {
       // Graceful fallback if storage restricted
     }
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (logIntervalRef.current) clearInterval(logIntervalRef.current);
+    };
   }, []);
 
-  const handleStartSimulation = useCallback(async () => {
+  const handleStartSimulation = useCallback(() => {
+    // 1. Fail-safe audio: never blocks or aborts the simulation state machine
     try {
-      localStorage.setItem("epl_simulations_completed", "true");
-      document.documentElement.classList.add("epl-sims-completed");
+      initAudio().catch(() => {});
+      soundFx.playSimulationCrunch();
+      playMechanicalClick();
     } catch {
-      // Ignore storage errors
+      // Silent fallback
     }
-    await initAudio();
-    playMechanicalClick();
+
+    // 2. Immediately switch to crunching state and reset counter
     setPhase("crunching");
+    setSimulationsRun(false);
     setCrunchCount(0);
     setCrunchLogIndex(0);
 
-    const duration = 2500; // ~2.5 seconds
+    const duration = 3000; // strictly 3000ms
     const startTime = performance.now();
-    let lastTickTime = 0;
+    let lastUpdateTime = 0;
 
-    const logInterval = setInterval(() => {
+    if (logIntervalRef.current) clearInterval(logIntervalRef.current);
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+
+    logIntervalRef.current = setInterval(() => {
       setCrunchLogIndex((prev) =>
         prev < CRUNCH_LOGS.length - 2 ? prev + 1 : prev
       );
-    }, 420);
+    }, 450);
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
@@ -155,53 +219,70 @@ export default function HomePage() {
 
       // Decelerating cubic easing curve
       const easedProgress = 1 - Math.pow(1 - progress, 3);
-      const currentSims = Math.floor(easedProgress * 10000);
+      const currentSims = Math.min(10000, Math.floor(easedProgress * 10000));
 
-      // Trigger crisp typewriter micro-tick every ~65ms
-      if (currentTime - lastTickTime >= 65 && progress < 1) {
-        playOdometerTick(progress);
-        lastTickTime = currentTime;
+      // Throttle React state updates and audio ticks to ~70ms intervals (prevents 60 full-page re-renders/sec)
+      if (currentTime - lastUpdateTime >= 70 || progress >= 1) {
+        lastUpdateTime = currentTime;
+        setCrunchCount(currentSims);
+
+        if (progress < 1) {
+          try {
+            playOdometerTick(progress);
+          } catch {}
+        }
       }
 
-      setCrunchCount(currentSims);
-
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        animFrameRef.current = requestAnimationFrame(animate);
       } else {
-        clearInterval(logInterval);
+        if (logIntervalRef.current) clearInterval(logIntervalRef.current);
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
         setCrunchCount(10000);
         setCrunchLogIndex(CRUNCH_LOGS.length - 1);
 
-        // Transition to Step 3: Top 3 Broadcast Podium Preview with punchy lock-in thud
-        setTimeout(() => {
+        try {
           playLockInSound();
-          setPhase("podium_ready");
-        }, 400);
+        } catch {}
+
+        // Complete 3-second simulation and transition to revealed
+        setPhase("revealed");
+        setSimulationsRun(true);
+
+        try {
+          localStorage.setItem("epl_simulations_completed", "true");
+          document.documentElement.classList.add("epl-sims-completed");
+        } catch {}
+
+        // Smoothly scroll to the standings table and insights
+        setTimeout(() => {
+          const tableElem = document.getElementById("simulated-table");
+          if (tableElem) {
+            tableElem.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100);
       }
     };
 
-    requestAnimationFrame(animate);
+    animFrameRef.current = requestAnimationFrame(animate);
   }, []);
 
   const handleRevealFullTable = useCallback(async () => {
-    // 1. Immediately persist in localStorage so reloads or fast navigation are locked in
     try {
       localStorage.setItem("epl_simulations_completed", "true");
       document.documentElement.classList.add("epl-sims-completed");
-    } catch {
-      // Ignore storage errors
-    }
+    } catch {}
 
-    await initAudio();
-    // Play clean digital glass unlock chime
-    playExploreUnlock();
+    try {
+      await initAudio();
+      playExploreUnlock();
+    } catch {}
 
-    // 2. Smoothly scale down podium card and initiate frosted unblur melt
     setRevealing(true);
 
-    // 3. Complete transition into full revealed table after 400ms
     setTimeout(() => {
       setPhase("revealed");
+      setSimulationsRun(true);
       setRevealing(false);
     }, 400);
   }, []);
@@ -213,6 +294,7 @@ export default function HomePage() {
     } catch {
       // Ignore
     }
+    setSimulationsRun(false);
     setPhase("idle");
     setCrunchCount(0);
     setCrunchLogIndex(0);
@@ -297,73 +379,71 @@ export default function HomePage() {
   return (
     <>
       <div
-        className={`min-h-screen py-4 sm:py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 transition-all duration-600 ease-out ${
-          !simulationsRun && !revealing
+        className={`min-h-screen py-4 sm:py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 transition-all duration-500 ease-out ${
+          !simulationsRun && phase !== "revealed"
             ? "filter blur-md pointer-events-none select-none opacity-40"
             : "filter-none opacity-100"
         }`}
       >
-        {phase !== "idle" && (
+        {(simulationsRun || phase === "revealed") && (
           <>
             {/* Re-run Simulation Action Button (Top Right) */}
-            {simulationsRun && (
-          <div className="flex justify-end pt-1">
-            <button
-              onClick={handleRerunSimulation}
-              type="button"
-              className="group relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold text-xs text-slate-300 hover:text-white light:text-slate-700 light:hover:text-[#19001B] bg-[#1C2230] hover:bg-[#232B3D] light:bg-white light:hover:bg-slate-50 border border-[#38435E] hover:border-[#00FF87]/50 light:border-slate-200 light:hover:border-slate-300 shadow-[0_2.5px_0_0_#0F131C,0_3px_0_1px_#38435E,inset_0_1px_0_0_rgba(255,255,255,0.15)] light:shadow-[0_2.5px_0_0_#CBD5E1,0_3px_0_1px_#E2E8F0,inset_0_1px_0_0_rgba(255,255,255,0.9)] active:translate-y-[1px] active:shadow-[0_1px_0_0_#0F131C] light:active:shadow-[0_1px_0_0_#CBD5E1] transition-all cursor-pointer select-none -translate-y-[1px]"
-              title="Replay the 10,000 Monte Carlo season simulation"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] group-hover:-rotate-180 transition-transform duration-500" />
-              <span dir="rtl">إعادة محاكاة 10,000 موسم ↻</span>
-            </button>
-          </div>
-        )}
-
-        {/* Editorial Feature: Full-Width Analyst's Take */}
-        <section
-          className={`epl-editorial-card bg-[#111317] light:bg-white border border-white/[0.07] light:border-slate-200 border-r-[3px] border-r-[#7B1FA2] light:border-r-[#38003C] rounded-xl p-4 sm:p-5 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden ${
-            simulationsRun
-              ? "animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both"
-              : "opacity-40"
-          }`}
-        >
-          {/* Full-Width Editorial Analysis (dir="rtl") */}
-          <div dir="rtl" className="w-full text-right space-y-2.5">
-            <div className="flex items-center gap-2 pb-2.5 border-b border-white/10 light:border-slate-200">
-              <span className="w-2 h-2 rounded-full bg-[#00FF87] light:bg-[#047857] shrink-0" />
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold text-white light:text-[#38003C] light:bg-[#38003C]/10">
-                رؤية المحلل • قراءة تكتيكية بعد ختام الجولة 6
-              </span>
+            <div className="flex justify-end pt-1">
+              <button
+                onClick={handleRerunSimulation}
+                type="button"
+                className="group relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold text-xs text-slate-300 hover:text-white light:text-slate-700 light:hover:text-[#19001B] bg-[#1C2230] hover:bg-[#232B3D] light:bg-white light:hover:bg-slate-50 border border-[#38435E] hover:border-[#00FF87]/50 light:border-slate-200 light:hover:border-slate-300 shadow-[0_2.5px_0_0_#0F131C,0_3px_0_1px_#38435E,inset_0_1px_0_0_rgba(255,255,255,0.15)] light:shadow-[0_2.5px_0_0_#CBD5E1,0_3px_0_1px_#E2E8F0,inset_0_1px_0_0_rgba(255,255,255,0.9)] active:translate-y-[1px] active:shadow-[0_1px_0_0_#0F131C] light:active:shadow-[0_1px_0_0_#CBD5E1] transition-all cursor-pointer select-none -translate-y-[1px]"
+                title="Replay the 10,000 Monte Carlo season simulation"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] group-hover:-rotate-180 transition-transform duration-500" />
+                <span dir="rtl">إعادة محاكاة 10,000 موسم ↻</span>
+              </button>
             </div>
-            <p className="text-slate-100 light:text-[#475569] text-sm sm:text-base leading-relaxed font-sans font-medium">
-              مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
-              <span dir="ltr" className="text-[#00FF87] light:text-[#047857] font-bold">
-                78.2%
-              </span>{" "}
-              لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
-              <span dir="ltr" className="text-white light:text-[#19001B] font-semibold">
-                Arsenal
-              </span>{" "}
-              بنسبة{" "}
-              <span dir="ltr" className="text-slate-200 light:text-[#19001B] font-bold">
-                19.5%
-              </span>{" "}
-              كأقرب الملاحقين وفق محاكاة{" "}
-              <span dir="ltr" className="text-slate-300 light:text-slate-600 font-mono text-xs">
-                Monte Carlo
-              </span>
-              ، مع اشتعال صراع المربع الذهبي بين برايتون، تشيلسي، وبرينتفورد واحتدام المنافسة في قاع الترتيب لتفادي الهبوط.
-            </p>
-          </div>
-        </section>
+
+            {/* Editorial Feature: Full-Width Analyst's Take */}
+            <section
+              className={`epl-editorial-card bg-[#111317] light:bg-white border border-white/[0.07] light:border-slate-200 border-r-[3px] border-r-[#7B1FA2] light:border-r-[#38003C] rounded-xl p-4 sm:p-5 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden ${
+                simulationsRun || phase === "revealed"
+                  ? "animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both opacity-100"
+                  : "opacity-40"
+              }`}
+            >
+              {/* Full-Width Editorial Analysis (dir="rtl") */}
+              <div dir="rtl" className="w-full text-right space-y-2.5">
+                <div className="flex items-center gap-2 pb-2.5 border-b border-white/10 light:border-slate-200">
+                  <span className="w-2 h-2 rounded-full bg-[#00FF87] light:bg-[#047857] shrink-0" />
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold text-white light:text-[#38003C] light:bg-[#38003C]/10">
+                    رؤية المحلل • قراءة تكتيكية بعد ختام الجولة 6
+                  </span>
+                </div>
+                <p className="text-slate-100 light:text-[#475569] text-sm sm:text-base leading-relaxed font-sans font-medium">
+                  مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
+                  <span dir="ltr" className="text-[#00FF87] light:text-[#047857] font-bold">
+                    78.2%
+                  </span>{" "}
+                  لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
+                  <span dir="ltr" className="text-white light:text-[#19001B] font-semibold">
+                    Arsenal
+                  </span>{" "}
+                  بنسبة{" "}
+                  <span dir="ltr" className="text-slate-200 light:text-[#19001B] font-bold">
+                    19.5%
+                  </span>{" "}
+                  كأقرب الملاحقين وفق محاكاة{" "}
+                  <span dir="ltr" className="text-slate-300 light:text-slate-600 font-mono text-xs">
+                    Monte Carlo
+                  </span>
+                  ، مع اشتعال صراع المربع الذهبي بين برايتون، تشيلسي، وبرينتفورد واحتدام المنافسة في قاع الترتيب لتفادي الهبوط.
+                </p>
+              </div>
+            </section>
 
       {/* Main Projections Table */}
       <section
         id="simulated-table"
         className={`bg-[#111317] light:bg-white rounded-xl overflow-hidden border border-white/[0.07] light:border-slate-200 shadow-2xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] scroll-mt-24 ${
-          simulationsRun
-            ? "animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both"
+          simulationsRun || phase === "revealed"
+            ? "animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both opacity-100"
             : "opacity-40"
         }`}
       >
@@ -1093,9 +1173,9 @@ export default function HomePage() {
       </div>
 
       {/* Simulation Command Deck & Cinematic Reveal Overlay */}
-      {!simulationsRun && (
+      {!simulationsRun && phase !== "revealed" && (
         <div
-          className={`epl-launchpad-overlay fixed inset-0 z-40 flex items-center justify-center p-4 transition-all duration-600 ease-out ${
+          className={`epl-launchpad-overlay fixed inset-0 z-40 flex items-center justify-center p-4 transition-all duration-500 ease-out ${
             revealing
               ? "opacity-0 pointer-events-none backdrop-blur-none bg-[#090A0C]/0 light:bg-[#F4F5F8]/0"
               : "opacity-100 pointer-events-auto backdrop-blur-xl bg-[#090A0C]/85 light:bg-[#F4F5F8]/85"
@@ -1155,48 +1235,18 @@ export default function HomePage() {
                     : "جاهز لمعرفة مصير الدوري الإنجليزي؟"}
                 </h2>
 
-                {/* Step 2: Telemetry Crunching Counter */}
+                {/* Step 2: Telemetry Crunching Counter (Isolated Component) */}
                 {phase === "crunching" ? (
-                  <div className="py-2 space-y-3">
-                    {/* Big Live Monospace Odometer with Tabular Figures */}
-                    <div className="flex items-baseline justify-center gap-2 font-mono tabular-nums">
-                      <span className="text-4xl sm:text-5xl font-mono font-black tabular-nums tracking-wider text-[#00FF87] light:text-[#047857]">
-                        {crunchCount.toLocaleString()}
-                      </span>
-                      <span className="text-slate-400 light:text-slate-600 font-mono text-sm sm:text-base font-bold tabular-nums">
-                        / 10,000 SIMS
-                      </span>
-                    </div>
-
-                    {/* Clean Architectural Linear Progress Bar */}
-                    <div className="w-full bg-slate-800/80 light:bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="w-full bg-[#00FF87] light:bg-[#047857] rounded-full h-1.5 origin-left animate-progress-fill"
-                        style={{
-                          animation: "progress-fill 3s linear forwards",
-                        }}
-                      />
-                    </div>
-
-                    {/* Terminal Log Ticker */}
-                    <div className="flex items-center justify-center gap-2 text-xs font-mono text-slate-300 light:text-slate-700 bg-[#090A0C] light:bg-slate-100 py-2 px-3 rounded-xl border border-white/[0.07] light:border-slate-200">
-                      {crunchCount >= 10000 ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] shrink-0" />
-                      ) : (
-                        <Cpu className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] animate-pulse shrink-0" />
-                      )}
-                      <span className="truncate">{CRUNCH_LOGS[crunchLogIndex]}</span>
-                    </div>
-                  </div>
+                  <CrunchTelemetryView
+                    crunchCount={crunchCount}
+                    crunchLogIndex={crunchLogIndex}
+                  />
                 ) : (
                   /* Step 1: Initial Launch 3D Keycap Button */
                   <div className="pt-2">
                     <button
                       type="button"
-                      onClick={async () => {
-                        await initAudio();
-                        handleStartSimulation();
-                      }}
+                      onClick={handleStartSimulation}
                       className="w-full min-h-[52px] relative inline-flex items-center justify-center px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-black text-sm sm:text-base text-[#0B0E14] light:text-white bg-gradient-to-b from-[#00FF87] to-[#00D670] light:from-[#38003C] light:to-[#260029] border border-[#5CFFB0] light:border-[#4A0050] shadow-[0_4px_0_0_#009E52,0_5px_0_1px_#007A3E,inset_0_1px_0_0_rgba(255,255,255,0.4),0_10px_25px_rgba(0,255,135,0.3)] light:shadow-[0_4px_0_0_#1E0020,0_5px_0_1px_#140015,inset_0_1px_0_0_rgba(255,255,255,0.3),0_10px_25px_rgba(56,0,60,0.2)] hover:-translate-y-[1px] hover:brightness-105 light:hover:from-[#430048] light:hover:to-[#2B002E] active:translate-y-[2px] active:shadow-[0_1px_0_0_#009E52,0_1px_0_1px_#007A3E] light:active:shadow-[0_1px_0_0_#1E0020,0_1px_0_1px_#140015] transition-all cursor-pointer select-none"
                     >
                       <span>Run 10000 Simulations Now</span>
