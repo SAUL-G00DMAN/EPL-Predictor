@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Swords,
-  Calendar,
   AlertCircle,
   TrendingUp,
   RefreshCw,
@@ -18,8 +17,6 @@ import {
 import { TeamCrest } from "@/components/TeamCrest";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { MiniPitch } from "@/components/MiniPitch";
-import { ScrollIndicator } from "@/components/ScrollIndicator";
-import { HeadToHeadComparison } from "@/components/HeadToHeadComparison";
 import { TEAMS_DATA, getTeamMetadata } from "@/data/teams";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -110,14 +107,14 @@ function RollingScorePill({
 
   return (
     <div
-      className={`text-2xl sm:text-3xl font-black font-mono text-emerald-400 bg-slate-800/90 px-4 py-1.5 rounded-lg border transition-all duration-300 flex items-center justify-center gap-2 select-none ${
+      className={`text-2xl sm:text-3xl font-black font-mono text-emerald-400 light:text-emerald-700 bg-slate-800/90 light:bg-slate-100 px-4 py-1.5 rounded-lg border transition-all duration-300 flex items-center justify-center gap-2 select-none ${
         activeGlow
-          ? "border-[#00FF85] shadow-[0_0_16px_rgba(0,255,133,0.4)] animate-pulse scale-105"
-          : "border-slate-700 shadow-inner scale-100"
+          ? "border-[#00FF85] light:border-emerald-500 shadow-[0_0_16px_rgba(0,255,133,0.4)] light:shadow-[0_0_16px_rgba(16,185,129,0.3)] animate-pulse scale-105"
+          : "border-slate-700 light:border-slate-300 shadow-inner scale-100"
       }`}
     >
       <span className="w-5 sm:w-6 text-center tabular-nums">{displayHome}</span>
-      <span className="text-slate-500 text-xl font-bold select-none">-</span>
+      <span className="text-slate-500 light:text-slate-400 text-xl font-bold select-none">-</span>
       <span className="w-5 sm:w-6 text-center tabular-nums">{displayAway}</span>
     </div>
   );
@@ -313,12 +310,6 @@ function MatchPredictorContent() {
     setErrorMessage(null);
   };
 
-  const handleDateChange = (newDate: string) => {
-    setMatchDate(newDate);
-    setResult(null);
-    setErrorMessage(null);
-  };
-
   const handleSwap = () => {
     const prevHome = homeTeam;
     setHomeTeam(awayTeam);
@@ -427,27 +418,27 @@ function MatchPredictorContent() {
   const awayMeta = getTeamMetadata(awayTeam);
 
   return (
-    <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-6 sm:space-y-10">
+    <div className="min-h-screen py-6 sm:py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 sm:space-y-10">
       {/* Header */}
       <div className="text-center space-y-2 sm:space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/90 border border-slate-700/80 text-slate-300 text-xs font-semibold uppercase tracking-wider shadow-sm">
-          <Swords className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/90 light:bg-white border border-slate-700/80 light:border-slate-200 text-slate-300 light:text-slate-700 text-xs font-semibold uppercase tracking-wider shadow-sm">
+          <Swords className="w-3.5 h-3.5 text-emerald-400 light:text-emerald-600" />
           <span>Match Intelligence</span>
         </div>
-        <h1 className="text-2xl sm:text-5xl font-black text-[#F8FAFC] tracking-tight">
+        <h1 className="text-2xl sm:text-5xl font-black text-[#F8FAFC] light:text-[#19001B] tracking-tight">
           Head-to-Head Predictor
         </h1>
       </div>
 
       {/* Match Selector Card */}
-      <div className="bg-[#151C28] p-3 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-xl space-y-4 sm:space-y-8 relative overflow-hidden">
+      <div className="bg-[#151C28] light:bg-white p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] space-y-4 sm:space-y-8 relative overflow-hidden">
         {/* Subtle Tactical Pitch Lines & Grass Striping Overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-25 overflow-hidden">
           {/* Mown Lawn Alternating Turf Pattern */}
           <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_44px,rgba(16,185,129,0.03)_44px,rgba(16,185,129,0.03)_88px)]" />
           {/* Tactical Pitch Geometry */}
           <svg
-            className="absolute inset-0 w-full h-full stroke-emerald-400/10"
+            className="absolute inset-0 w-full h-full stroke-emerald-400/10 light:stroke-emerald-600/10"
             fill="none"
             strokeWidth="1.25"
           >
@@ -468,9 +459,9 @@ function MatchPredictorContent() {
         </div>
 
         {/* Feature 3: Quick Marquee Presets */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 pb-3 sm:pb-5 border-b border-slate-800">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 pb-3 sm:pb-5 border-b border-slate-800 light:border-slate-200">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#94A3B8] light:text-slate-600">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400 light:text-emerald-600" />
             <span>Featured Clashes:</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
@@ -484,8 +475,8 @@ function MatchPredictorContent() {
                   onClick={() => handleSelectPreset(preset.home, preset.away)}
                   className={`px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 border ${
                     isActive
-                      ? "bg-emerald-500/20 border-emerald-500/60 text-emerald-300 shadow-sm"
-                      : "bg-slate-800/60 border-slate-700/70 text-slate-300 hover:text-white hover:border-slate-600 hover:bg-slate-800"
+                      ? "bg-emerald-500/20 light:bg-emerald-50 border-emerald-500/60 light:border-emerald-500 text-emerald-300 light:text-emerald-700 shadow-sm"
+                      : "bg-slate-800/60 light:bg-slate-100 border-slate-700/70 light:border-slate-200 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-[#19001B] hover:border-slate-600 light:hover:border-slate-300 hover:bg-slate-800 light:hover:bg-slate-200"
                   }`}
                 >
                   <span>{preset.label}</span>
@@ -499,8 +490,8 @@ function MatchPredictorContent() {
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-11 gap-3 sm:gap-6 items-center">
           {/* Home Team Selector */}
           <div
-            className={`md:col-span-5 flex flex-col items-center text-center space-y-2 sm:space-y-4 p-3 sm:p-5 rounded-2xl bg-[#182030] border transition-all duration-300 relative overflow-hidden ${
-              isSuspense ? "border-emerald-500/60 scale-[1.02]" : "border-slate-800/80"
+            className={`md:col-span-5 flex flex-col items-center text-center space-y-2 sm:space-y-4 p-3 sm:p-5 rounded-2xl bg-[#182030] light:bg-slate-50 border transition-all duration-300 relative overflow-hidden ${
+              isSuspense ? "border-emerald-500/60 light:border-emerald-500 scale-[1.02]" : "border-slate-800/80 light:border-slate-200"
             }`}
           >
             {/* Dynamic Ambient Team Glow */}
@@ -509,7 +500,7 @@ function MatchPredictorContent() {
               style={{ backgroundColor: homeMeta.primaryColor }}
             />
 
-            <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-[#94A3B8] relative z-10">
+            <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-[#94A3B8] light:text-slate-500 relative z-10">
               Home Team
             </span>
             <div className="relative py-1 sm:py-2 transform transition-transform duration-300 hover:scale-105 flex items-center justify-center">
@@ -528,14 +519,14 @@ function MatchPredictorContent() {
             <select
               value={homeTeam}
               onChange={(e) => handleHomeTeamChange(e.target.value)}
-              className="w-full min-h-[44px] bg-[#0F1520] border border-slate-700 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-white font-bold text-center text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer relative z-10"
+              className="w-full min-h-[44px] bg-[#0F1520] light:bg-white border border-slate-700 light:border-slate-300 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-white light:text-slate-900 font-bold text-center text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer relative z-10"
             >
               {teamList.map((team) => (
                 <option
                   key={team}
                   value={team}
                   disabled={team === awayTeam}
-                  className={`bg-[#0F1520] ${team === awayTeam ? "text-slate-500" : "text-white"}`}
+                  className={`bg-[#0F1520] light:bg-white light:text-slate-900 ${team === awayTeam ? "text-slate-500" : "text-white"}`}
                 >
                   {team} {team === awayTeam ? " (Away Team)" : ""}
                 </option>
@@ -544,7 +535,7 @@ function MatchPredictorContent() {
 
             {/* Recent 5-Match Form Badges (W - D - L) */}
             <div className="flex items-center justify-center gap-1.5 pt-1 relative z-10">
-              <span className="text-[10px] uppercase font-bold text-slate-400 mr-1 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-slate-400 light:text-slate-500 mr-1 tracking-wider">
                 Form:
               </span>
               {homeMeta.form.map((res, i) => (
@@ -552,10 +543,10 @@ function MatchPredictorContent() {
                   key={i}
                   className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black uppercase transition-transform hover:scale-110 shadow-xs ${
                     res === "W"
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      ? "bg-emerald-500/20 text-emerald-400 light:bg-emerald-100 light:text-emerald-700 border border-emerald-500/40 light:border-emerald-300"
                       : res === "D"
-                      ? "bg-slate-500/20 text-slate-300 border border-slate-500/40"
-                      : "bg-rose-500/20 text-rose-400 border border-rose-500/40"
+                      ? "bg-slate-500/20 text-slate-300 light:bg-slate-100 light:text-slate-700 border border-slate-500/40 light:border-slate-300"
+                      : "bg-rose-500/20 text-rose-400 light:bg-rose-100 light:text-rose-700 border border-rose-500/40 light:border-rose-300"
                   }`}
                   title={res === "W" ? "Win" : res === "D" ? "Draw" : "Loss"}
                 >
@@ -573,13 +564,13 @@ function MatchPredictorContent() {
                 onClick={handleSwap}
                 type="button"
                 title="Swap Home/Away"
-                className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center justify-center font-black text-xs sm:text-sm text-slate-200 shadow-lg hover:scale-110 active:scale-95 transition-all group cursor-pointer"
+                className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#1F2937] light:bg-slate-100 hover:bg-[#374151] light:hover:bg-slate-200 border border-slate-700 light:border-slate-300 flex items-center justify-center font-black text-xs sm:text-sm text-slate-200 light:text-slate-800 shadow-lg hover:scale-110 active:scale-95 transition-all group cursor-pointer"
               >
                 <span className={isSuspense ? "animate-spin" : "group-hover:hidden"}>
                   {isSuspense ? "⚡" : "VS"}
                 </span>
                 {!isSuspense && (
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 hidden group-hover:block animate-spin text-slate-300" />
+                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 hidden group-hover:block animate-spin text-slate-300 light:text-slate-600" />
                 )}
               </button>
             </div>
@@ -591,18 +582,18 @@ function MatchPredictorContent() {
                   onClick={handleSwap}
                   type="button"
                   title="Swap Home/Away"
-                  className="px-3.5 py-1 rounded-full bg-[#1F2937] hover:bg-[#374151] border border-slate-700 flex items-center gap-1.5 font-bold text-xs text-slate-200 shadow-sm active:scale-95 transition-all cursor-pointer"
+                  className="px-3.5 py-1 rounded-full bg-[#1F2937] light:bg-slate-100 hover:bg-[#374151] light:hover:bg-slate-200 border border-slate-700 light:border-slate-300 flex items-center gap-1.5 font-bold text-xs text-slate-200 light:text-slate-800 shadow-sm active:scale-95 transition-all cursor-pointer"
                 >
-                  <RefreshCw className="w-3 h-3 text-slate-400" />
+                  <RefreshCw className="w-3 h-3 text-slate-400 light:text-slate-500" />
                   <span>Swap</span>
-                  <span className="text-emerald-400 font-black">VS</span>
+                  <span className="text-emerald-400 light:text-emerald-600 font-black">VS</span>
                 </button>
               </div>
 
               <button
                 onClick={() => runSimulation()}
                 disabled={loading}
-                className={`w-full min-h-[46px] py-3 px-6 rounded-xl font-black text-sm tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 flex items-center justify-center gap-2 ${
+                className={`w-full min-h-[46px] py-3 px-6 rounded-xl font-black text-sm tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 light:shadow-md light:shadow-emerald-900/10 border border-[#00FF85] transition-all duration-200 flex items-center justify-center gap-2 ${
                   loading
                     ? "opacity-80 cursor-not-allowed pointer-events-none"
                     : "cursor-pointer hover:scale-[1.02]"
@@ -625,8 +616,8 @@ function MatchPredictorContent() {
 
           {/* Away Team Selector */}
           <div
-            className={`md:col-span-5 flex flex-col items-center text-center space-y-2 sm:space-y-4 p-3 sm:p-5 rounded-2xl bg-[#182030] border transition-all duration-300 relative overflow-hidden ${
-              isSuspense ? "border-slate-600 scale-[1.02]" : "border-slate-800/80"
+            className={`md:col-span-5 flex flex-col items-center text-center space-y-2 sm:space-y-4 p-3 sm:p-5 rounded-2xl bg-[#182030] light:bg-slate-50 border transition-all duration-300 relative overflow-hidden ${
+              isSuspense ? "border-slate-600 light:border-slate-400 scale-[1.02]" : "border-slate-800/80 light:border-slate-200"
             }`}
           >
             {/* Dynamic Ambient Team Glow */}
@@ -635,7 +626,7 @@ function MatchPredictorContent() {
               style={{ backgroundColor: awayMeta.primaryColor }}
             />
 
-            <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-[#94A3B8] relative z-10">
+            <span className="text-[10px] sm:text-xs uppercase font-extrabold tracking-wider text-[#94A3B8] light:text-slate-500 relative z-10">
               Away Team
             </span>
             <div className="relative py-1 sm:py-2 transform transition-transform duration-300 hover:scale-105 flex items-center justify-center">
@@ -654,14 +645,14 @@ function MatchPredictorContent() {
             <select
               value={awayTeam}
               onChange={(e) => handleAwayTeamChange(e.target.value)}
-              className="w-full min-h-[44px] bg-[#0F1520] border border-slate-700 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-white font-bold text-center text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer relative z-10"
+              className="w-full min-h-[44px] bg-[#0F1520] light:bg-white border border-slate-700 light:border-slate-300 rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-white light:text-slate-900 font-bold text-center text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer relative z-10"
             >
               {teamList.map((team) => (
                 <option
                   key={team}
                   value={team}
                   disabled={team === homeTeam}
-                  className={`bg-[#0F1520] ${team === homeTeam ? "text-slate-500" : "text-white"}`}
+                  className={`bg-[#0F1520] light:bg-white light:text-slate-900 ${team === homeTeam ? "text-slate-500" : "text-white"}`}
                 >
                   {team} {team === homeTeam ? " (Home Team)" : ""}
                 </option>
@@ -670,7 +661,7 @@ function MatchPredictorContent() {
 
             {/* Recent 5-Match Form Badges (W - D - L) */}
             <div className="flex items-center justify-center gap-1.5 pt-1 relative z-10">
-              <span className="text-[10px] uppercase font-bold text-slate-400 mr-1 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-slate-400 light:text-slate-500 mr-1 tracking-wider">
                 Form:
               </span>
               {awayMeta.form.map((res, i) => (
@@ -678,10 +669,10 @@ function MatchPredictorContent() {
                   key={i}
                   className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black uppercase transition-transform hover:scale-110 shadow-xs ${
                     res === "W"
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                      ? "bg-emerald-500/20 text-emerald-400 light:bg-emerald-100 light:text-emerald-700 border border-emerald-500/40 light:border-emerald-300"
                       : res === "D"
-                      ? "bg-slate-500/20 text-slate-300 border border-slate-500/40"
-                      : "bg-rose-500/20 text-rose-400 border border-rose-500/40"
+                      ? "bg-slate-500/20 text-slate-300 light:bg-slate-100 light:text-slate-700 border border-slate-500/40 light:border-slate-300"
+                      : "bg-rose-500/20 text-rose-400 light:bg-rose-100 light:text-rose-700 border border-rose-500/40 light:border-rose-300"
                   }`}
                   title={res === "W" ? "Win" : res === "D" ? "Draw" : "Loss"}
                 >
@@ -692,37 +683,29 @@ function MatchPredictorContent() {
           </div>
         </div>
 
-        {/* Date Selector, Share Matchup Button, and Simulate Action */}
-        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-slate-800">
-          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 w-full sm:w-auto">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
-              <span className="text-xs text-[#94A3B8] font-medium">Fixture Date:</span>
-            </div>
-            <input
-              type="date"
-              value={matchDate}
-              onChange={(e) => handleDateChange(e.target.value)}
-              className="min-h-[44px] bg-[#0F1520] border border-slate-700 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-emerald-500 cursor-pointer flex items-center"
-            />
+        {/* Match Controls Toolbar: Engine Telemetry, Share Matchup & Simulate Actions */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-slate-800 light:border-slate-200">
+          <div className="flex items-center gap-2 text-xs text-slate-400 light:text-slate-500 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-[#00FF85] light:text-[#00A855] shrink-0" />
+            <span>10,000 Monte Carlo Iterations • Dixon-Coles Goal Engine</span>
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             {/* Share Matchup Link Button */}
             <button
               onClick={handleShareMatchup}
               type="button"
-              className="px-3.5 py-2 sm:px-3.5 sm:py-3.5 rounded-xl font-semibold text-xs bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm shrink-0 min-h-[44px]"
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm bg-slate-800/80 light:bg-slate-100 hover:bg-slate-800 light:hover:bg-slate-200 border border-slate-700 light:border-slate-300 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-[#19001B] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shrink-0 min-h-[44px]"
               title="Copy shareable link for this matchup"
             >
               {copiedLink ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400">Copied!</span>
+                  <Check className="w-4 h-4 text-emerald-400 light:text-emerald-600" />
+                  <span className="text-emerald-400 light:text-emerald-600 font-bold">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3.5 h-3.5 text-slate-400" />
+                  <Share2 className="w-4 h-4 text-slate-400 light:text-slate-500" />
                   <span className="hidden sm:inline">Share Matchup</span>
                   <span className="sm:hidden">Share Link</span>
                 </>
@@ -733,7 +716,7 @@ function MatchPredictorContent() {
             <button
               onClick={() => runSimulation()}
               disabled={loading}
-              className={`hidden md:flex w-auto px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-black text-sm sm:text-base tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 border border-[#00FF85] transition-all duration-200 items-center justify-center gap-2 ${
+              className={`hidden md:flex w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-black text-sm sm:text-base tracking-wide bg-[#00FF85] hover:bg-[#00E676] active:scale-95 text-[#0A0A14] shadow-lg shadow-[#00FF85]/25 light:shadow-md light:shadow-emerald-900/10 border border-[#00FF85] transition-all duration-200 items-center justify-center gap-2 min-h-[44px] ${
                 loading
                   ? "opacity-80 cursor-not-allowed pointer-events-none"
                   : "cursor-pointer hover:scale-[1.02]"
@@ -755,12 +738,6 @@ function MatchPredictorContent() {
         </div>
       </div>
 
-      {/* Feature: Tactical Radar & Head-to-Head Battle Comparison Studio */}
-      <HeadToHeadComparison teamA={homeTeam} teamB={awayTeam} />
-
-      {/* Mobile Scroll-Down Visual Cue */}
-      <ScrollIndicator scrollOffset={350} label="Scroll for Results & Analysis" />
-
       {/* Error Message Box */}
       {errorMessage && (
         <div className="p-4 sm:p-5 rounded-2xl border-l-4 border-l-rose-500 flex items-center justify-between gap-3 bg-rose-950/40 border border-rose-900/50 text-rose-200 animate-in fade-in slide-in-from-top-2 duration-300 shadow-lg">
@@ -781,10 +758,10 @@ function MatchPredictorContent() {
 
       {/* Dramatic Clash Reveal Sequence */}
       {clashState !== "idle" && (
-        <div className="bg-[#151C28] p-6 sm:p-10 rounded-3xl border border-slate-800 relative overflow-hidden transition-all duration-300 shadow-xl">
+        <div className="bg-[#151C28] light:bg-white p-5 sm:p-6 md:p-8 rounded-3xl border border-slate-800 light:border-slate-200 relative overflow-hidden transition-all duration-300 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)]">
           <div className="relative z-10 flex flex-col items-center justify-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800 text-xs font-bold uppercase tracking-wider text-slate-300 border border-slate-700 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800 light:bg-slate-100 text-xs font-bold uppercase tracking-wider text-slate-300 light:text-slate-700 border border-slate-700 light:border-slate-200 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 light:bg-emerald-600 animate-ping" />
               <span>Matchday Clash Simulation</span>
             </div>
 
@@ -798,17 +775,17 @@ function MatchPredictorContent() {
                     : "translate-x-16 sm:translate-x-32 scale-110"
                 }`}
               >
-                <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-800 border-2 border-slate-700 shadow-lg bg-[#182030]">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-800 border-2 border-slate-700 light:border-slate-200 shadow-lg light:shadow-sm bg-[#182030] light:bg-slate-50">
                   <TeamCrest team={homeTeam} size={64} />
                 </div>
-                <span className="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase">
+                <span className="text-xs sm:text-sm font-black text-slate-200 light:text-[#19001B] tracking-wider uppercase">
                   {homeTeam}
                 </span>
               </div>
 
               {/* Center Impact Badge */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full flex items-center justify-center font-black text-slate-200 bg-[#182030] border-2 border-slate-700 shadow-xl">
+                <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full flex items-center justify-center font-black text-slate-200 light:text-[#19001B] bg-[#182030] light:bg-white border-2 border-slate-700 light:border-slate-200 shadow-xl light:shadow-sm">
                   <span className="font-mono text-base font-black">VS</span>
                 </div>
               </div>
@@ -821,16 +798,16 @@ function MatchPredictorContent() {
                     : "-translate-x-16 sm:-translate-x-32 scale-110"
                 }`}
               >
-                <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-800 border-2 border-slate-700 shadow-lg bg-[#182030]">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-slate-800 border-2 border-slate-700 light:border-slate-200 shadow-lg light:shadow-sm bg-[#182030] light:bg-slate-50">
                   <TeamCrest team={awayTeam} size={64} />
                 </div>
-                <span className="text-xs sm:text-sm font-black text-slate-200 tracking-wider uppercase">
+                <span className="text-xs sm:text-sm font-black text-slate-200 light:text-[#19001B] tracking-wider uppercase">
                   {awayTeam}
                 </span>
               </div>
             </div>
 
-            <p className="text-xs text-[#94A3B8] font-mono tracking-wider animate-pulse">
+            <p className="text-xs text-[#94A3B8] light:text-slate-500 font-mono tracking-wider animate-pulse">
               Simulating tactical duel & Dixon-Coles goal dynamics...
             </p>
           </div>
@@ -845,15 +822,15 @@ function MatchPredictorContent() {
           className="space-y-6 animate-in fade-in zoom-in-95 duration-500 scroll-mt-20"
         >
           {/* Main Dramatic Scoreline & Outcome Banner */}
-          <div className="bg-[#151C28] p-6 sm:p-10 rounded-3xl border border-slate-800 shadow-xl space-y-8 relative overflow-hidden">
+          <div className="bg-[#151C28] light:bg-white p-5 sm:p-6 md:p-8 rounded-3xl border border-slate-800 light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] space-y-8 relative overflow-hidden">
             {/* Header / Subtitle with Share Matchup Link */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-800 light:border-slate-200">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#94A3B8] light:text-slate-500">
                   Match Forecast
                 </span>
-                <span className="text-slate-600">•</span>
-                <span className="text-xs text-slate-300 font-mono">
+                <span className="text-slate-600 light:text-slate-400">•</span>
+                <span className="text-xs text-slate-300 light:text-slate-700 font-mono">
                   {result.match_date}
                 </span>
               </div>
@@ -861,31 +838,31 @@ function MatchPredictorContent() {
                 <button
                   onClick={handleShareMatchup}
                   type="button"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-800/80 light:bg-slate-100 hover:bg-slate-800 light:hover:bg-slate-200 border border-slate-700 light:border-slate-300 text-slate-300 light:text-slate-700 hover:text-white light:hover:text-[#19001B] transition-all cursor-pointer shadow-sm"
                 >
                   {copiedLink ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400">Matchup URL Copied!</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-400 light:text-emerald-600" />
+                      <span className="text-emerald-400 light:text-emerald-600 font-bold">Matchup URL Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Share2 className="w-3.5 h-3.5 text-slate-400" />
+                      <Share2 className="w-3.5 h-3.5 text-slate-400 light:text-slate-500" />
                       <span>Share Matchup</span>
                     </>
                   )}
                 </button>
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-800 border border-slate-700 text-slate-200">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-800 light:bg-slate-100 border border-slate-700 light:border-slate-200 text-slate-200 light:text-slate-800">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 light:bg-emerald-600" />
                   <span>{result.outcome_meaning}</span>
                 </div>
               </div>
             </div>
 
             {/* EXPANSIVE BROADCAST SCOREBOARD (Primary Centerpiece: Statistical Most Likely Scoreline) */}
-            <div className="w-full max-w-2xl mx-auto bg-[#182030] border border-slate-700/80 rounded-2xl py-6 px-4 sm:px-8 shadow-2xl flex flex-col items-center">
+            <div className="w-full max-w-2xl mx-auto bg-[#182030] light:bg-slate-50 border border-slate-700/80 light:border-slate-200 rounded-2xl py-6 px-4 sm:px-8 shadow-2xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] flex flex-col items-center">
               {/* Header Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/90 border border-slate-700 text-xs sm:text-sm font-bold text-slate-200 shadow-sm mb-5">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/90 light:bg-white border border-slate-700 light:border-slate-200 text-xs sm:text-sm font-bold text-slate-200 light:text-slate-800 shadow-sm mb-5">
                 <span>🎯 النتيجة الأكثر ترجيحاً إحصائياً (Most Likely Scoreline)</span>
               </div>
 
@@ -901,11 +878,11 @@ function MatchPredictorContent() {
                       <TeamCrest team={result.home_team} size={42} />
                     </div>
                   </div>
-                  <h3 className="text-[11px] sm:text-sm font-extrabold text-[#F8FAFC] truncate max-w-full">
+                  <h3 className="text-[11px] sm:text-sm font-extrabold text-[#F8FAFC] light:text-[#19001B] truncate max-w-full">
                     {result.home_team}
                   </h3>
                   {isMlHomeWinner && (
-                    <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                    <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 light:bg-emerald-100 text-emerald-400 light:text-emerald-700 border border-emerald-500/40 light:border-emerald-300">
                       <Trophy className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Winner
                     </span>
                   )}
@@ -936,11 +913,11 @@ function MatchPredictorContent() {
                       <TeamCrest team={result.away_team} size={42} />
                     </div>
                   </div>
-                  <h3 className="text-[11px] sm:text-sm font-extrabold text-[#F8FAFC] truncate max-w-full">
+                  <h3 className="text-[11px] sm:text-sm font-extrabold text-[#F8FAFC] light:text-[#19001B] truncate max-w-full">
                     {result.away_team}
                   </h3>
                   {isMlAwayWinner && (
-                    <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                    <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 light:bg-emerald-100 text-emerald-400 light:text-emerald-700 border border-emerald-500/40 light:border-emerald-300">
                       <Trophy className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Winner
                     </span>
                   )}
@@ -951,28 +928,28 @@ function MatchPredictorContent() {
               <div className="flex flex-col items-center space-y-1 mt-5 text-center">
                 <p
                   dir="rtl"
-                  className="text-xs sm:text-sm text-slate-300 font-semibold"
+                  className="text-xs sm:text-sm text-slate-300 light:text-slate-700 font-semibold"
                 >
                   النتيجة الأكثر تكراراً ونسبة تحقق بناءً على النماذج الإحصائية.
                 </p>
-                <p className="text-[11px] sm:text-xs text-slate-400 font-medium">
+                <p className="text-[11px] sm:text-xs text-slate-400 light:text-slate-500 font-medium">
                   Most probable mode across all underlying goal expectation distributions.
                 </p>
               </div>
             </div>
 
             {/* PROMINENT SECONDARY CARD: Monte Carlo Stochastic Draw */}
-            <div className="w-full max-w-2xl mx-auto mt-4 bg-[#151C28] border border-slate-700/80 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-lg">
+            <div className="w-full max-w-2xl mx-auto mt-4 bg-[#151C28] light:bg-slate-50 border border-slate-700/80 light:border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-lg light:shadow-sm">
               {/* Interactive Action (Left) */}
               <button
                 type="button"
                 onClick={handleReroll}
                 disabled={rerolling || loading}
-                className="order-3 sm:order-1 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 hover:border-slate-600 transition-all cursor-pointer shadow-sm active:scale-95 disabled:opacity-50 shrink-0"
+                className="order-3 sm:order-1 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-800 light:bg-white hover:bg-slate-700 light:hover:bg-slate-100 text-slate-200 light:text-slate-800 hover:text-white light:hover:text-[#19001B] border border-slate-700 light:border-slate-300 hover:border-slate-600 transition-all cursor-pointer shadow-sm active:scale-95 disabled:opacity-50 shrink-0"
                 title="Re-roll simulation scenario"
               >
                 <RefreshCw
-                  className={`w-3.5 h-3.5 text-emerald-400 ${
+                  className={`w-3.5 h-3.5 text-emerald-400 light:text-emerald-600 ${
                     rerolling ? "animate-spin" : ""
                   }`}
                 />
@@ -994,23 +971,23 @@ function MatchPredictorContent() {
                 dir="rtl"
                 className="order-1 sm:order-3 text-center sm:text-right flex flex-col"
               >
-                <span className="text-xs sm:text-sm font-bold text-slate-200">
+                <span className="text-xs sm:text-sm font-bold text-slate-200 light:text-[#19001B]">
                   🎲 عينة محاكاة عشوائية (Monte Carlo Stochastic Draw)
                 </span>
-                <span className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                <span className="text-[11px] sm:text-xs text-slate-400 light:text-slate-600 mt-0.5">
                   سيناريو عشوائي فردي مسحوب من أصل 10,000 محاكاة كاملة
                 </span>
               </div>
             </div>
 
             {/* Segmented Probabilities Bar (Sky Sports / Opta Style) */}
-            <div className="space-y-3 pt-6 border-t border-slate-800">
-              <div className="flex items-center justify-between text-xs text-[#94A3B8] font-semibold">
+            <div className="space-y-3 pt-6 border-t border-slate-800 light:border-slate-200">
+              <div className="flex items-center justify-between text-xs text-[#94A3B8] light:text-slate-600 font-semibold">
                 <span>XGBoost Match Probabilities</span>
                 <span>Sum: 100%</span>
               </div>
 
-              <div className="h-9 w-full rounded-2xl overflow-hidden flex bg-slate-900 border border-slate-800 p-1 gap-1">
+              <div className="h-9 w-full rounded-2xl overflow-hidden flex bg-slate-900 light:bg-slate-100 border border-slate-800 light:border-slate-200 p-1 gap-1">
                 {/* Home Win Segment */}
                 <div
                   className="h-full rounded-xl bg-emerald-500 flex items-center justify-center font-bold text-xs text-slate-950 transition-all duration-700 hover:brightness-110"
@@ -1044,7 +1021,7 @@ function MatchPredictorContent() {
 
               {/* Legend under bar */}
               <div className="grid grid-cols-3 text-center text-xs font-semibold pt-1">
-                <div className="text-emerald-400 space-y-0.5">
+                <div className="text-emerald-400 light:text-emerald-700 space-y-0.5">
                   <div>{result.home_team} Win (H)</div>
                   <div className="text-base font-black font-mono">
                     <AnimatedNumber
@@ -1054,7 +1031,7 @@ function MatchPredictorContent() {
                   </div>
                 </div>
 
-                <div className="text-slate-300 space-y-0.5">
+                <div className="text-slate-300 light:text-slate-800 space-y-0.5">
                   <div>Draw (D)</div>
                   <div className="text-base font-black font-mono">
                     <AnimatedNumber
@@ -1064,7 +1041,7 @@ function MatchPredictorContent() {
                   </div>
                 </div>
 
-                <div className="text-indigo-400 space-y-0.5">
+                <div className="text-indigo-400 light:text-indigo-700 space-y-0.5">
                   <div>{result.away_team} Win (A)</div>
                   <div className="text-base font-black font-mono">
                     <AnimatedNumber
@@ -1077,61 +1054,61 @@ function MatchPredictorContent() {
             </div>
 
             {/* Feature 4: Fantasy / FPL Clean Sheet Odds Cards */}
-            <div className="pt-6 border-t border-slate-800 space-y-3">
+            <div className="pt-6 border-t border-slate-800 light:border-slate-200 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 light:text-emerald-600" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-300 light:text-slate-800">
                     Fantasy Premier League (FPL) Clean Sheet Edge
                   </span>
                 </div>
-                <span className="text-[11px] text-[#94A3B8] font-mono">
+                <span className="text-[11px] text-[#94A3B8] light:text-slate-500 font-mono">
                   Poisson Zero-Goal Probabilities
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Home Clean Sheet */}
-                <div className="p-4 rounded-2xl bg-[#182030] border border-slate-800 flex items-center justify-between hover:border-slate-700 transition-all shadow-sm">
+                <div className="p-4 rounded-2xl bg-[#182030] light:bg-slate-50 border border-slate-800 light:border-slate-200 flex items-center justify-between hover:border-slate-700 light:hover:border-slate-300 transition-all shadow-sm">
                   <div className="flex items-center gap-3">
                     <TeamCrest team={result.home_team} size={38} />
                     <div>
-                      <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <div className="text-xs font-bold text-white light:text-[#19001B] flex items-center gap-1.5">
                         <span>{result.home_team} Clean Sheet</span>
                       </div>
-                      <div className="text-[10px] text-[#94A3B8]">
+                      <div className="text-[10px] text-[#94A3B8] light:text-slate-500">
                         P(Away Conceded = 0) vs {result.expected_goals.away.toFixed(2)} xG
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black font-mono text-emerald-400">
+                    <span className="text-2xl font-black font-mono text-emerald-400 light:text-emerald-700">
                       {homeCleanSheetPct}%
                     </span>
-                    <span className="block text-[9px] uppercase tracking-wider text-slate-500 font-semibold">
+                    <span className="block text-[9px] uppercase tracking-wider text-slate-500 light:text-slate-400 font-semibold">
                       Probable Clean Sheet
                     </span>
                   </div>
                 </div>
 
                 {/* Away Clean Sheet */}
-                <div className="p-4 rounded-2xl bg-[#182030] border border-slate-800 flex items-center justify-between hover:border-slate-700 transition-all shadow-sm">
+                <div className="p-4 rounded-2xl bg-[#182030] light:bg-slate-50 border border-slate-800 light:border-slate-200 flex items-center justify-between hover:border-slate-700 light:hover:border-slate-300 transition-all shadow-sm">
                   <div className="flex items-center gap-3">
                     <TeamCrest team={result.away_team} size={38} />
                     <div>
-                      <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <div className="text-xs font-bold text-white light:text-[#19001B] flex items-center gap-1.5">
                         <span>{result.away_team} Clean Sheet</span>
                       </div>
-                      <div className="text-[10px] text-[#94A3B8]">
+                      <div className="text-[10px] text-[#94A3B8] light:text-slate-500">
                         P(Home Conceded = 0) vs {result.expected_goals.home.toFixed(2)} xG
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black font-mono text-slate-200">
+                    <span className="text-2xl font-black font-mono text-slate-200 light:text-slate-800">
                       {awayCleanSheetPct}%
                     </span>
-                    <span className="block text-[9px] uppercase tracking-wider text-slate-500 font-semibold">
+                    <span className="block text-[9px] uppercase tracking-wider text-slate-500 light:text-slate-400 font-semibold">
                       Probable Clean Sheet
                     </span>
                   </div>
@@ -1140,20 +1117,20 @@ function MatchPredictorContent() {
             </div>
 
             {/* Dixon-Coles Expected Goals Section */}
-            <div className="pt-6 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-[#182030] border border-slate-800 flex items-center justify-between shadow-sm">
+            <div className="pt-6 border-t border-slate-800 light:border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-[#182030] light:bg-slate-50 border border-slate-800 light:border-slate-200 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                   <TeamCrest team={result.home_team} size={36} />
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-[#94A3B8]">
+                    <span className="text-[10px] uppercase font-bold text-[#94A3B8] light:text-slate-500">
                       Expected Goals (xG)
                     </span>
-                    <h4 className="text-sm font-bold text-white">
+                    <h4 className="text-sm font-bold text-white light:text-[#19001B]">
                       {result.home_team}
                     </h4>
                   </div>
                 </div>
-                <div className="text-2xl font-black font-mono text-emerald-400">
+                <div className="text-2xl font-black font-mono text-emerald-400 light:text-emerald-700">
                   <AnimatedNumber
                     value={result.expected_goals.home}
                     decimals={2}
@@ -1161,19 +1138,19 @@ function MatchPredictorContent() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#182030] border border-slate-800 flex items-center justify-between shadow-sm">
+              <div className="p-4 rounded-2xl bg-[#182030] light:bg-slate-50 border border-slate-800 light:border-slate-200 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                   <TeamCrest team={result.away_team} size={36} />
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-[#94A3B8]">
+                    <span className="text-[10px] uppercase font-bold text-[#94A3B8] light:text-slate-500">
                       Expected Goals (xG)
                     </span>
-                    <h4 className="text-sm font-bold text-white">
+                    <h4 className="text-sm font-bold text-white light:text-[#19001B]">
                       {result.away_team}
                     </h4>
                   </div>
                 </div>
-                <div className="text-2xl font-black font-mono text-slate-200">
+                <div className="text-2xl font-black font-mono text-slate-200 light:text-slate-800">
                   <AnimatedNumber
                     value={result.expected_goals.away}
                     decimals={2}

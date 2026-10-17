@@ -76,7 +76,7 @@ export function ServerWarmupNotice() {
       aria-live="polite"
       className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-5 duration-300 pointer-events-auto"
     >
-      <div className="glass-panel bg-[#12121C]/95 border border-[#04F5FF]/40 shadow-2xl shadow-black/80 rounded-2xl p-4 sm:p-4.5 flex items-start gap-3.5 backdrop-blur-xl">
+      <div className="glass-panel bg-[#12121C]/95 light:bg-white/95 border border-[#38BDF8]/40 light:border-slate-200 shadow-2xl shadow-black/80 light:shadow-slate-300/60 rounded-2xl p-4 sm:p-4.5 flex items-start gap-3.5 backdrop-blur-xl transition-colors duration-300">
         {/* Animated Spinning Football Icon */}
         <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#3D195B] to-[#E90052] flex items-center justify-center shrink-0 border border-white/20 shadow-md shadow-[#E90052]/30">
           <svg
@@ -105,10 +105,10 @@ export function ServerWarmupNotice() {
         </div>
 
         <div className="space-y-1 min-w-0 flex-1">
-          <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight leading-snug">
+          <h4 className="text-xs sm:text-sm font-bold text-white light:text-[#19001B] tracking-tight leading-snug">
             Waking up the Monte Carlo engine on the cloud...
           </h4>
-          <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+          <p className="text-[11px] sm:text-xs text-slate-300 light:text-slate-600 leading-relaxed">
             First boot may take ~20s as free-tier instances spin up.
           </p>
         </div>
@@ -116,7 +116,7 @@ export function ServerWarmupNotice() {
         <button
           type="button"
           onClick={() => setManuallyDismissed(true)}
-          className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
+          className="text-slate-400 hover:text-white light:text-slate-500 light:hover:text-slate-900 p-1 rounded-lg hover:bg-white/10 light:hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
           title="Dismiss notice"
         >
           <X className="w-4 h-4" />

@@ -1,9 +1,13 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
 
 @theme {
   --color-pl-base: var(--pl-base);
   --color-pl-surface: var(--pl-surface);
   --color-pl-surface-card: var(--pl-surface-card);
+  --color-pl-surface-elevated: var(--pl-surface-elevated);
   --color-pl-border: var(--pl-border);
   --color-pl-border-subtle: var(--pl-border-subtle);
   --color-pl-purple: var(--pl-purple);
@@ -24,6 +28,7 @@
   --pl-base: #0B0E14;             /* PL Midnight Deep Slate Base */
   --pl-surface: #141824;          /* Official PL Broadcast Surface / Card */
   --pl-surface-card: #1A1F30;     /* Elevated Interactive Surface */
+  --pl-surface-elevated: #1A1F2E; /* Elevated Card Slate */
   --pl-border: #23293B;           /* Ultra-fine Slate Border */
   --pl-border-subtle: rgba(255, 255, 255, 0.08); /* Secondary Border */
 
@@ -38,8 +43,8 @@
   --pl-berry-light: #FF2E7E;      /* Bright berry for dark backgrounds */
   --pl-berry-subtle: rgba(233, 0, 82, 0.15);
 
-  --pl-text-primary: #F8FAFC;
-  --pl-text-secondary: #94A3B8;
+  --pl-text-primary: #FFFFFF;     /* Crisp white text for dark canvas */
+  --pl-text-secondary: #94A3B8;   /* Slate secondary text */
   --pl-text-muted: #64748B;
 
   /* Legacy aliases for backward compatibility */
@@ -48,28 +53,30 @@
   --border-glow: rgba(56, 0, 60, 0.5);
 }
 
-/* Architecture for Future Light Mode Swapping */
+/* Premier League Broadcast Light Theme Tokens */
 :root[data-theme='light'],
+[data-theme='light'],
 .light {
-  --pl-base: #F8FAFC;
-  --pl-surface: #FFFFFF;
-  --pl-surface-card: #F1F5F9;
-  --pl-border: #E2E8F0;
+  --pl-base: #F4F5F8;             /* Studio off-white / cool gray canvas (strictly NOT stark #fff) */
+  --pl-surface: #FFFFFF;          /* Pure White Broadcast Card Surface */
+  --pl-surface-card: #FFFFFF;     /* Elevated Interactive Surface */
+  --pl-surface-elevated: #FFFFFF; /* Elevated Card */
+  --pl-border: #E2E8F0;           /* Clean studio border */
   --pl-border-subtle: rgba(0, 0, 0, 0.06);
 
-  --pl-purple: #38003C;
+  --pl-purple: #38003C;           /* Iconic Official Premier League Purple */
   --pl-purple-accent: #5E0065;
   --pl-purple-highlight: #7B1FA2;
 
-  --pl-mint: #00875A;
-  --pl-mint-subtle: rgba(0, 135, 90, 0.12);
+  --pl-mint: #00A855;             /* Broadcast Emerald Green (calibrated for high contrast on light canvas) */
+  --pl-mint-subtle: rgba(0, 168, 85, 0.12);
 
-  --pl-berry: #D8004C;
-  --pl-berry-light: #E90052;
-  --pl-berry-subtle: rgba(216, 0, 76, 0.1);
+  --pl-berry: #E90052;            /* Official PL Highlight Magenta / Berry */
+  --pl-berry-light: #FF2E7E;
+  --pl-berry-subtle: rgba(233, 0, 82, 0.1);
 
-  --pl-text-primary: #0F172A;
-  --pl-text-secondary: #475569;
+  --pl-text-primary: #19001B;     /* Deep PL Plum Purple primary text */
+  --pl-text-secondary: #64748B;   /* Slate secondary text */
   --pl-text-muted: #94A3B8;
 
   --bg-dark: var(--pl-base);
@@ -77,11 +84,77 @@
   --border-glow: rgba(56, 0, 60, 0.15);
 }
 
+/* ==========================================================================
+   Global Cascade Rules: Light Mode Contrast & Studio Inversion Overrides
+   ========================================================================== */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Invert hardcoded white typography on light surfaces */
+[data-theme="light"] h1.text-white,
+[data-theme="light"] h2.text-white,
+[data-theme="light"] h3.text-white,
+[data-theme="light"] h4.text-white,
+[data-theme="light"] .text-white:not(
+  button,
+  button *,
+  .pl-lion-crest,
+  .pl-lion-crest *,
+  [class*="bg-emerald"],
+  [class*="bg-rose"],
+  [class*="bg-purple"],
+  [class*="bg-[#38003C]"],
+  [class*="from-[#38003C]"],
+  [class*="from-[#38003C]"] *,
+  [class*="bg-[#E90052]"],
+  [class*="bg-sky-"]
+) {
+  color: #19001B !important;
+}
+
+/* Ensure Premier League Lion crest stays pure white */
+.pl-lion-crest path,
+.pl-lion-crest svg {
+  fill: #FFFFFF !important;
+}
+
+/* Invert orphaned dark containers */
+[data-theme="light"] .bg-\[\#0B0E14\],
+[data-theme="light"] .bg-\[\#141824\],
+[data-theme="light"] .bg-\[\#1A1F2E\],
+[data-theme="light"] .bg-\[\#151C28\],
+[data-theme="light"] .bg-\[\#1E1E34\],
+[data-theme="light"] .bg-\[\#182030\],
+[data-theme="light"] .bg-\[\#12121e\],
+[data-theme="light"] .bg-\[\#12121C\],
+[data-theme="light"] .bg-\[\#161628\],
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-slate-950 {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #19001B !important;
+}
+
+/* Form selects and inputs */
+[data-theme="light"] select.bg-\[\#0F1520\],
+[data-theme="light"] input.bg-\[\#0F1520\] {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+/* Improve telemetry and slate subtitles contrast */
+[data-theme="light"] .text-slate-400,
+[data-theme="light"] .text-slate-500 {
+  color: #475569 !important;
+}
+
 @layer base {
   html,
   body {
     background-color: var(--pl-base, #0B0E14);
-    color: var(--pl-text-primary, #F8FAFC);
+    color: var(--pl-text-primary, #FFFFFF);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     overflow-x: hidden;
     max-width: 100vw;
@@ -101,16 +174,42 @@
   box-shadow: 0 0 20px -5px rgba(0, 255, 135, 0.35);
 }
 
+.glow-blue {
+  box-shadow: 0 0 20px -5px rgba(56, 189, 248, 0.4);
+}
+
 .glow-cyan {
-  box-shadow: 0 0 20px -5px rgba(0, 255, 135, 0.35);
+  box-shadow: 0 0 20px -5px rgba(56, 189, 248, 0.4);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 20px rgba(0, 255, 135, 0.5);
+}
+
+.text-glow-magenta {
+  text-shadow: 0 0 20px rgba(233, 0, 82, 0.5);
+}
+
+.text-glow-blue,
+.text-glow-cyan {
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
 }
 
 /* Ambient dynamic background - Authentic PL Studio Atmosphere (No artificial neon blobs) */
 .bg-ambient {
-  background: 
+  background-color: var(--pl-base);
+  background-image: 
     radial-gradient(ellipse 85% 45% at 50% -10%, rgba(56, 0, 60, 0.4) 0%, transparent 75%),
-    radial-gradient(circle at 100% 0%, rgba(56, 0, 60, 0.2) 0%, transparent 50%),
-    #0B0E14;
+    radial-gradient(circle at 100% 0%, rgba(56, 0, 60, 0.2) 0%, transparent 50%);
+}
+
+[data-theme='light'] .bg-ambient,
+:root[data-theme='light'] .bg-ambient,
+.light .bg-ambient {
+  background-color: var(--pl-base);
+  background-image: 
+    radial-gradient(ellipse 85% 40% at 50% -10%, rgba(56, 0, 60, 0.05) 0%, transparent 70%),
+    radial-gradient(circle at 100% 0%, rgba(0, 168, 85, 0.04) 0%, transparent 50%);
 }
 
 /* Glassmorphism cards - Authentic PL Broadcast Card */
@@ -119,6 +218,32 @@
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='light'] .glass-panel,
+:root[data-theme='light'] .glass-panel,
+.light .glass-panel {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(56, 0, 60, 0.05);
+}
+
+/* Neutralize neon glows in Light Mode to high-end studio broadcast shadows */
+[data-theme="light"] .glow-purple,
+[data-theme="light"] .glow-magenta,
+[data-theme="light"] .glow-green,
+[data-theme="light"] .glow-blue,
+[data-theme="light"] .glow-cyan,
+[data-theme="light"] .glow-gold {
+  box-shadow: 0 4px 20px -2px rgba(56, 0, 60, 0.05) !important;
+}
+
+[data-theme="light"] .text-glow-green,
+[data-theme="light"] .text-glow-magenta,
+[data-theme="light"] .text-glow-blue,
+[data-theme="light"] .text-glow-cyan {
+  text-shadow: none !important;
 }
 
 .glass-panel:hover {
@@ -231,3 +356,47 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 4. Graceful Row Cascade Keyframes */
+
+@keyframes rowCascade {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-row-cascade {
+  animation: rowCascade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 5. Simulation Crunch Progress Bar Animation (Hardware-Accelerated Compositor) */
+@keyframes progress-fill {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes progressFill {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-progress-fill {
+  transform-origin: left;
+  will-change: transform;
+  animation: progress-fill 3s linear forwards;
+}
+
+

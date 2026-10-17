@@ -11,7 +11,7 @@ interface AnimatedNumberProps {
   className?: string;
 }
 
-export function AnimatedNumber({
+export const AnimatedNumber = React.memo(function AnimatedNumber({
   value,
   decimals = 1,
   duration = 900,
@@ -57,4 +57,4 @@ export function AnimatedNumber({
       {suffix}
     </span>
   );
-}
+});

@@ -11,7 +11,7 @@ interface TeamCrestProps {
   nameClassName?: string;
 }
 
-export function TeamCrest({
+export const TeamCrest = React.memo(function TeamCrest({
   team,
   size = 32,
   className = "",
@@ -64,4 +64,4 @@ export function TeamCrest({
       )}
     </div>
   );
-}
+});

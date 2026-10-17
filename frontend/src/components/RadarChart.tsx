@@ -21,7 +21,7 @@ export interface RadarChartProps {
 export function RadarChart({
   metrics,
   size = 320,
-  primaryColor = "#04F5FF",
+  primaryColor = "#38BDF8",
   secondaryMetrics,
   secondaryColor = "#E90052",
 }: RadarChartProps) {
@@ -117,8 +117,8 @@ export function RadarChart({
               key={lvlIdx}
               points={gridPoints}
               fill="none"
-              stroke="rgba(255, 255, 255, 0.08)"
               strokeWidth="1"
+              className="stroke-white/10 light:stroke-slate-300"
             />
           );
         })}
@@ -136,9 +136,9 @@ export function RadarChart({
               y1={centerY}
               x2={x2}
               y2={y2}
-              stroke="rgba(255, 255, 255, 0.12)"
               strokeWidth="1"
               strokeDasharray="2 2"
+              className="stroke-white/15 light:stroke-slate-300"
             />
           );
         })}
@@ -150,7 +150,7 @@ export function RadarChart({
             fill={`url(#${secondaryGlowId})`}
             stroke={secondaryColor}
             strokeWidth="2.5"
-            className="transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(233,0,82,0.4)]"
+            className="transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(233,0,82,0.4)] light:drop-shadow-none"
           />
         )}
 
@@ -160,7 +160,7 @@ export function RadarChart({
           fill={`url(#${primaryGlowId})`}
           stroke={primaryColor}
           strokeWidth="2.5"
-          className="transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(4,245,255,0.4)]"
+          className="transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(56,189,248,0.4)] light:drop-shadow-none"
         />
 
         {/* Secondary team vertex markers */}
@@ -174,9 +174,8 @@ export function RadarChart({
                 cy={y}
                 r="4"
                 fill={secondaryColor}
-                stroke="#07070b"
                 strokeWidth="2"
-                className="filter drop-shadow-[0_0_6px_rgba(233,0,82,0.9)]"
+                className="stroke-[#07070b] light:stroke-white filter drop-shadow-[0_0_6px_rgba(233,0,82,0.9)] light:drop-shadow-none"
               />
             );
           })}
@@ -191,9 +190,8 @@ export function RadarChart({
               cy={y}
               r="4"
               fill={primaryColor}
-              stroke="#07070b"
               strokeWidth="2"
-              className="filter drop-shadow-[0_0_6px_rgba(4,245,255,0.9)]"
+              className="stroke-[#07070b] light:stroke-white filter drop-shadow-[0_0_6px_rgba(56,189,248,0.9)] light:drop-shadow-none"
             />
           );
         })}
@@ -214,14 +212,14 @@ export function RadarChart({
                 dominantBaseline="middle"
                 className="text-[11px] font-bold select-none"
               >
-                <tspan x={x} dy="-0.45em" className="fill-white font-extrabold text-xs">
+                <tspan x={x} dy="-0.45em" className="fill-white light:fill-[#19001B] font-extrabold text-xs">
                   {m.label}
                 </tspan>
-                <tspan x={x} dy="1.35em" className="font-mono text-[10px]">
+                <tspan x={x} dy="1.35em" className="font-mono tabular-nums text-[10px]">
                   <tspan fill={primaryColor} className="font-bold">
                     {m.rawValue}
                   </tspan>
-                  <tspan fill="#64748b"> vs </tspan>
+                  <tspan className="fill-[#64748b] light:fill-slate-500"> vs </tspan>
                   <tspan fill={secondaryColor} className="font-bold">
                     {secondaryMetrics[i].rawValue}
                   </tspan>
@@ -237,15 +235,15 @@ export function RadarChart({
               y={y}
               textAnchor="middle"
               dominantBaseline="middle"
-              className="text-[11px] font-bold fill-slate-300 select-none"
+              className="text-[11px] font-bold fill-slate-300 light:fill-slate-600 select-none"
             >
-              <tspan x={x} dy="-0.4em" className="fill-white font-extrabold text-xs">
+              <tspan x={x} dy="-0.4em" className="fill-white light:fill-[#19001B] font-extrabold text-xs">
                 {m.label}
               </tspan>
               <tspan
                 x={x}
                 dy="1.3em"
-                className="fill-[#00FF85] font-mono text-[10px] font-bold"
+                className="fill-[#00FF85] light:fill-[#008744] font-mono tabular-nums text-[10px] font-bold"
               >
                 {m.rawValue}
               </tspan>
