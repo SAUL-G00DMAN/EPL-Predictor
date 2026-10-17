@@ -76,7 +76,7 @@ export function ServerWarmupNotice() {
       aria-live="polite"
       className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in fade-in slide-in-from-bottom-5 duration-300 pointer-events-auto"
     >
-      <div className="glass-panel bg-[#12121C]/95 light:bg-white/95 border border-[#38BDF8]/40 light:border-slate-200 shadow-2xl shadow-black/80 light:shadow-slate-300/60 rounded-2xl p-4 sm:p-4.5 flex items-start gap-3.5 backdrop-blur-xl transition-colors duration-300">
+      <div className="glass-panel bg-[#12121C]/95 light:bg-white/95 border border-[#38BDF8]/40 light:border-slate-200 shadow-2xl shadow-black/80 light:shadow-slate-300/60 rounded-2xl p-4 sm:p-4.5 flex items-start gap-3.5 backdrop-blur-xl">
         {/* Animated Spinning Football Icon */}
         <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-[#3D195B] to-[#E90052] flex items-center justify-center shrink-0 border border-white/20 shadow-md shadow-[#E90052]/30">
           <svg

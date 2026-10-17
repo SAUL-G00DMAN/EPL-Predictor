@@ -392,7 +392,7 @@ export function getTeamMomentum(
       formHistory: form,
       title: "Negative Momentum",
       description: `Cold form: ${wins}W ${draws}D ${losses}L (${formPts} pts in last 5). GW6 #${curRank} → Proj #${simulatedRank}.`,
-      badgeStyle: "text-rose-400 bg-rose-500/10 border border-rose-500/20",
+      badgeStyle: "text-rose-400 light:text-rose-800 bg-rose-500/10 light:bg-rose-50 border border-rose-500/20 light:border-rose-200 font-bold",
     };
   }
 
@@ -410,7 +410,7 @@ export function getTeamMomentum(
       formHistory: form,
       title: "Positive Momentum",
       description: `Winning streak: ${wins}W ${draws > 0 ? `${draws}D ` : ""}${losses > 0 ? `${losses}L ` : ""}(${formPts} pts in last 5). GW6 #${curRank} → Proj #${simulatedRank}.`,
-      badgeStyle: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
+      badgeStyle: "text-emerald-400 light:text-emerald-800 bg-emerald-500/10 light:bg-emerald-50 border border-emerald-500/20 light:border-emerald-200 font-bold",
     };
   }
 
@@ -428,7 +428,7 @@ export function getTeamMomentum(
       formHistory: form,
       title: `Trending Up: +${delta} spots`,
       description: `Ascending trajectory: GW6 #${curRank} → Proj #${simulatedRank} (${formPts} pts in last 5).`,
-      badgeStyle: "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
+      badgeStyle: "text-emerald-400 light:text-emerald-800 bg-emerald-500/10 light:bg-emerald-50 border border-emerald-500/20 light:border-emerald-200 font-bold",
     };
   }
 
@@ -445,7 +445,7 @@ export function getTeamMomentum(
       formHistory: form,
       title: `Trending Down: ${delta} spots`,
       description: `Projected slip: GW6 #${curRank} → Proj #${simulatedRank} (${formPts} pts in last 5).`,
-      badgeStyle: "text-rose-400 bg-rose-500/10 border border-rose-500/20",
+      badgeStyle: "text-rose-400 light:text-rose-800 bg-rose-500/10 light:bg-rose-50 border border-rose-500/20 light:border-rose-200 font-bold",
     };
   }
 
@@ -461,6 +461,6 @@ export function getTeamMomentum(
     formHistory: form,
     title: "Steady Trajectory",
     description: `Consistent performance: Holding rank #${simulatedRank} with ${formPts} pts in last 5 matches.`,
-    badgeStyle: "text-slate-400 bg-slate-800/40 border border-white/10",
+    badgeStyle: "text-slate-400 light:text-slate-700 bg-slate-800/40 light:bg-slate-100 border border-white/10 light:border-slate-200 font-bold",
   };
 }

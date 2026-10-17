@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Shield,
   User,
   ArrowRight,
   Trophy,
@@ -11,7 +10,6 @@ import {
   ArrowLeftRight,
   ChevronDown,
   ChevronUp,
-  Sparkles,
 } from "lucide-react";
 import { TeamCrest } from "@/components/TeamCrest";
 import { HeadToHeadComparison } from "@/components/HeadToHeadComparison";
@@ -69,11 +67,7 @@ export default function TeamsIndexPage() {
     <div className="min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       {/* Header with Title and Compare Mode Toggle */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-white/10 light:border-slate-200">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3D195B]/40 light:bg-purple-50 border border-[#E90052]/30 light:border-purple-200 text-[#E90052] light:text-[#38003C] text-xs font-bold uppercase tracking-wider">
-            <Shield className="w-3.5 h-3.5 text-[#00FF85] light:text-emerald-600" />
-            Club Directory & Analytics
-          </div>
+        <div>
           <h1 className="text-3xl sm:text-5xl font-black text-[var(--pl-text-primary)] tracking-tight">
             2026-27 Premier League Team Profiles
           </h1>
@@ -83,10 +77,10 @@ export default function TeamsIndexPage() {
         <button
           type="button"
           onClick={() => setCompareOpen((prev) => !prev)}
-          className={`px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg shrink-0 ${
+          className={`px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm shrink-0 ${
             compareOpen
-              ? "bg-gradient-to-r from-[#38BDF8] to-[#00FF85] light:from-[#38003C] light:to-[#6B1D76] text-black light:text-white shadow-[#38BDF8]/20 light:shadow-purple-900/20 hover:scale-105"
-              : "bg-white/10 light:bg-slate-100 hover:bg-white/15 light:hover:bg-slate-200 text-white light:text-slate-800 border border-white/15 light:border-slate-300"
+              ? "bg-[#181A20] hover:bg-[#20232B] light:bg-[#38003C] light:hover:bg-[#260029] text-white border border-white/10 light:border-[#38003C]"
+              : "bg-white/5 hover:bg-white/10 light:bg-slate-100 light:hover:bg-slate-200 text-slate-200 light:text-slate-800 border border-white/10 light:border-slate-300"
           }`}
         >
           <Swords className="w-4 h-4" />
@@ -101,24 +95,14 @@ export default function TeamsIndexPage() {
 
       {/* Head-to-Head Comparison Studio (Radar Overlay + Spec Comparison) */}
       {compareOpen && (
-        <section className="glass-panel light:bg-white rounded-3xl p-5 sm:p-6 md:p-8 border border-white/15 light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-top-4 duration-300 glow-blue">
-          {/* Subtle ambient lighting */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-[#38BDF8]/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-[#E90052]/10 rounded-full blur-3xl pointer-events-none" />
+        <section className="bg-[#111317] light:bg-white rounded-xl p-5 sm:p-6 md:p-8 border border-white/[0.07] light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-top-4 duration-300">
 
           {/* Section Header & Team Selectors */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10 light:border-slate-200 relative z-10">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#38BDF8]/10 light:bg-sky-50 border border-[#38BDF8]/30 light:border-sky-300 text-[#38BDF8] light:text-[#0284C7] text-[11px] font-bold uppercase tracking-wider mb-1.5">
-                <Sparkles className="w-3 h-3 text-[#00FF85] light:text-emerald-600" />
-                Tactical Radar Overlay Studio
-              </div>
               <h2 className="text-xl sm:text-2xl font-black text-[var(--pl-text-primary)] tracking-tight">
                 Head-to-Head Comparison
               </h2>
-              <p className="text-xs text-slate-400 light:text-slate-500 mt-0.5">
-                Superimpose two clubs on the same radar coordinate space to analyze tactical match-ups.
-              </p>
             </div>
 
             {/* Selector Controls: Team A vs Team B */}
@@ -194,13 +178,10 @@ export default function TeamsIndexPage() {
           onClick={() => {
             document.getElementById("club-grid")?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="relative bg-[#161628]/90 light:bg-white hover:bg-[#1E1E36] light:hover:bg-slate-50 border border-white/15 light:border-slate-200 hover:border-[#38BDF8]/60 light:hover:border-[#38003C]/40 px-5 sm:px-6 py-2.5 rounded-full shadow-lg light:shadow-md shadow-black/50 light:shadow-slate-300/40 transition-all duration-300 group cursor-pointer flex items-center gap-2.5 sm:gap-3 mx-auto animate-bounce hover:animate-none"
+          className="relative bg-[#16181D] light:bg-white hover:bg-[#1E2129] light:hover:bg-slate-50 border border-white/10 light:border-slate-200 hover:border-white/20 light:hover:border-[#38003C]/40 px-5 sm:px-6 py-2.5 rounded-full shadow-lg light:shadow-md transition-all duration-300 group cursor-pointer flex items-center gap-2.5 sm:gap-3 mx-auto"
         >
-          {/* Ambient blue glow pulse behind it */}
-          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-[#38BDF8]/30 via-[#00FF87]/20 to-[#38BDF8]/30 light:from-purple-200/50 light:via-pink-200/50 light:to-purple-200/50 blur-md opacity-75 group-hover:opacity-100 transition-opacity -z-10 animate-pulse pointer-events-none" />
-
           {/* Glowing badge */}
-          <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-[#38BDF8]/15 light:bg-[#38003C]/10 border border-[#38BDF8]/40 light:border-[#38003C]/20 text-[#38BDF8] light:text-[#38003C] shadow-[0_0_10px_rgba(56,189,248,0.2)] light:shadow-none shrink-0">
+          <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-white/5 light:bg-[#38003C]/10 border border-white/10 light:border-[#38003C]/20 text-slate-300 light:text-[#38003C] shrink-0">
             CLUB DIRECTORY
           </span>
 
@@ -209,12 +190,12 @@ export default function TeamsIndexPage() {
             Browse All 20 Premier League Clubs Below
           </span>
 
-          {/* Downward Chevron with broadcast royal blue glow */}
-          <ChevronDown className="w-4 h-4 text-[#38BDF8] light:text-[#38003C] group-hover:translate-y-1 transition-transform drop-shadow-[0_0_6px_rgba(56,189,248,0.8)] light:drop-shadow-none shrink-0" />
+          {/* Downward Chevron */}
+          <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-white light:text-[#38003C] group-hover:translate-y-0.5 transition-all shrink-0" />
         </button>
 
-        {/* Visual Connector Gradient Line (32px = h-8) */}
-        <div className="w-[1px] h-8 bg-gradient-to-b from-[#38BDF8]/60 to-transparent mx-auto mt-2" />
+        {/* Visual Connector Line (32px = h-8) */}
+        <div className="w-[1px] h-8 bg-gradient-to-b from-white/20 to-transparent mx-auto mt-2" />
       </div>
 
       {/* Grid of 20 Teams */}
@@ -237,12 +218,12 @@ export default function TeamsIndexPage() {
             return (
               <div
                 key={t.name}
-                className={`glass-panel light:bg-white light:border-slate-200 light:shadow-sm p-5 rounded-2xl border transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between group ${
+                className={`bg-[#111317] light:bg-white light:border-slate-200 light:shadow-sm p-5 rounded-xl border transition-all duration-300 flex flex-col justify-between group ${
                   isSelectedA
-                    ? "border-[#38BDF8] light:border-sky-500 bg-[#38BDF8]/[0.08] light:bg-sky-50 shadow-lg shadow-[#38BDF8]/15 light:shadow-sm"
+                    ? "border-[#38BDF8] light:border-sky-500 bg-[#38BDF8]/[0.08] light:bg-sky-50 shadow-sm"
                     : isSelectedB
-                    ? "border-[#E90052] light:border-rose-500 bg-[#E90052]/[0.08] light:bg-rose-50 shadow-lg shadow-[#E90052]/15 light:shadow-sm"
-                    : "border-white/15 light:border-slate-200 hover:border-[#38BDF8]/50 light:hover:border-slate-300 bg-[#1E1E34]/90 light:bg-white"
+                    ? "border-[#E90052] light:border-rose-500 bg-[#E90052]/[0.08] light:bg-rose-50 shadow-sm"
+                    : "border-white/[0.07] light:border-slate-200 hover:border-white/20 light:hover:border-slate-300"
                 }`}
               >
                 <div>
@@ -269,7 +250,7 @@ export default function TeamsIndexPage() {
                 </div>
 
                 {/* Quick stats footer & Action Buttons */}
-                <div className="mt-5 pt-4 border-t border-white/15 light:border-slate-100 space-y-3">
+                <div className="mt-5 pt-4 border-t border-white/[0.07] light:border-slate-100 space-y-3">
                   <div className="flex items-center justify-between text-xs">
                     <div>
                       <span className="text-slate-300 light:text-slate-500 font-medium">Title Odds: </span>
@@ -288,7 +269,7 @@ export default function TeamsIndexPage() {
                   <div className="flex items-center gap-2 pt-1">
                     <Link
                       href={`/teams/${encodeURIComponent(t.name)}`}
-                      className="flex-1 py-1.5 px-3 rounded-xl text-center text-xs font-bold bg-[#2A2A46] light:bg-slate-100 hover:bg-[#343458] light:hover:bg-slate-200 text-white light:text-slate-800 border border-white/15 light:border-slate-200 transition-all"
+                      className="flex-1 py-1.5 px-3 rounded-xl text-center text-xs font-bold bg-[#181A20] light:bg-slate-100 hover:bg-[#20232B] light:hover:bg-slate-200 text-white light:text-slate-800 border border-white/10 light:border-slate-200 transition-all"
                     >
                       Profile
                     </Link>
@@ -300,7 +281,7 @@ export default function TeamsIndexPage() {
                           ? "bg-[#38BDF8] text-slate-950 font-extrabold shadow-sm"
                           : isSelectedB
                           ? "bg-[#E90052] text-white font-extrabold shadow-sm"
-                          : "bg-[#2A2A46] light:bg-slate-100 hover:bg-[#343458] light:hover:bg-slate-200 text-slate-100 light:text-slate-700 hover:text-white light:hover:text-[#19001B] border border-white/15 light:border-slate-200"
+                          : "bg-[#181A20] light:bg-slate-100 hover:bg-[#20232B] light:hover:bg-slate-200 text-slate-100 light:text-slate-700 hover:text-white light:hover:text-[#19001B] border border-white/10 light:border-slate-200"
                       }`}
                       title={`Select ${t.name} for head-to-head comparison`}
                     >

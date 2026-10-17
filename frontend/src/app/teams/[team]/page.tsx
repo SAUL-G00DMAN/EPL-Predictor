@@ -7,7 +7,6 @@ import {
   Trophy,
   TrendingUp,
   AlertTriangle,
-  Sparkles,
   User,
   MapPin,
   Swords,
@@ -305,7 +304,7 @@ export default function TeamProfilePage({
                   <div className="p-3.5 rounded-xl bg-[#00FF85]/10 light:bg-emerald-50 border border-[#00FF85]/30 light:border-emerald-300 space-y-1">
                     <div className="flex items-center justify-between text-[10px] uppercase font-black text-[#00FF85] light:text-emerald-700">
                       <span>Best Case (Ceiling)</span>
-                      <Sparkles className="w-3 h-3 text-[#00FF85] light:text-emerald-600" />
+                      <TrendingUp className="w-3 h-3 text-[#00FF85] light:text-emerald-600" />
                     </div>
                     <div className="text-xl font-black font-mono text-white light:text-slate-900">
                       #{Math.round(Math.min(tableStats.position_p10 ?? 1, tableStats.position_p90 ?? 20))}

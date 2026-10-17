@@ -85,17 +85,17 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('epl_theme');var theme=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',theme||'dark');if(theme==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.add('dark');document.documentElement.classList.remove('light');}}catch(e){document.documentElement.setAttribute('data-theme','dark');document.documentElement.classList.add('dark');}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('epl_theme');var theme=(t==='light')?'light':'dark';document.documentElement.setAttribute('data-theme',theme||'dark');if(theme==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.add('dark');document.documentElement.classList.remove('light');}if(localStorage.getItem('epl_simulations_completed')==='true'){document.documentElement.classList.add('epl-sims-completed');}}catch(e){document.documentElement.setAttribute('data-theme','dark');document.documentElement.classList.add('dark');}})();`,
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-ambient text-[var(--pl-text-primary)] relative selection:bg-[#E90052] selection:text-white overflow-x-hidden w-full transition-colors duration-300">
+      <body className="min-h-full flex flex-col bg-ambient text-[var(--pl-text-primary)] relative selection:bg-[#E90052] selection:text-white overflow-x-hidden w-full">
         {/* Premier League Lion Ultra-Subtle Watermark Silhouette */}
         <div
           aria-hidden="true"
           className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden opacity-[0.07] light:opacity-[0.09] select-none"
         >
-          <PremierLeagueLion className="w-[600px] h-[600px] sm:w-[850px] sm:h-[850px] text-white light:text-[#38003C] transform -rotate-12 translate-x-12 translate-y-8 transition-colors duration-300" />
+          <PremierLeagueLion className="w-[600px] h-[600px] sm:w-[850px] sm:h-[850px] text-white light:text-[#38003C] transform -rotate-12 translate-x-12 translate-y-8" />
         </div>
 
         <Navbar />
@@ -103,12 +103,12 @@ export default function RootLayout({
         <main className="flex-1 relative z-10 w-full overflow-x-hidden">{children}</main>
 
         {/* Professional Developer Signature Footer */}
-        <footer className="border-t border-[#23293B] light:border-[#E2E8F0] bg-[#0B0E14]/95 light:bg-white/95 backdrop-blur-md py-6 sm:py-8 mt-12 text-slate-400 light:text-slate-600 text-sm transition-colors duration-300">
+        <footer className="border-t border-[#23293B] light:border-[#E2E8F0] bg-[#0B0E14]/95 light:bg-white/95 backdrop-blur-md py-6 sm:py-8 mt-12 text-slate-400 light:text-slate-600 text-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 text-center md:text-left">
             {/* Left side */}
             <div className="space-y-1.5 flex flex-col items-center md:items-start">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 font-semibold text-slate-200 light:text-[#19001B]">
-                <span className="w-2 h-2 rounded-full bg-[#00FF87] light:bg-[#00A855]" />
+                <span className="w-2 h-2 rounded-full bg-[#00FF87] light:bg-[#047857]" />
                 <span>Premier League 2026-27 Forecast Engine</span>
                 <span className="text-slate-600 light:text-slate-400 hidden sm:inline">•</span>
                 <span className="text-xs text-slate-400 light:text-slate-500 font-mono hidden sm:inline">

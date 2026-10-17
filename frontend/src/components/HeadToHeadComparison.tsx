@@ -13,7 +13,6 @@ import {
   User,
   AlertTriangle,
   History,
-  Sparkles,
 } from "lucide-react";
 import { TeamCrest } from "@/components/TeamCrest";
 import { RadarChart, RadarMetric } from "@/components/RadarChart";
@@ -195,20 +194,12 @@ export function HeadToHeadComparison({
 
   return (
     <div
-      className={`glass-panel light:bg-white light:border-slate-200 light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] rounded-3xl p-5 sm:p-6 md:p-8 border border-white/10 shadow-2xl relative overflow-hidden space-y-5 ${className}`}
+      className={`bg-[#111317] light:bg-white light:border-slate-200 light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] rounded-xl p-5 sm:p-6 md:p-8 border border-white/[0.07] shadow-2xl relative overflow-hidden space-y-5 ${className}`}
     >
-      {/* Ambient background glows */}
-      <div className="absolute -top-24 -left-24 w-72 h-72 bg-[#38BDF8]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-[#E90052]/10 rounded-full blur-3xl pointer-events-none" />
-
       {/* Header bar */}
       {showHeader && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10 light:border-slate-200 relative z-10">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/30 text-[#38BDF8] light:text-[#0284C7] light:border-sky-300 light:bg-sky-50 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1">
-              <Sparkles className="w-3 h-3 text-[#00FF85] light:text-emerald-600" />
-              Tactical Radar & Battle Analytics
-            </div>
             <h2 className="text-lg sm:text-2xl font-black text-[var(--pl-text-primary)] tracking-tight flex items-center gap-2">
               <span>{teamA}</span>
               <span className="text-slate-500 light:text-slate-400 text-sm sm:text-base font-normal">vs</span>
@@ -240,7 +231,7 @@ export function HeadToHeadComparison({
       {/* Main Grid: Radar on Left (lg:col-span-5), Stats on Right (lg:col-span-7) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center relative z-10">
         {/* Left: Superimposed Dual Radar Chart */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-center p-2 sm:p-4 rounded-2xl bg-white/[0.02] light:bg-slate-50 border border-white/10 light:border-slate-200 overflow-visible relative">
+        <div className="lg:col-span-5 flex flex-col items-center justify-center p-2 sm:p-4 lg:border-r lg:border-white/[0.06] light:lg:border-slate-200 lg:pr-6 overflow-visible relative">
           <RadarChart
             metrics={metricsA}
             secondaryMetrics={metricsB}
@@ -255,7 +246,7 @@ export function HeadToHeadComparison({
 
         {/* Right: Streamlined Battle Stats Table */}
         <div className="lg:col-span-7 flex flex-col justify-between space-y-3 max-w-full">
-          <div className="overflow-x-auto w-full select-none rounded-xl border border-white/10 light:border-slate-200 bg-[#12121e]/80 light:bg-white light:text-slate-800 shadow-md light:shadow-sm">
+          <div className="overflow-x-auto w-full select-none rounded-xl border border-white/[0.07] light:border-slate-200 bg-[#14161B] light:bg-white light:text-slate-800 shadow-sm">
             <table className="w-full text-left text-xs sm:text-sm border-collapse light:text-slate-800">
               <thead>
                 <tr className="border-b border-white/10 light:border-slate-200 bg-white/[0.03] light:bg-slate-50 text-slate-400 light:text-slate-600 font-semibold">

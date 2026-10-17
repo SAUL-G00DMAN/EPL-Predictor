@@ -35,14 +35,14 @@ const STEPS: StepItem[] = [
         سحبنا بيانات 11 موسم تاريخي من موقع{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           football-data
         </span>{" "}
         مع دمج أرقام الـ{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           xG
         </span>{" "}
@@ -61,7 +61,7 @@ const STEPS: StepItem[] = [
         بنينا 23 ميزة رياضية تشمل تصنيف{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           Elo
         </span>{" "}
@@ -80,14 +80,14 @@ const STEPS: StepItem[] = [
         دمجنا نموذج{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           Dixon-Coles
         </span>{" "}
         لحساب احتمالية الأهداف مع موديل{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           XGBoost
         </span>{" "}
@@ -106,7 +106,7 @@ const STEPS: StepItem[] = [
         اعتمدنا معيار تحقق صارم{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#00FF85] light:text-[#00A855] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold font-mono px-1"
         >
           (50.66% Accuracy / 1.013 LogLoss)
         </span>{" "}
@@ -125,7 +125,7 @@ const STEPS: StepItem[] = [
         تشغيل محاكاة{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           Monte Carlo
         </span>{" "}
@@ -144,14 +144,14 @@ const STEPS: StepItem[] = [
         ربط المحرك النهائي بـ{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           FastAPI Backend
         </span>{" "}
         وتحديث فوري للنتائج مع كل جولة على واجهة{" "}
         <span
           dir="ltr"
-          className="inline-block text-[#38BDF8] light:text-[#0284C7] font-medium font-mono px-1"
+          className="inline-block text-white light:text-slate-900 font-semibold px-1"
         >
           Next.js
         </span>
@@ -164,27 +164,9 @@ const STEPS: StepItem[] = [
 export default function HowItWorksPage() {
   return (
     <div className="relative min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-10 overflow-hidden">
-      {/* Visual Atmosphere: Luminous Ambient Background Glows (25-35% Opacity) */}
-      <div className="absolute top-10 left-1/4 -translate-x-1/2 w-[550px] h-[550px] bg-[#6b21a8]/35 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute top-44 right-0 w-[480px] h-[480px] bg-[#38BDF8]/20 rounded-full blur-[130px] pointer-events-none -z-10" />
-      <div className="absolute top-[650px] left-0 w-[520px] h-[520px] bg-[#E90052]/25 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-[#00FF85]/20 rounded-full blur-[130px] pointer-events-none -z-10" />
-
       {/* Hero Header Section */}
-      <section className="relative overflow-hidden rounded-3xl p-8 sm:p-12 glass-panel light:bg-white light:border-slate-200 light:shadow-sm border border-white/15 glow-purple space-y-6">
-        <div className="absolute -right-16 -top-16 w-80 h-80 bg-gradient-to-br from-[#38BDF8]/20 to-[#3D195B]/40 light:from-[#38003C]/10 light:to-transparent rounded-full blur-3xl pointer-events-none" />
-
+      <section className="relative overflow-hidden rounded-xl p-6 sm:p-10 bg-[#111317] light:bg-white light:border-slate-200 light:shadow-sm border border-white/[0.07] space-y-6">
         <div className="relative z-10 space-y-4">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#181828] light:bg-sky-50 border border-slate-700/80 light:border-sky-300 text-[#38BDF8] light:text-[#0284C7] text-xs font-bold uppercase tracking-wider shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#00FF85] light:bg-[#00A855]" />
-              ANALYTICS METHODOLOGY
-            </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/60 light:bg-slate-100 border border-slate-700 light:border-slate-200 text-xs font-semibold text-slate-200 light:text-slate-700">
-              <span>Dixon-Coles + XGBoost + Monte Carlo</span>
-            </div>
-          </div>
-
           <div>
             <h1 className="text-3xl sm:text-5xl font-black text-white light:text-[#19001B] tracking-tight">
               How This Works
@@ -194,7 +176,7 @@ export default function HowItWorksPage() {
           {/* Prominent High-Contrast Arabic Introduction Banner (Visible at First Glance) */}
           <div
             dir="rtl"
-            className="text-right text-slate-100 light:text-slate-800 font-medium text-base sm:text-lg bg-gradient-to-r from-purple-900/40 via-slate-800/60 to-emerald-950/40 light:from-purple-50 light:via-slate-50 light:to-emerald-50 p-4 sm:p-5 rounded-2xl border border-white/15 light:border-slate-200 shadow-md light:shadow-xs flex items-start sm:items-center gap-3"
+            className="text-right text-slate-100 light:text-slate-800 font-medium text-base sm:text-lg bg-[#16181D] light:bg-slate-50 p-4 sm:p-5 rounded-xl border border-white/[0.07] light:border-slate-200 border-r-[3px] border-r-[#00FF85] light:border-r-[#00A855] shadow-md light:shadow-xs flex items-start sm:items-center gap-3"
           >
             <div className="w-8 h-8 rounded-xl bg-[#00FF85]/15 light:bg-[#00A855]/15 border border-[#00FF85]/30 light:border-[#00A855]/30 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
               <ShieldCheck className="w-4 h-4 text-[#00FF85] light:text-[#00A855]" />
@@ -203,14 +185,14 @@ export default function HowItWorksPage() {
               إزاي بنحسبها؟ دمجنا 11 موسم تاريخي مع موديل{" "}
               <span
                 dir="ltr"
-                className="inline-block text-[#38BDF8] light:text-[#0284C7] font-semibold font-mono px-1"
+                className="inline-block text-white light:text-slate-900 font-semibold px-1"
               >
                 Dixon-Coles
               </span>{" "}
               وذكاء اصطناعي{" "}
               <span
                 dir="ltr"
-                className="inline-block text-[#38BDF8] light:text-[#0284C7] font-semibold font-mono px-1"
+                className="inline-block text-white light:text-slate-900 font-semibold px-1"
               >
                 XGBoost
               </span>{" "}
@@ -227,7 +209,7 @@ export default function HowItWorksPage() {
               {STEPS.map((s, idx) => (
                 <div
                   key={s.number}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-[#181828] light:bg-white border border-slate-700/70 light:border-slate-200 hover:border-slate-500/80 light:hover:border-slate-300 hover:bg-[#202034] light:hover:bg-slate-50 light:shadow-xs transition-all"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-[#16181D] light:bg-white border border-white/[0.07] light:border-slate-200 hover:border-white/20 light:hover:border-slate-300 hover:bg-[#1C2027] light:hover:bg-slate-50 light:shadow-xs transition-all"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="font-mono text-xs font-black text-[#00FF85] light:text-[#00A855]">
@@ -247,7 +229,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* Permanently Open Step Cards (Bright Slate Glassmorphism with Top Emerald Accent) */}
+      {/* Permanently Open Step Cards */}
       <section className="space-y-4">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
@@ -268,11 +250,8 @@ export default function HowItWorksPage() {
             return (
               <div
                 key={step.number}
-                className="bg-[#181828] light:bg-white backdrop-blur-md rounded-2xl border-t-2 border-t-[#00FF85] light:border-t-[#00A855] border-x border-b border-slate-700/70 light:border-slate-200 hover:bg-[#202034] light:hover:bg-slate-50/80 light:shadow-sm hover:shadow-[0_0_25px_rgba(0,255,133,0.2)] hover:border-slate-500/80 transition-all duration-300 p-6 sm:p-7 shadow-xl relative overflow-hidden group"
+                className="bg-[#111317] light:bg-white rounded-xl border border-white/[0.07] border-t-2 border-t-[#00FF85] light:border-t-[#00A855] light:border-slate-200 hover:bg-[#16181D] light:hover:bg-slate-50/80 light:shadow-sm hover:border-white/20 transition-all duration-300 p-6 sm:p-7 shadow-xl relative overflow-hidden group"
               >
-                {/* Background Corner Glow on hover */}
-                <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#00FF85]/15 light:bg-[#00A855]/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
                 {/* Card Header (English Title + Step Badge + Icon) */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10 light:border-slate-200 relative z-10">
                   <div className="flex items-center gap-3.5 min-w-0">
@@ -302,7 +281,7 @@ export default function HowItWorksPage() {
 
                 {/* Bilingual Arabic Explanation (RTL with Zero BiDi Glitches) */}
                 <div className="pt-4 relative z-10">
-                  <div className="p-4 sm:p-5 rounded-xl bg-[#11111E] light:bg-slate-50 border border-slate-800 light:border-slate-200 group-hover:border-slate-700 light:group-hover:border-slate-300 transition-colors">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#16181D] light:bg-slate-50 border border-white/[0.07] light:border-slate-200 group-hover:border-white/15 light:group-hover:border-slate-300 transition-colors">
                     <p
                       dir="rtl"
                       className="text-right text-slate-100 light:text-slate-700 font-medium text-sm sm:text-base leading-relaxed font-sans"
@@ -318,7 +297,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Navigation Quick Links */}
-      <section className="glass-panel light:bg-white light:border-slate-200 light:shadow-sm p-6 sm:p-8 rounded-3xl border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4 glow-purple">
+      <section className="bg-[#111317] light:bg-white light:border-slate-200 light:shadow-sm p-6 sm:p-8 rounded-xl border border-white/[0.07] flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-lg font-bold text-white light:text-[#19001B]">Explore the Predictions</h3>
           <p className="text-xs sm:text-sm text-slate-300 light:text-slate-600 mt-1">
@@ -328,14 +307,14 @@ export default function HowItWorksPage() {
         <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
           <Link
             href="/"
-            className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-white/10 light:bg-slate-100 hover:bg-white/20 light:hover:bg-slate-200 border border-transparent light:border-slate-200 text-white light:text-slate-800 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-[#181A20] hover:bg-[#20232B] light:bg-slate-100 light:hover:bg-slate-200 border border-white/10 light:border-slate-200 text-white light:text-slate-800 transition-colors flex items-center justify-center gap-2"
           >
             Table & Odds
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
           <Link
             href="/predict"
-            className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#00FF85] to-[#38BDF8] text-black transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-[#00FF85]/20"
+            className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-bold bg-[#181A20] hover:bg-[#20232B] light:bg-[#38003C] light:hover:bg-[#260029] text-white border border-white/10 light:border-[#38003C] transition-all flex items-center justify-center gap-2 shadow-sm"
           >
             Match Predictor
             <ArrowRight className="w-3.5 h-3.5" />

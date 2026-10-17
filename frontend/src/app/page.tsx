@@ -64,7 +64,7 @@ const formatCellOdds = (pct: number) => {
 };
 
 const getZoneBorderClass = (rank: number) => {
-  if (rank <= 4) return "border-l-[3px] border-l-[#00FF87] light:border-l-[#00A855]";
+  if (rank <= 4) return "border-l-[3px] border-l-[#00FF87] light:border-l-[#047857]";
   if (rank === 5) return "border-l-[3px] border-l-sky-500 light:border-l-sky-600";
   if (rank >= 18) return "border-l-4 border-l-[#E90052]";
   return "border-l-[3px] border-l-transparent";
@@ -72,12 +72,12 @@ const getZoneBorderClass = (rank: number) => {
 
 const getBarColor = (type: "champ" | "top4" | "releg", val: number) => {
   if (type === "champ") {
-    if (val > 40) return "bg-gradient-to-r from-[#00FF85] to-[#38BDF8] light:from-[#00A855] light:to-[#0284C7]";
-    if (val > 10) return "bg-gradient-to-r from-[#38BDF8] to-[#3D195B] light:from-[#0284C7] light:to-[#38003C]";
-    return "bg-[#3D195B] light:bg-[#38003C]";
+    if (val > 40) return "bg-gradient-to-r from-[#00FF85] to-[#38BDF8] light:bg-none light:bg-[#047857]";
+    if (val > 10) return "bg-gradient-to-r from-[#38BDF8] to-[#3D195B] light:bg-none light:bg-[#047857]";
+    return "bg-[#3D195B] light:bg-none light:bg-[#047857]";
   }
   if (type === "top4") {
-    if (val > 60) return "bg-gradient-to-r from-[#00FF85] to-[#38BDF8] light:from-[#00A855] light:to-[#0284C7]";
+    if (val > 60) return "bg-gradient-to-r from-[#00FF85] to-[#38BDF8] light:from-[#047857] light:to-[#0284C7]";
     if (val > 20) return "bg-gradient-to-r from-[#3D195B] to-[#38BDF8] light:from-[#38003C] light:to-[#0284C7]";
     return "bg-slate-700 light:bg-slate-300";
   }
@@ -102,7 +102,7 @@ export default function HomePage() {
   type SimulationPhase = "idle" | "crunching" | "podium_ready" | "revealed";
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [phase, setPhase] = useState<SimulationPhase>("revealed"); // default 'revealed' for SSR safety
+  const [phase, setPhase] = useState<SimulationPhase>("idle"); // strictly default to 'idle' to eliminate table flash
   const [crunchCount, setCrunchCount] = useState<number>(0);
   const [crunchLogIndex, setCrunchLogIndex] = useState<number>(0);
   const [revealing, setRevealing] = useState<boolean>(false);
@@ -114,17 +114,25 @@ export default function HomePage() {
     setIsMounted(true);
     setIsMuted(isAudioMuted());
     try {
-      const hasRun = sessionStorage.getItem("simulations_run");
-      if (hasRun !== "true") {
-        setPhase("idle");
+      const hasCompleted = localStorage.getItem("epl_simulations_completed");
+      if (hasCompleted === "true") {
+        setPhase("revealed");
+        document.documentElement.classList.add("epl-sims-completed");
+      } else {
+        document.documentElement.classList.remove("epl-sims-completed");
       }
     } catch {
       // Graceful fallback if storage restricted
-      setPhase("revealed");
     }
   }, []);
 
   const handleStartSimulation = useCallback(async () => {
+    try {
+      localStorage.setItem("epl_simulations_completed", "true");
+      document.documentElement.classList.add("epl-sims-completed");
+    } catch {
+      // Ignore storage errors
+    }
     await initAudio();
     playMechanicalClick();
     setPhase("crunching");
@@ -176,9 +184,10 @@ export default function HomePage() {
   }, []);
 
   const handleRevealFullTable = useCallback(async () => {
-    // 1. Immediately persist in sessionStorage so reloads or fast navigation are locked in
+    // 1. Immediately persist in localStorage so reloads or fast navigation are locked in
     try {
-      sessionStorage.setItem("simulations_run", "true");
+      localStorage.setItem("epl_simulations_completed", "true");
+      document.documentElement.classList.add("epl-sims-completed");
     } catch {
       // Ignore storage errors
     }
@@ -199,7 +208,8 @@ export default function HomePage() {
 
   const handleRerunSimulation = useCallback(() => {
     try {
-      sessionStorage.removeItem("simulations_run");
+      localStorage.removeItem("epl_simulations_completed");
+      document.documentElement.classList.remove("epl-sims-completed");
     } catch {
       // Ignore
     }
@@ -288,13 +298,15 @@ export default function HomePage() {
     <>
       <div
         className={`min-h-screen py-4 sm:py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4 sm:space-y-5 transition-all duration-600 ease-out ${
-          isMounted && !simulationsRun && !revealing
+          !simulationsRun && !revealing
             ? "filter blur-md pointer-events-none select-none opacity-40"
             : "filter-none opacity-100"
         }`}
       >
-        {/* Re-run Simulation Action Button (Top Right) */}
-        {isMounted && simulationsRun && (
+        {phase !== "idle" && (
+          <>
+            {/* Re-run Simulation Action Button (Top Right) */}
+            {simulationsRun && (
           <div className="flex justify-end pt-1">
             <button
               onClick={handleRerunSimulation}
@@ -302,7 +314,7 @@ export default function HomePage() {
               className="group relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold text-xs text-slate-300 hover:text-white light:text-slate-700 light:hover:text-[#19001B] bg-[#1C2230] hover:bg-[#232B3D] light:bg-white light:hover:bg-slate-50 border border-[#38435E] hover:border-[#00FF87]/50 light:border-slate-200 light:hover:border-slate-300 shadow-[0_2.5px_0_0_#0F131C,0_3px_0_1px_#38435E,inset_0_1px_0_0_rgba(255,255,255,0.15)] light:shadow-[0_2.5px_0_0_#CBD5E1,0_3px_0_1px_#E2E8F0,inset_0_1px_0_0_rgba(255,255,255,0.9)] active:translate-y-[1px] active:shadow-[0_1px_0_0_#0F131C] light:active:shadow-[0_1px_0_0_#CBD5E1] transition-all cursor-pointer select-none -translate-y-[1px]"
               title="Replay the 10,000 Monte Carlo season simulation"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-[#00FF87] light:text-[#00A855] group-hover:-rotate-180 transition-transform duration-500" />
+              <RotateCcw className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] group-hover:-rotate-180 transition-transform duration-500" />
               <span dir="rtl">إعادة محاكاة 10,000 موسم ↻</span>
             </button>
           </div>
@@ -310,7 +322,7 @@ export default function HomePage() {
 
         {/* Editorial Feature: Full-Width Analyst's Take */}
         <section
-          className={`bg-gradient-to-l from-[#38003C]/25 via-[#141824]/95 to-[#141824] light:bg-none light:bg-white border border-[#23293B] light:border-slate-200/90 border-r-4 border-r-[#7B1FA2] light:border-r-[#38003C] rounded-2xl p-4 sm:p-5 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden backdrop-blur-md transition-colors duration-300 ${
+          className={`epl-editorial-card bg-[#111317] light:bg-white border border-white/[0.07] light:border-slate-200 border-r-[3px] border-r-[#7B1FA2] light:border-r-[#38003C] rounded-xl p-4 sm:p-5 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden ${
             simulationsRun
               ? "animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both"
               : "opacity-40"
@@ -319,14 +331,14 @@ export default function HomePage() {
           {/* Full-Width Editorial Analysis (dir="rtl") */}
           <div dir="rtl" className="w-full text-right space-y-2.5">
             <div className="flex items-center gap-2 pb-2.5 border-b border-white/10 light:border-slate-200">
-              <span className="w-2 h-2 rounded-full bg-[#00FF87] light:bg-[#00A855] shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-[#00FF87] light:bg-[#047857] shrink-0" />
               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-extrabold text-white light:text-[#38003C] light:bg-[#38003C]/10">
                 رؤية المحلل • قراءة تكتيكية بعد ختام الجولة 6
               </span>
             </div>
             <p className="text-slate-100 light:text-[#475569] text-sm sm:text-base leading-relaxed font-sans font-medium">
               مانشستر سيتي يعزز صدارته للترشيحات بنسبة{" "}
-              <span dir="ltr" className="text-[#00FF87] light:text-[#00A855] font-bold">
+              <span dir="ltr" className="text-[#00FF87] light:text-[#047857] font-bold">
                 78.2%
               </span>{" "}
               لحسم اللقب بعد ختام الجولة 6 بالعلامة الكاملة (18 نقطة)، بينما يحتفظ{" "}
@@ -349,7 +361,7 @@ export default function HomePage() {
       {/* Main Projections Table */}
       <section
         id="simulated-table"
-        className={`glass-panel light:bg-white rounded-3xl overflow-hidden border border-[#23293B] light:border-slate-200 shadow-2xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] scroll-mt-24 transition-colors duration-300 ${
+        className={`bg-[#111317] light:bg-white rounded-xl overflow-hidden border border-white/[0.07] light:border-slate-200 shadow-2xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] scroll-mt-24 ${
           simulationsRun
             ? "animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-both"
             : "opacity-40"
@@ -406,7 +418,7 @@ export default function HomePage() {
                 onClick={() => setDisplayMode("odds")}
                 className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                   displayMode === "odds"
-                    ? "bg-gradient-to-r from-[#00FF85] to-[#38BDF8] light:from-[#00A855] light:to-[#008A46] text-black light:text-white shadow-md font-bold"
+                    ? "bg-gradient-to-r from-[#00FF85] to-[#38BDF8] light:from-[#047857] light:to-sky-700 text-black light:text-white shadow-md font-bold"
                     : "text-slate-400 hover:text-white light:text-slate-600 light:hover:text-[#19001B]"
                 }`}
               >
@@ -416,7 +428,7 @@ export default function HomePage() {
 
             <div className="text-xs text-slate-400 light:text-slate-600 flex items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#00FF85] light:bg-[#00A855]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00FF85] light:bg-[#047857]"></span>
                 <span className="hidden sm:inline">Title</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -470,25 +482,25 @@ export default function HomePage() {
         ) : (
           <div>
             {/* Mobile Swipe Prompt Banner */}
-            <div className="sm:hidden px-3.5 py-2 border-b border-[#23293B] light:border-slate-200 bg-[#141824]/90 light:bg-slate-50 flex items-center justify-between text-[11px] text-slate-400 light:text-slate-600 font-mono">
+            <div className="sm:hidden px-3.5 py-2 border-b border-white/[0.07] light:border-slate-200 bg-[#0E1013] light:bg-slate-50 flex items-center justify-between text-[11px] text-slate-400 light:text-slate-600 font-mono">
               <span className="flex items-center gap-1.5">
                 <span>👈</span> اسحب الجدول أفقياً لعرض كامل الإحصائيات
               </span>
-              <span className="text-[10px] uppercase font-bold text-[#00FF87] light:text-[#008A44]">
+              <span className="text-[10px] uppercase font-bold text-[#00FF87] light:text-[#047857]">
                 Swipe ➔
               </span>
             </div>
 
             <div
-              className="overflow-x-auto w-full select-none touch-pan-x overscroll-x-contain"
+              className="overflow-x-auto w-full touch-auto"
               style={{ WebkitOverflowScrolling: "touch" }}
             >
               <table className="w-full text-left text-sm border-collapse min-w-[680px]">
                 <thead>
-                  <tr className="border-b border-[#23293B] light:border-slate-200 text-[11px] uppercase tracking-wider text-slate-300 light:text-slate-600 bg-[#141824] light:bg-slate-50 font-bold select-none">
+                  <tr className="border-b border-white/[0.07] light:border-slate-200 text-[11px] uppercase tracking-wider text-slate-300 light:text-slate-600 bg-[#111317] light:bg-slate-50 font-bold select-none">
                     {/* Sticky Rank Header */}
                     <th
-                      className="py-3.5 px-2 sm:px-3 cursor-pointer hover:text-white light:hover:text-slate-900 sticky left-0 z-30 bg-[#141824] light:bg-slate-50 w-16 sm:w-20 select-none"
+                      className="py-3.5 px-2 sm:px-3 cursor-pointer hover:text-white light:hover:text-slate-900 sticky left-0 z-30 bg-[#111317] light:bg-slate-50 w-16 sm:w-20 select-none"
                       onClick={() => handleSort("rank")}
                       title="Rank & Momentum Trajectory (Simulated vs Official GW6)"
                     >
@@ -499,7 +511,7 @@ export default function HomePage() {
 
                     {/* Sticky Team Header */}
                     <th
-                      className="py-3.5 px-3 sm:px-4 cursor-pointer hover:text-white light:hover:text-slate-900 sticky left-16 sm:left-20 z-30 bg-[#141824] light:bg-slate-50 border-r border-[#23293B] light:border-slate-200 shadow-[4px_0_12px_rgba(0,0,0,0.5)] light:shadow-[4px_0_12px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[200px] select-none"
+                      className="py-3.5 px-3 sm:px-4 cursor-pointer hover:text-white light:hover:text-slate-900 sticky left-16 sm:left-20 z-30 bg-[#111317] light:bg-slate-50 border-r border-white/[0.07] light:border-slate-200 shadow-[4px_0_12px_rgba(0,0,0,0.5)] light:shadow-[4px_0_12px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[200px] select-none"
                       onClick={() => handleSort("team")}
                     >
                     <div className="flex items-center gap-1 text-slate-300 light:text-slate-600 hover:text-white light:hover:text-slate-900">
@@ -552,12 +564,12 @@ export default function HomePage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 light:divide-slate-200/80 font-medium">
+              <tbody className="divide-y divide-white/5 light:divide-slate-100 font-medium">
                 {filteredData.length === 0 && (
                   <tr>
                     <td
                       colSpan={7}
-                      className="py-12 px-4 text-center text-slate-400 light:text-slate-500 space-y-2 bg-[#141824] light:bg-white"
+                      className="py-12 px-4 text-center text-slate-400 light:text-slate-500 space-y-2 bg-[#111317] light:bg-white"
                     >
                       <p className="text-sm font-semibold text-slate-300 light:text-slate-700">
                         No clubs found matching &ldquo;{searchQuery}&rdquo;
@@ -565,7 +577,7 @@ export default function HomePage() {
                       <button
                         type="button"
                         onClick={() => setSearchQuery("")}
-                        className="text-xs text-[#00FF87] light:text-[#00A855] hover:underline font-medium cursor-pointer"
+                        className="text-xs text-[#00FF87] light:text-[#047857] hover:underline font-medium cursor-pointer"
                       >
                         Clear search filter
                       </button>
@@ -583,16 +595,16 @@ export default function HomePage() {
                   const isRelegation = row.rank >= 18;
 
                   const stickyBg = isExpanded
-                    ? "bg-[#1E2538] light:bg-slate-100"
+                    ? "bg-[#16181D] light:bg-slate-100"
                     : isSearchMatch
-                    ? "bg-[#1A2636] light:bg-emerald-100"
+                    ? "bg-[#1A222D] light:bg-emerald-100"
                     : isRelegation
-                    ? "bg-[#1D1420] light:bg-[#FFF1F2]"
-                    : "bg-[#141824] light:bg-white";
+                    ? "bg-[#1E1216] light:bg-[#FFF1F2]"
+                    : "bg-[#111317] light:bg-white";
 
                   const stickyHoverBg = isRelegation
-                    ? "group-hover:bg-[#281525] light:group-hover:bg-[#FFE4E6]"
-                    : "group-hover:bg-[#1E2538] light:group-hover:bg-slate-100";
+                    ? "group-hover:bg-[#281520] light:group-hover:bg-[#FFE4E6]"
+                    : "group-hover:bg-[#181B22] light:group-hover:bg-slate-100";
 
                   return (
                     <React.Fragment key={row.team}>
@@ -601,7 +613,7 @@ export default function HomePage() {
                         style={{
                           animationDelay: `${index * 30}ms`,
                         }}
-                        className={`transition-colors cursor-pointer group ${
+                        className={`transition-colors cursor-pointer group border-b border-white/[0.04] light:border-b light:border-slate-100 ${
                           simulationsRun ? "animate-row-cascade" : ""
                         } ${
                           isExpanded
@@ -640,13 +652,13 @@ export default function HomePage() {
                                     className={`inline-flex items-center justify-center gap-0.5 text-[9px] sm:text-[10px] font-black px-1 sm:px-1.5 py-0.5 rounded-md border transition-transform group-hover/delta:scale-105 shadow-xs ${momentum.badgeStyle}`}
                                   >
                                     {momentum.type === "positive" && (
-                                      <ChevronUp className="w-3 h-3 stroke-[3] text-emerald-400 shrink-0" />
+                                      <ChevronUp className="w-3 h-3 stroke-[3] text-emerald-400 light:text-emerald-800 shrink-0" />
                                     )}
                                     {momentum.type === "negative" && (
-                                      <ChevronDown className="w-3 h-3 stroke-[3] text-rose-400 shrink-0" />
+                                      <ChevronDown className="w-3 h-3 stroke-[3] text-rose-400 light:text-rose-800 shrink-0" />
                                     )}
                                     {momentum.type === "steady" && (
-                                      <Minus className="w-2.5 h-2.5 stroke-[3] text-slate-400 shrink-0" />
+                                      <Minus className="w-2.5 h-2.5 stroke-[3] text-slate-400 light:text-slate-600 shrink-0" />
                                     )}
                                     <span>{momentum.label}</span>
                                   </span>
@@ -709,14 +721,14 @@ export default function HomePage() {
 
                         {/* Sticky Team name + crest */}
                         <td
-                          className={`py-3.5 px-3 sm:px-4 font-bold text-white light:text-[#19001B] sticky left-16 sm:left-20 z-20 ${stickyBg} ${stickyHoverBg} transition-colors border-r border-[#23293B] light:border-slate-200 shadow-[4px_0_12px_rgba(0,0,0,0.5)] light:shadow-[4px_0_12px_rgba(0,0,0,0.04)] min-w-[150px] sm:min-w-[200px]`}
+                          className={`py-3.5 px-3 sm:px-4 font-bold text-white light:text-[#19001B] sticky left-16 sm:left-20 z-20 ${stickyBg} ${stickyHoverBg} transition-colors border-r border-white/[0.07] light:border-slate-200 shadow-[4px_0_12px_rgba(0,0,0,0.5)] light:shadow-[4px_0_12px_rgba(0,0,0,0.04)] min-w-[150px] sm:min-w-[200px]`}
                         >
                           <div className="flex items-center gap-2.5 sm:gap-3">
                             <TeamCrest team={row.team} size={30} />
                             <Link
                               href={`/teams/${encodeURIComponent(row.team)}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="hover:text-[#00FF87] light:hover:text-[#00A855] text-white light:text-[#19001B] transition-colors flex items-center gap-1.5 group/link truncate font-bold"
+                              className="hover:text-[#00FF87] light:hover:text-[#047857] text-white light:text-[#19001B] transition-colors flex items-center gap-1.5 group/link truncate font-bold"
                             >
                               <span className="truncate">{row.team}</span>
                               <ExternalLink className="w-3 h-3 text-slate-500 light:text-slate-400 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0" />
@@ -732,8 +744,8 @@ export default function HomePage() {
                                 <span
                                   className={
                                     row.champion_pct > 0.05
-                                      ? "font-bold text-[#00FF85] light:text-[#008A44]"
-                                      : "text-slate-500 light:text-slate-400"
+                                      ? "font-bold text-[#00FF85] light:text-[#047857]"
+                                      : "text-slate-500 light:text-slate-500 font-mono"
                                   }
                                 >
                                   {formatCellOdds(row.champion_pct)}
@@ -745,8 +757,8 @@ export default function HomePage() {
                                   suffix="%"
                                   className={
                                     row.champion_pct > 0.05
-                                      ? "font-bold text-[#00FF85] light:text-[#008A44]"
-                                      : "text-slate-500 light:text-slate-400"
+                                      ? "font-bold text-[#00FF85] light:text-[#047857]"
+                                      : "text-slate-500 light:text-slate-500 font-mono"
                                   }
                                 />
                               )}
@@ -783,7 +795,7 @@ export default function HomePage() {
                                       ? "font-bold text-[#38BDF8] light:text-sky-700"
                                       : row.top4_pct > 0.05
                                       ? "text-slate-300 light:text-slate-700 font-semibold"
-                                      : "text-slate-500 light:text-slate-400"
+                                      : "text-slate-500 light:text-slate-500 font-mono"
                                   }
                                 >
                                   {formatCellOdds(row.top4_pct)}
@@ -796,7 +808,9 @@ export default function HomePage() {
                                   className={
                                     row.top4_pct > 50
                                       ? "font-bold text-[#38BDF8] light:text-sky-700"
-                                      : "text-slate-400 light:text-slate-600 font-semibold"
+                                      : row.top4_pct > 0.05
+                                      ? "text-slate-400 light:text-slate-700 font-semibold"
+                                      : "text-slate-500 light:text-slate-500 font-mono"
                                   }
                                 />
                               )}
@@ -824,7 +838,7 @@ export default function HomePage() {
                                       ? "font-black text-[#E90052] light:text-[#D00045]"
                                       : row.relegation_pct > 0.05
                                       ? "text-slate-300 light:text-slate-700 font-semibold"
-                                      : "text-slate-500 light:text-slate-400"
+                                      : "text-slate-500 light:text-slate-500 font-mono"
                                   }
                                 >
                                   {formatCellOdds(row.relegation_pct)}
@@ -837,7 +851,9 @@ export default function HomePage() {
                                   className={
                                     row.relegation_pct > 15 || isRelegation
                                       ? "font-black text-[#E90052] light:text-[#D00045]"
-                                      : "text-slate-500 light:text-slate-400 font-semibold"
+                                      : row.relegation_pct > 0.05
+                                      ? "text-slate-400 light:text-slate-700 font-semibold"
+                                      : "text-slate-500 light:text-slate-500 font-mono font-medium"
                                   }
                                 />
                               )}
@@ -1072,15 +1088,17 @@ export default function HomePage() {
           </div>
         )}
       </section>
+          </>
+        )}
       </div>
 
       {/* Simulation Command Deck & Cinematic Reveal Overlay */}
-      {isMounted && !simulationsRun && (
+      {!simulationsRun && (
         <div
-          className={`fixed inset-0 z-40 flex items-center justify-center p-4 transition-all duration-600 ease-out ${
+          className={`epl-launchpad-overlay fixed inset-0 z-40 flex items-center justify-center p-4 transition-all duration-600 ease-out ${
             revealing
-              ? "opacity-0 pointer-events-none backdrop-blur-none bg-[#0B0E14]/0 light:bg-[#F4F5F8]/0"
-              : "opacity-100 pointer-events-auto backdrop-blur-xl bg-[#0B0E14]/85 light:bg-[#F4F5F8]/85"
+              ? "opacity-0 pointer-events-none backdrop-blur-none bg-[#090A0C]/0 light:bg-[#F4F5F8]/0"
+              : "opacity-100 pointer-events-auto backdrop-blur-xl bg-[#090A0C]/85 light:bg-[#F4F5F8]/85"
           }`}
         >
           {/* Central Deck Card */}
@@ -1089,7 +1107,7 @@ export default function HomePage() {
               phase === "podium_ready"
                 ? "max-w-lg sm:max-w-xl"
                 : "max-w-md sm:max-w-lg"
-            } mx-auto bg-[#141824]/95 light:bg-white/95 border border-[#23293B] light:border-slate-200/90 rounded-3xl p-4 sm:p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] light:shadow-[0_10px_35px_-5px_rgba(56,0,60,0.06)] text-center overflow-hidden transition-all duration-400 ease-out ${
+            } mx-auto bg-[#111317] light:bg-white/95 border border-white/[0.08] light:border-slate-200/90 rounded-xl p-4 sm:p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] light:shadow-[0_10px_35px_-5px_rgba(56,0,60,0.06)] text-center overflow-hidden transition-all duration-400 ease-out ${
               revealing ? "scale-95 opacity-0" : "scale-100 opacity-100"
             }`}
           >
@@ -1103,12 +1121,9 @@ export default function HomePage() {
               {isMuted ? (
                 <VolumeX className="w-4 h-4 text-slate-400 light:text-slate-500" />
               ) : (
-                <Volume2 className="w-4 h-4 text-[#00FF87] light:text-[#00A855]" />
+                <Volume2 className="w-4 h-4 text-[#00FF87] light:text-[#047857]" />
               )}
             </button>
-
-            {/* Ambient dynamic radial glow */}
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#00FF87]/10 via-[#38003C]/20 to-transparent light:from-[#38003C]/5 light:via-transparent light:to-transparent" />
 
             {/* Step 1 (Idle) & Step 2 (Crunching) View */}
             {(phase === "idle" || phase === "crunching") && (
@@ -1116,7 +1131,7 @@ export default function HomePage() {
                 {/* Central PL Emblem with Telemetry Ring */}
                 <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto flex items-center justify-center">
                   {phase === "crunching" && (
-                    <div className="absolute inset-0 rounded-3xl border-2 border-[#00FF87]/20 border-t-[#00FF87] light:border-[#00A855]/20 light:border-t-[#00A855] animate-spin" />
+                    <div className="absolute inset-0 rounded-full border-2 border-[#00FF87]/20 border-t-[#00FF87] light:border-[#047857]/20 light:border-t-[#047857] animate-spin" />
                   )}
                   <div
                     className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#38003C] to-[#1a001c] light:from-[#38003C] light:to-[#220025] p-3 flex items-center justify-center shadow-xl light:shadow-md border border-[#7B1FA2]/50 light:border-[#38003C]/30 transition-transform duration-500 ${
@@ -1133,7 +1148,7 @@ export default function HomePage() {
                 {/* Title */}
                 <h2
                   dir="rtl"
-                  className="text-2xl sm:text-3xl font-black text-white light:text-[#19001B] tracking-tight leading-snug pt-1 transition-colors duration-300"
+                  className="text-2xl sm:text-3xl font-black text-white light:text-[#19001B] tracking-tight leading-snug pt-1"
                 >
                   {phase === "crunching"
                     ? "جارٍ معالجة 10,000 مسار احتمالي..."
@@ -1145,7 +1160,7 @@ export default function HomePage() {
                   <div className="py-2 space-y-3">
                     {/* Big Live Monospace Odometer with Tabular Figures */}
                     <div className="flex items-baseline justify-center gap-2 font-mono tabular-nums">
-                      <span className="text-4xl sm:text-5xl font-mono font-black tabular-nums tracking-wider text-[#00FF87] light:text-[#00A855]">
+                      <span className="text-4xl sm:text-5xl font-mono font-black tabular-nums tracking-wider text-[#00FF87] light:text-[#047857]">
                         {crunchCount.toLocaleString()}
                       </span>
                       <span className="text-slate-400 light:text-slate-600 font-mono text-sm sm:text-base font-bold tabular-nums">
@@ -1156,7 +1171,7 @@ export default function HomePage() {
                     {/* Clean Architectural Linear Progress Bar */}
                     <div className="w-full bg-slate-800/80 light:bg-slate-200 rounded-full h-1.5 overflow-hidden">
                       <div
-                        className="w-full bg-[#00FF87] light:bg-[#00A855] rounded-full h-1.5 origin-left animate-progress-fill"
+                        className="w-full bg-[#00FF87] light:bg-[#047857] rounded-full h-1.5 origin-left animate-progress-fill"
                         style={{
                           animation: "progress-fill 3s linear forwards",
                         }}
@@ -1164,11 +1179,11 @@ export default function HomePage() {
                     </div>
 
                     {/* Terminal Log Ticker */}
-                    <div className="flex items-center justify-center gap-2 text-xs font-mono text-slate-300 light:text-slate-700 bg-[#0B0E14]/60 light:bg-slate-100 py-2 px-3 rounded-xl border border-white/5 light:border-slate-200">
+                    <div className="flex items-center justify-center gap-2 text-xs font-mono text-slate-300 light:text-slate-700 bg-[#090A0C] light:bg-slate-100 py-2 px-3 rounded-xl border border-white/[0.07] light:border-slate-200">
                       {crunchCount >= 10000 ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#00A855] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] shrink-0" />
                       ) : (
-                        <Cpu className="w-3.5 h-3.5 text-[#00FF87] light:text-[#00A855] animate-pulse shrink-0" />
+                        <Cpu className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857] animate-pulse shrink-0" />
                       )}
                       <span className="truncate">{CRUNCH_LOGS[crunchLogIndex]}</span>
                     </div>
@@ -1182,7 +1197,7 @@ export default function HomePage() {
                         await initAudio();
                         handleStartSimulation();
                       }}
-                      className="w-full min-h-[52px] relative inline-flex items-center justify-center px-4 sm:px-6 py-3.5 sm:py-4 rounded-2xl font-black text-sm sm:text-base text-[#0B0E14] light:text-white bg-gradient-to-b from-[#00FF87] to-[#00D670] light:from-[#38003C] light:to-[#260029] border border-[#5CFFB0] light:border-[#4A0050] shadow-[0_4px_0_0_#009E52,0_5px_0_1px_#007A3E,inset_0_1px_0_0_rgba(255,255,255,0.4),0_10px_25px_rgba(0,255,135,0.3)] light:shadow-[0_4px_0_0_#1E0020,0_5px_0_1px_#140015,inset_0_1px_0_0_rgba(255,255,255,0.3),0_10px_25px_rgba(56,0,60,0.2)] hover:-translate-y-[1px] hover:brightness-105 light:hover:from-[#430048] light:hover:to-[#2B002E] active:translate-y-[2px] active:shadow-[0_1px_0_0_#009E52,0_1px_0_1px_#007A3E] light:active:shadow-[0_1px_0_0_#1E0020,0_1px_0_1px_#140015] transition-all cursor-pointer select-none"
+                      className="w-full min-h-[52px] relative inline-flex items-center justify-center px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-black text-sm sm:text-base text-[#0B0E14] light:text-white bg-gradient-to-b from-[#00FF87] to-[#00D670] light:from-[#38003C] light:to-[#260029] border border-[#5CFFB0] light:border-[#4A0050] shadow-[0_4px_0_0_#009E52,0_5px_0_1px_#007A3E,inset_0_1px_0_0_rgba(255,255,255,0.4),0_10px_25px_rgba(0,255,135,0.3)] light:shadow-[0_4px_0_0_#1E0020,0_5px_0_1px_#140015,inset_0_1px_0_0_rgba(255,255,255,0.3),0_10px_25px_rgba(56,0,60,0.2)] hover:-translate-y-[1px] hover:brightness-105 light:hover:from-[#430048] light:hover:to-[#2B002E] active:translate-y-[2px] active:shadow-[0_1px_0_0_#009E52,0_1px_0_1px_#007A3E] light:active:shadow-[0_1px_0_0_#1E0020,0_1px_0_1px_#140015] transition-all cursor-pointer select-none"
                     >
                       <span>Run 10000 Simulations Now</span>
                     </button>
@@ -1195,26 +1210,26 @@ export default function HomePage() {
             {phase === "podium_ready" && (
               <div className="relative z-10 space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95 duration-500">
                 <div className="space-y-2 text-center">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00FF87]/10 light:bg-[#E6F9F0] border border-[#00FF87]/30 light:border-[#00A855]/30 text-[#00FF87] light:text-[#00A855] text-[11px] font-bold font-mono uppercase tracking-wider">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#00A855]" />
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00FF87]/10 light:bg-emerald-50 border border-[#00FF87]/30 light:border-emerald-200 text-[#00FF87] light:text-[#047857] text-[11px] font-bold font-mono uppercase tracking-wider">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857]" />
                     <span>10,000 Simulations Complete</span>
                   </div>
                   <h3
                     dir="rtl"
-                    className="text-2xl sm:text-3xl font-black text-white light:text-[#19001B] tracking-tight transition-colors duration-300"
+                    className="text-2xl sm:text-3xl font-black text-white light:text-[#19001B] tracking-tight"
                   >
                     منصة التتويج
                   </h3>
                 </div>
 
                 {/* Structured Glass Podium Box Container */}
-                <div className="bg-[#141824]/90 light:bg-white border border-[#23293B] light:border-slate-200 rounded-2xl p-2.5 sm:p-4 shadow-inner light:shadow-sm">
+                <div className="bg-[#16181D] light:bg-white border border-white/[0.07] light:border-slate-200 rounded-xl p-2.5 sm:p-4 shadow-inner light:shadow-sm">
                   <div className="grid grid-cols-3 gap-1.5 sm:gap-3.5 text-center items-end pt-2">
                     {/* #2 Platform (Left - Arsenal Silver) */}
                     {top3TitleTeams[1] && (
-                      <div className="flex flex-col items-center p-2 sm:p-3 rounded-2xl bg-white/[0.02] light:bg-slate-50/80 border border-slate-400/30 light:border-slate-200 shadow-md light:shadow-sm relative">
+                      <div className="flex flex-col items-center p-2 sm:p-3 rounded-xl bg-white/[0.02] light:bg-slate-50/80 border border-slate-400/30 light:border-slate-200 shadow-md light:shadow-sm relative">
                         <div className="relative mb-1.5 sm:mb-2">
-                          <div className="p-1 sm:p-1.5 rounded-xl border border-slate-400/40 light:border-slate-300 bg-[#12141F] light:bg-white light:shadow-xs">
+                          <div className="p-1 sm:p-1.5 rounded-xl border border-slate-400/40 light:border-slate-300 bg-[#111317] light:bg-white light:shadow-xs">
                             <TeamCrest team={top3TitleTeams[1].team} size={32} />
                           </div>
                           <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-200 text-slate-900 font-mono font-black text-[9px] sm:text-[10px] flex items-center justify-center border border-white shadow">
@@ -1235,9 +1250,9 @@ export default function HomePage() {
 
                     {/* #1 Platform (Center - Man City Gold Favorite - Elevated) */}
                     {top3TitleTeams[0] && (
-                      <div className="flex flex-col items-center p-2.5 sm:p-4 rounded-2xl bg-gradient-to-b from-amber-500/15 via-amber-500/[0.04] to-transparent light:from-amber-50/90 light:via-amber-50/40 light:to-transparent border-2 border-amber-400/70 light:border-amber-400/80 shadow-[0_0_25px_rgba(251,191,36,0.2)] light:shadow-[0_4px_20px_rgba(245,158,11,0.12)] -translate-y-2 sm:-translate-y-3 z-10 relative">
+                      <div className="flex flex-col items-center p-2.5 sm:p-4 rounded-xl bg-gradient-to-b from-amber-500/15 via-amber-500/[0.04] to-transparent light:from-amber-50/90 light:via-amber-50/40 light:to-transparent border-2 border-amber-400/70 light:border-amber-400/80 shadow-[0_0_25px_rgba(251,191,36,0.2)] light:shadow-[0_4px_20px_rgba(245,158,11,0.12)] -translate-y-2 sm:-translate-y-3 z-10 relative">
                         <div className="relative mb-1.5 sm:mb-2">
-                          <div className="p-1 sm:p-1.5 rounded-xl border border-amber-400/60 light:border-amber-400/80 bg-[#12141F] light:bg-white shadow-[0_0_12px_rgba(251,191,36,0.3)] light:shadow-sm">
+                          <div className="p-1 sm:p-1.5 rounded-xl border border-amber-400/60 light:border-amber-400/80 bg-[#111317] light:bg-white shadow-[0_0_12px_rgba(251,191,36,0.3)] light:shadow-sm">
                             <TeamCrest team={top3TitleTeams[0].team} size={40} />
                           </div>
                           <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-[9px] sm:text-[10px] flex items-center justify-center border border-white shadow">
@@ -1258,9 +1273,9 @@ export default function HomePage() {
 
                     {/* #3 Platform (Right - Liverpool Bronze) */}
                     {top3TitleTeams[2] && (
-                      <div className="flex flex-col items-center p-2 sm:p-3 rounded-2xl bg-white/[0.02] light:bg-orange-50/40 border border-amber-700/40 light:border-amber-300/60 shadow-lg light:shadow-sm relative">
+                      <div className="flex flex-col items-center p-2 sm:p-3 rounded-xl bg-white/[0.02] light:bg-orange-50/40 border border-amber-700/40 light:border-amber-300/60 shadow-lg light:shadow-sm relative">
                         <div className="relative mb-1.5 sm:mb-2">
-                          <div className="p-1 sm:p-1.5 rounded-xl border border-amber-700/50 light:border-amber-300 bg-[#12141F] light:bg-white light:shadow-xs">
+                          <div className="p-1 sm:p-1.5 rounded-xl border border-amber-700/50 light:border-amber-300 bg-[#111317] light:bg-white light:shadow-xs">
                             <TeamCrest team={top3TitleTeams[2].team} size={32} />
                           </div>
                           <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[9px] sm:text-[10px] flex items-center justify-center border border-amber-400/80 shadow">
@@ -1289,7 +1304,7 @@ export default function HomePage() {
                       await initAudio();
                       handleRevealFullTable();
                     }}
-                    className="w-full min-h-[52px] relative inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3.5 sm:py-4 rounded-2xl font-black text-sm sm:text-base text-[#0B0E14] light:text-white bg-gradient-to-b from-[#00FF87] to-[#00D670] light:from-[#38003C] light:to-[#260029] border border-[#5CFFB0] light:border-[#4A0050] shadow-[0_4px_0_0_#009E52,0_5px_0_1px_#007A3E,inset_0_1px_0_0_rgba(255,255,255,0.4),0_10px_25px_rgba(0,255,135,0.3)] light:shadow-[0_4px_0_0_#1E0020,0_5px_0_1px_#140015,inset_0_1px_0_0_rgba(255,255,255,0.3),0_10px_25px_rgba(56,0,60,0.2)] hover:-translate-y-[1px] hover:brightness-105 light:hover:from-[#430048] light:hover:to-[#2B002E] active:translate-y-[2px] active:shadow-[0_1px_0_0_#009E52,0_1px_0_1px_#007A3E] light:active:shadow-[0_1px_0_0_#1E0020,0_1px_0_1px_#140015] transition-all cursor-pointer select-none"
+                    className="w-full min-h-[52px] relative inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-black text-sm sm:text-base text-[#0B0E14] light:text-white bg-gradient-to-b from-[#00FF87] to-[#00D670] light:from-[#38003C] light:to-[#260029] border border-[#5CFFB0] light:border-[#4A0050] shadow-[0_4px_0_0_#009E52,0_5px_0_1px_#007A3E,inset_0_1px_0_0_rgba(255,255,255,0.4),0_10px_25px_rgba(0,255,135,0.3)] light:shadow-[0_4px_0_0_#1E0020,0_5px_0_1px_#140015,inset_0_1px_0_0_rgba(255,255,255,0.3),0_10px_25px_rgba(56,0,60,0.2)] hover:-translate-y-[1px] hover:brightness-105 light:hover:from-[#430048] light:hover:to-[#2B002E] active:translate-y-[2px] active:shadow-[0_1px_0_0_#009E52,0_1px_0_1px_#007A3E] light:active:shadow-[0_1px_0_0_#1E0020,0_1px_0_1px_#140015] transition-all cursor-pointer select-none"
                   >
                     <span>استكشف الجدول الكامل والترتيب ➔</span>
                   </button>

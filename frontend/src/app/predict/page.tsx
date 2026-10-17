@@ -7,7 +7,8 @@ import {
   AlertCircle,
   TrendingUp,
   RefreshCw,
-  Sparkles,
+  Flame,
+  Cpu,
   Trophy,
   Share2,
   Check,
@@ -431,7 +432,7 @@ function MatchPredictorContent() {
       </div>
 
       {/* Match Selector Card */}
-      <div className="bg-[#151C28] light:bg-white p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] space-y-4 sm:space-y-8 relative overflow-hidden">
+      <div className="bg-[#111317] light:bg-white p-5 sm:p-6 md:p-8 rounded-xl border border-white/[0.07] light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] space-y-4 sm:space-y-8 relative overflow-hidden">
         {/* Subtle Tactical Pitch Lines & Grass Striping Overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-25 overflow-hidden">
           {/* Mown Lawn Alternating Turf Pattern */}
@@ -461,7 +462,7 @@ function MatchPredictorContent() {
         {/* Feature 3: Quick Marquee Presets */}
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 pb-3 sm:pb-5 border-b border-slate-800 light:border-slate-200">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#94A3B8] light:text-slate-600">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 light:text-emerald-600" />
+            <Flame className="w-3.5 h-3.5 text-amber-400 light:text-amber-600" />
             <span>Featured Clashes:</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
@@ -686,7 +687,7 @@ function MatchPredictorContent() {
         {/* Match Controls Toolbar: Engine Telemetry, Share Matchup & Simulate Actions */}
         <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-4 border-t border-slate-800 light:border-slate-200">
           <div className="flex items-center gap-2 text-xs text-slate-400 light:text-slate-500 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-[#00FF85] light:text-[#00A855] shrink-0" />
+            <Cpu className="w-3.5 h-3.5 text-slate-400 light:text-slate-500 shrink-0" />
             <span>10,000 Monte Carlo Iterations • Dixon-Coles Goal Engine</span>
           </div>
 
@@ -758,7 +759,7 @@ function MatchPredictorContent() {
 
       {/* Dramatic Clash Reveal Sequence */}
       {clashState !== "idle" && (
-        <div className="bg-[#151C28] light:bg-white p-5 sm:p-6 md:p-8 rounded-3xl border border-slate-800 light:border-slate-200 relative overflow-hidden transition-all duration-300 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)]">
+        <div className="bg-[#111317] light:bg-white p-5 sm:p-6 md:p-8 rounded-xl border border-white/[0.07] light:border-slate-200 relative overflow-hidden transition-all duration-300 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)]">
           <div className="relative z-10 flex flex-col items-center justify-center space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800 light:bg-slate-100 text-xs font-bold uppercase tracking-wider text-slate-300 light:text-slate-700 border border-slate-700 light:border-slate-200 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-400 light:bg-emerald-600 animate-ping" />
@@ -822,7 +823,7 @@ function MatchPredictorContent() {
           className="space-y-6 animate-in fade-in zoom-in-95 duration-500 scroll-mt-20"
         >
           {/* Main Dramatic Scoreline & Outcome Banner */}
-          <div className="bg-[#151C28] light:bg-white p-5 sm:p-6 md:p-8 rounded-3xl border border-slate-800 light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] space-y-8 relative overflow-hidden">
+          <div className="bg-[#111317] light:bg-white p-5 sm:p-6 md:p-8 rounded-xl border border-white/[0.07] light:border-slate-200 shadow-xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] space-y-8 relative overflow-hidden">
             {/* Header / Subtitle with Share Matchup Link */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-slate-800 light:border-slate-200">
               <div className="flex items-center gap-2">

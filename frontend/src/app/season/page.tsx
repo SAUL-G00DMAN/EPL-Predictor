@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Sparkles,
   Trophy,
   AlertTriangle,
   Swords,
@@ -306,13 +305,8 @@ export default function YourSeasonPage() {
 
   return (
     <div className="min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center max-w-5xl mx-auto space-y-6 sm:space-y-8">
-      {/* Title & Badge */}
-      <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#3D195B]/50 light:bg-purple-100 border border-purple-400/30 light:border-purple-300 text-purple-200 light:text-[#38003C] text-xs font-bold uppercase tracking-wider shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-[#00FF85] light:text-[#00A855]" />
-          <span>Interactive Club Story • تجربة تفاعلية مخصصة</span>
-        </div>
-
+      {/* Title */}
+      <div className="text-center max-w-2xl mx-auto">
         <h1
           dir="rtl"
           className="text-2xl sm:text-4xl font-black text-white light:text-[#19001B] text-center tracking-tight leading-tight"
@@ -325,7 +319,7 @@ export default function YourSeasonPage() {
       <div
         className={`w-full ${
           storyBeat === 0 ? "max-w-2xl" : "max-w-md"
-        } mx-auto bg-[#0d0d16] light:bg-white rounded-3xl border border-white/10 light:border-slate-200 shadow-2xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden flex flex-col justify-between ${
+        } mx-auto bg-[#111317] light:bg-white rounded-xl border border-white/[0.07] light:border-slate-200 shadow-2xl light:shadow-[0_4px_20px_-2px_rgba(56,0,60,0.05)] relative overflow-hidden flex flex-col justify-between ${
           storyBeat === 0 ? "" : "min-h-[640px] sm:min-h-[680px]"
         } transition-all duration-300`}
       >
@@ -459,10 +453,10 @@ export default function YourSeasonPage() {
                       <span
                         className={`text-7xl font-black font-mono tracking-tight ${
                           isStrong
-                            ? "text-[#00FF85] light:text-[#00A855] text-glow-green"
+                            ? "text-[#00FF85] light:text-[#00A855]"
                             : isRelegationRisk
-                            ? "text-[#E90052] text-glow-magenta"
-                            : "text-[#38BDF8] light:text-sky-700 text-glow-blue"
+                            ? "text-[#E90052]"
+                            : "text-[#38BDF8] light:text-sky-700"
                         }`}
                       >
                         #{Math.round(teamData.avg_position)}
@@ -539,7 +533,7 @@ export default function YourSeasonPage() {
 
               {/* Clashing Crests Collision Visual */}
               <div className="py-4 relative flex items-center justify-center">
-                <div className="flex items-center gap-4 sm:gap-6 bg-white/[0.03] light:bg-slate-50 p-5 rounded-3xl border border-white/10 light:border-slate-200 glow-magenta light:shadow-sm">
+                <div className="flex items-center gap-4 sm:gap-6 bg-[#16181D] light:bg-slate-50 p-5 rounded-xl border border-white/[0.07] light:border-slate-200 shadow-sm">
                   {/* User Team */}
                   <div className="flex flex-col items-center space-y-2 transform -translate-x-1 hover:scale-105 transition-transform">
                     <TeamCrest team={teamData.team} size={68} />
@@ -630,12 +624,12 @@ export default function YourSeasonPage() {
               {/* Contrasting Split Cards */}
               <div className="grid grid-cols-2 gap-3 pt-2 text-left">
                 {/* Best Case (Ceiling) - Bright, Hopeful */}
-                <div className="p-4 rounded-2xl bg-gradient-to-b from-[#00FF85]/15 to-transparent light:from-emerald-50 light:to-white border border-[#00FF85]/30 light:border-emerald-300 space-y-2 glow-green">
+                <div className="p-4 rounded-xl bg-[#16181D] light:bg-emerald-50/50 border border-white/[0.07] light:border-emerald-300 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-black tracking-wider text-[#00FF85] light:text-emerald-700">
                       Best Case (Ceiling)
                     </span>
-                    <Sparkles className="w-3.5 h-3.5 text-[#00FF85] light:text-emerald-700" />
+                    <TrendingUp className="w-3.5 h-3.5 text-[#00FF85] light:text-emerald-700" />
                   </div>
                   <div className="text-3xl font-black font-mono text-white light:text-slate-900">
                     #{Math.round(Math.min(teamData.position_p10 || 1, teamData.position_p90 || 20))}
@@ -649,7 +643,7 @@ export default function YourSeasonPage() {
                 </div>
 
                 {/* Worst Case (Floor) - Dark, Ominous */}
-                <div className="p-4 rounded-2xl bg-gradient-to-b from-[#E90052]/15 to-transparent light:from-rose-50 light:to-white border border-[#E90052]/30 light:border-rose-300 space-y-2 glow-magenta">
+                <div className="p-4 rounded-xl bg-[#16181D] light:bg-rose-50/50 border border-white/[0.07] light:border-rose-300 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-black tracking-wider text-[#E90052] light:text-rose-700">
                       Worst Case (Floor)
@@ -714,7 +708,7 @@ export default function YourSeasonPage() {
         {storyBeat === 4 && teamData && (
           <div className="p-6 flex-1 flex flex-col justify-between z-10 animate-in fade-in zoom-in-95 duration-500">
             {/* The Actual Shareable Poster Card */}
-            <div className="p-5 rounded-3xl bg-gradient-to-br from-[#12121C] via-[#07070b] to-[#170a24] light:from-white light:via-slate-50 light:to-purple-50/20 border border-white/15 light:border-slate-200 shadow-2xl light:shadow-md space-y-5 text-center relative overflow-hidden">
+            <div className="p-5 rounded-xl bg-[#16181D] light:bg-white border border-white/[0.07] light:border-slate-200 shadow-2xl light:shadow-md space-y-5 text-center relative overflow-hidden">
               {/* Premier League Brand Seal */}
               <div className="flex items-center justify-between pb-3 border-b border-white/10 light:border-slate-200">
                 <div className="flex items-center gap-2">
@@ -746,10 +740,10 @@ export default function YourSeasonPage() {
                   <div
                     className={`text-6xl font-black font-mono tracking-tight ${
                       isStrong
-                        ? "text-[#00FF85] light:text-[#00A855] text-glow-green"
+                        ? "text-[#00FF85] light:text-[#00A855]"
                         : isRelegationRisk
-                        ? "text-[#E90052] text-glow-magenta"
-                        : "text-[#38BDF8] light:text-sky-700 text-glow-blue"
+                        ? "text-[#E90052]"
+                        : "text-[#38BDF8] light:text-sky-700"
                     }`}
                   >
                     #{Math.round(teamData.avg_position)}

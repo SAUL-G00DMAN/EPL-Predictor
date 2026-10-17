@@ -24,13 +24,13 @@
 }
 
 :root {
-  /* Official Premier League & FPL Dark Theme Tokens (Default) */
-  --pl-base: #0B0E14;             /* PL Midnight Deep Slate Base */
-  --pl-surface: #141824;          /* Official PL Broadcast Surface / Card */
-  --pl-surface-card: #1A1F30;     /* Elevated Interactive Surface */
-  --pl-surface-elevated: #1A1F2E; /* Elevated Card Slate */
-  --pl-border: #23293B;           /* Ultra-fine Slate Border */
-  --pl-border-subtle: rgba(255, 255, 255, 0.08); /* Secondary Border */
+  /* Matte Carbon / Obsidian Broadcast Dark Theme Tokens (Default) */
+  --pl-base: #090A0C;             /* Deep Matte Carbon Base */
+  --pl-surface: #111317;          /* Solid Matte Charcoal Surface / Card */
+  --pl-surface-card: #16181D;     /* Elevated Interactive Surface */
+  --pl-surface-elevated: #16181D; /* Elevated Card Charcoal */
+  --pl-border: rgba(255, 255, 255, 0.07); /* Crisp neutral 1px border */
+  --pl-border-subtle: rgba(255, 255, 255, 0.05); /* Secondary Border */
 
   --pl-purple: #38003C;           /* Iconic Official Premier League Purple */
   --pl-purple-accent: #7B1FA2;    /* Refined purple accent for dark surfaces */
@@ -68,8 +68,8 @@
   --pl-purple-accent: #5E0065;
   --pl-purple-highlight: #7B1FA2;
 
-  --pl-mint: #00A855;             /* Broadcast Emerald Green (calibrated for high contrast on light canvas) */
-  --pl-mint-subtle: rgba(0, 168, 85, 0.12);
+  --pl-mint: #047857;             /* Deep Broadcast Emerald (calibrated for high contrast on light canvas) */
+  --pl-mint-subtle: rgba(4, 120, 87, 0.12);
 
   --pl-berry: #E90052;            /* Official PL Highlight Magenta / Berry */
   --pl-berry-light: #FF2E7E;
@@ -82,6 +82,20 @@
   --bg-dark: var(--pl-base);
   --bg-card: var(--pl-surface);
   --border-glow: rgba(56, 0, 60, 0.15);
+}
+
+/* ==========================================================================
+   Snappy Theme Transitions (Hardware-Friendly Micro-Transition)
+   ========================================================================== */
+body, 
+nav, 
+header,
+footer,
+.epl-card, 
+[class*="bg-[#111317]"], 
+[class*="light:bg-white"] {
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* ==========================================================================
@@ -195,12 +209,10 @@
   text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
 }
 
-/* Ambient dynamic background - Authentic PL Studio Atmosphere (No artificial neon blobs) */
+/* Ambient dynamic background - Solid Matte Carbon (No artificial neon blobs) */
 .bg-ambient {
   background-color: var(--pl-base);
-  background-image: 
-    radial-gradient(ellipse 85% 45% at 50% -10%, rgba(56, 0, 60, 0.4) 0%, transparent 75%),
-    radial-gradient(circle at 100% 0%, rgba(56, 0, 60, 0.2) 0%, transparent 50%);
+  background-image: none;
 }
 
 [data-theme='light'] .bg-ambient,
@@ -208,28 +220,33 @@
 .light .bg-ambient {
   background-color: var(--pl-base);
   background-image: 
-    radial-gradient(ellipse 85% 40% at 50% -10%, rgba(56, 0, 60, 0.05) 0%, transparent 70%),
-    radial-gradient(circle at 100% 0%, rgba(0, 168, 85, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 85% 40% at 50% -10%, rgba(56, 0, 60, 0.04) 0%, transparent 70%);
 }
 
-/* Glassmorphism cards - Authentic PL Broadcast Card */
+/* Authentic Broadcast Card Surfaces - Solid Matte Charcoal */
 .glass-panel {
-  background: rgba(20, 24, 36, 0.92);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  background: #111317;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme='light'] .glass-panel,
 :root[data-theme='light'] .glass-panel,
 .light .glass-panel {
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
+  background: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 4px 20px -2px rgba(56, 0, 60, 0.05);
 }
 
-/* Neutralize neon glows in Light Mode to high-end studio broadcast shadows */
+/* Neutralize AI glowing halos to crisp matte editorial shadows */
+.glow-purple,
+.glow-magenta,
+.glow-green,
+.glow-blue,
+.glow-cyan {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
 [data-theme="light"] .glow-purple,
 [data-theme="light"] .glow-magenta,
 [data-theme="light"] .glow-green,
@@ -247,7 +264,7 @@
 }
 
 .glass-panel:hover {
-  border-color: rgba(123, 31, 162, 0.35);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Animated bar styles */
@@ -398,5 +415,16 @@
   will-change: transform;
   animation: progress-fill 3s linear forwards;
 }
+
+/* Persistent Simulation: Zero-flicker reveal for returning visitors */
+html.epl-sims-completed .epl-launchpad-overlay {
+  display: none !important;
+}
+
+html.epl-sims-completed .epl-editorial-card,
+html.epl-sims-completed #simulated-table {
+  opacity: 1 !important;
+}
+
 
 
