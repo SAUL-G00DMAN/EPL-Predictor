@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
   ArrowUpDown,
   CheckCircle2,
   ChevronDown,
@@ -105,6 +106,164 @@ const CrunchTelemetryView = React.memo(function CrunchTelemetryView({
   );
 });
 
+interface Top3PodiumPreviewProps {
+  top3Teams: {
+    team: string;
+    champion_pct: number;
+    avg_points?: number;
+  }[];
+  onRevealTable: () => void;
+}
+
+const Top3PodiumPreview = React.memo(function Top3PodiumPreview({
+  top3Teams,
+  onRevealTable,
+}: Top3PodiumPreviewProps) {
+  const first = top3Teams[0];
+  const second = top3Teams[1];
+  const third = top3Teams[2];
+
+  return (
+    <div className="relative z-10 space-y-5 sm:space-y-6">
+      {/* Header */}
+      <div className="space-y-2 text-center">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00FF87]/10 light:bg-emerald-50 border border-[#00FF87]/30 light:border-emerald-200 text-[#00FF87] light:text-[#047857] text-[11px] font-bold font-mono uppercase tracking-wider">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857]" />
+          <span>10,000 Simulations Complete</span>
+        </div>
+        <h3
+          dir="rtl"
+          className="text-2xl sm:text-3xl font-black text-white light:text-[#19001B] tracking-tight"
+        >
+          منصة التتويج • ثلاثي المقدمة
+        </h3>
+        <p className="text-xs text-slate-400 light:text-slate-600 font-mono">
+          Top 3 Title Favorites & Projected Points
+        </p>
+      </div>
+
+      {/* Structured Glass Podium Box Container */}
+      <div className="bg-[#16181D] light:bg-slate-50/80 border border-white/[0.07] light:border-slate-200 rounded-xl p-2.5 sm:p-4 shadow-inner light:shadow-sm">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3.5 text-center items-end pt-2">
+          {/* #2 Platform (Left - Silver) */}
+          {second && (
+            <div
+              className="animate-podium-card-entrance flex flex-col items-center p-2.5 sm:p-3.5 rounded-xl bg-white/[0.03] light:bg-white border border-slate-400/30 light:border-slate-300 shadow-md light:shadow-sm relative"
+              style={{ animationDelay: "80ms" }}
+            >
+              <div className="relative mb-2">
+                <div className="p-1 sm:p-1.5 rounded-xl border border-slate-400/40 light:border-slate-300 bg-[#111317] light:bg-white light:shadow-xs">
+                  <TeamCrest team={second.team} size={34} />
+                </div>
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-200 text-slate-900 font-mono font-black text-[10px] flex items-center justify-center border border-white shadow">
+                  2
+                </span>
+              </div>
+              <span className="text-[11px] sm:text-sm font-bold text-white light:text-[#19001B] truncate max-w-[80px] sm:max-w-[100px]">
+                {second.team}
+              </span>
+              <div className="mt-1">
+                <span className="text-xs sm:text-base font-black text-slate-200 light:text-slate-800 font-mono">
+                  {second.champion_pct.toFixed(1)}%
+                </span>
+                <div className="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 light:text-slate-500 font-bold">
+                  Title Odds
+                </div>
+              </div>
+              <div className="mt-1 text-[10px] sm:text-xs font-mono font-bold text-slate-300 light:text-slate-600">
+                {second.avg_points ? `${second.avg_points.toFixed(1)} pts` : "—"}
+              </div>
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 light:text-slate-600 font-bold bg-white/5 light:bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-full border border-white/10 light:border-slate-200 mt-1.5">
+                Silver
+              </span>
+            </div>
+          )}
+
+          {/* #1 Platform (Center - Gold Favorite - Elevated) */}
+          {first && (
+            <div
+              className="animate-podium-card-entrance flex flex-col items-center p-3 sm:p-4 rounded-xl bg-gradient-to-b from-amber-500/15 via-amber-500/[0.04] to-transparent light:from-amber-50/90 light:via-amber-50/40 light:to-transparent border-2 border-amber-400/70 light:border-amber-400/80 shadow-[0_0_25px_rgba(251,191,36,0.2)] light:shadow-[0_4px_20px_rgba(245,158,11,0.12)] -translate-y-2 sm:-translate-y-3 z-10 relative"
+              style={{ animationDelay: "0ms" }}
+            >
+              <div className="relative mb-2">
+                <div className="p-1 sm:p-1.5 rounded-xl border border-amber-400/60 light:border-amber-400/80 bg-[#111317] light:bg-white shadow-[0_0_12px_rgba(251,191,36,0.3)] light:shadow-sm">
+                  <TeamCrest team={first.team} size={42} />
+                </div>
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-[10px] flex items-center justify-center border border-white shadow">
+                  1
+                </span>
+              </div>
+              <span className="text-xs sm:text-base font-black text-white light:text-[#19001B] truncate max-w-[85px] sm:max-w-[110px]">
+                {first.team}
+              </span>
+              <div className="mt-1">
+                <span className="text-sm sm:text-lg font-black text-amber-300 light:text-amber-800 font-mono">
+                  {first.champion_pct.toFixed(1)}%
+                </span>
+                <div className="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-300 light:text-amber-800 font-bold">
+                  Title Odds
+                </div>
+              </div>
+              <div className="mt-1 text-[10px] sm:text-xs font-mono font-black text-amber-200 light:text-amber-900">
+                {first.avg_points ? `${first.avg_points.toFixed(1)} pts` : "—"}
+              </div>
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-300 light:text-amber-800 font-black bg-amber-400/20 light:bg-amber-100 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-400/40 light:border-amber-300 mt-1.5">
+                Favorite
+              </span>
+            </div>
+          )}
+
+          {/* #3 Platform (Right - Bronze) */}
+          {third && (
+            <div
+              className="animate-podium-card-entrance flex flex-col items-center p-2.5 sm:p-3.5 rounded-xl bg-white/[0.03] light:bg-white border border-amber-700/40 light:border-amber-300/60 shadow-lg light:shadow-sm relative"
+              style={{ animationDelay: "160ms" }}
+            >
+              <div className="relative mb-2">
+                <div className="p-1 sm:p-1.5 rounded-xl border border-amber-700/50 light:border-amber-300 bg-[#111317] light:bg-white light:shadow-xs">
+                  <TeamCrest team={third.team} size={34} />
+                </div>
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[10px] flex items-center justify-center border border-amber-400/80 shadow">
+                  3
+                </span>
+              </div>
+              <span className="text-[11px] sm:text-sm font-bold text-white light:text-[#19001B] truncate max-w-[80px] sm:max-w-[100px]">
+                {third.team}
+              </span>
+              <div className="mt-1">
+                <span className="text-xs sm:text-base font-black text-amber-200/90 light:text-amber-900 font-mono">
+                  {third.champion_pct.toFixed(1)}%
+                </span>
+                <div className="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 light:text-slate-500 font-bold">
+                  Title Odds
+                </div>
+              </div>
+              <div className="mt-1 text-[10px] sm:text-xs font-mono font-bold text-slate-300 light:text-slate-600">
+                {third.avg_points ? `${third.avg_points.toFixed(1)} pts` : "—"}
+              </div>
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-400/80 light:text-amber-800 font-bold bg-white/5 light:bg-amber-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-white/10 light:border-amber-200 mt-1.5">
+                Bronze
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Catchy Arabic CTA Button */}
+      <div className="pt-2 flex justify-center">
+        <button
+          type="button"
+          onClick={onRevealTable}
+          className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-base md:text-lg bg-[#00FF87] hover:bg-[#00E577] light:bg-[#047857] light:hover:bg-[#036044] text-[#090A0C] light:text-white shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+        >
+          <span>استكشف مصير الـ 20 نادياً وصراع الهبوط والمربع الذهبي</span>
+          <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+        </button>
+      </div>
+    </div>
+  );
+});
+
 const formatCellOdds = (pct: number) => {
   if (!pct || pct <= 0.05) return "-";
   const odds = 100 / pct;
@@ -146,8 +305,8 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Simulation Launchpad & Cinematic Reveal State Machine
-  // 'idle' -> 'crunching' -> 'podium_ready' -> 'revealed'
-  type SimulationPhase = "idle" | "crunching" | "podium_ready" | "revealed";
+  // 'idle' -> 'crunching' -> 'podium' -> 'revealed'
+  type SimulationPhase = "idle" | "crunching" | "podium" | "revealed";
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [phase, setPhase] = useState<SimulationPhase>("idle"); // strictly default to 'idle' to eliminate table flash
@@ -194,11 +353,18 @@ export default function HomePage() {
       // Silent fallback
     }
 
-    // 2. Immediately switch to crunching state and reset counter
+    // 2. CRITICAL: Ensure any lingering completion tags are cleared so podium stays visible
+    try {
+      localStorage.removeItem("epl_simulations_completed");
+      document.documentElement.classList.remove("epl-sims-completed");
+    } catch {}
+
+    // 3. Immediately switch to crunching state and reset counter
     setPhase("crunching");
     setSimulationsRun(false);
     setCrunchCount(0);
     setCrunchLogIndex(0);
+    setRevealing(false);
 
     const duration = 3000; // strictly 3000ms
     const startTime = performance.now();
@@ -245,46 +411,47 @@ export default function HomePage() {
           playLockInSound();
         } catch {}
 
-        // Complete 3-second simulation and transition to revealed
-        setPhase("revealed");
-        setSimulationsRun(true);
-
-        try {
-          localStorage.setItem("epl_simulations_completed", "true");
-          document.documentElement.classList.add("epl-sims-completed");
-        } catch {}
-
-        // Smoothly scroll to the standings table and insights
-        setTimeout(() => {
-          const tableElem = document.getElementById("simulated-table");
-          if (tableElem) {
-            tableElem.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 100);
+        // Complete 3-second simulation and transition to podium
+        // CRITICAL: Do NOT set simulationsRun(true), do NOT set localStorage, do NOT add epl-sims-completed
+        setPhase("podium");
       }
     };
 
     animFrameRef.current = requestAnimationFrame(animate);
   }, []);
 
-  const handleRevealFullTable = useCallback(async () => {
+  const handleRevealFullTable = useCallback(() => {
+    // 1. Trigger mechanical click sound
     try {
-      localStorage.setItem("epl_simulations_completed", "true");
-      document.documentElement.classList.add("epl-sims-completed");
-    } catch {}
-
-    try {
-      await initAudio();
+      initAudio().catch(() => {});
+      soundFx.playMechanicalClick();
       playExploreUnlock();
     } catch {}
 
-    setRevealing(true);
+    // 2. Set phase to revealed
+    setPhase("revealed");
 
+    // 3. Set simulationsRun to true
+    setSimulationsRun(true);
+    setRevealing(false);
+
+    // 4. Now save to localStorage
+    try {
+      localStorage.setItem("epl_simulations_completed", "true");
+    } catch {}
+
+    // 5. Add DOM tag
+    try {
+      document.documentElement.classList.add("epl-sims-completed");
+    } catch {}
+
+    // 6. Smoothly scroll down to #simulated-table
     setTimeout(() => {
-      setPhase("revealed");
-      setSimulationsRun(true);
-      setRevealing(false);
-    }, 400);
+      const tableElem = document.getElementById("simulated-table");
+      if (tableElem) {
+        tableElem.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   }, []);
 
   const handleRerunSimulation = useCallback(() => {
@@ -366,9 +533,9 @@ export default function HomePage() {
   const top3TitleTeams = useMemo(() => {
     if (!data || data.length < 3) {
       return [
-        { team: "Man City", champion_pct: 78.21 },
-        { team: "Arsenal", champion_pct: 19.51 },
-        { team: "Liverpool", champion_pct: 1.6 },
+        { team: "Man City", champion_pct: 78.21, avg_points: 88.4 },
+        { team: "Arsenal", champion_pct: 19.51, avg_points: 82.1 },
+        { team: "Liverpool", champion_pct: 1.6, avg_points: 75.3 },
       ];
     }
     return [...data]
@@ -1184,8 +1351,8 @@ export default function HomePage() {
           {/* Central Deck Card */}
           <div
             className={`relative w-full ${
-              phase === "podium_ready"
-                ? "max-w-lg sm:max-w-xl"
+              phase === "podium"
+                ? "max-w-lg sm:max-w-2xl"
                 : "max-w-md sm:max-w-lg"
             } mx-auto bg-[#111317] light:bg-white/95 border border-white/[0.08] light:border-slate-200/90 rounded-xl p-4 sm:p-6 md:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.8)] light:shadow-[0_10px_35px_-5px_rgba(56,0,60,0.06)] text-center overflow-hidden transition-all duration-400 ease-out ${
               revealing ? "scale-95 opacity-0" : "scale-100 opacity-100"
@@ -1256,110 +1423,12 @@ export default function HomePage() {
               </div>
             )}
 
-            {/* Step 3: Top 3 Broadcast Podium Preview */}
-            {phase === "podium_ready" && (
-              <div className="relative z-10 space-y-5 sm:space-y-6 animate-in fade-in zoom-in-95 duration-500">
-                <div className="space-y-2 text-center">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00FF87]/10 light:bg-emerald-50 border border-[#00FF87]/30 light:border-emerald-200 text-[#00FF87] light:text-[#047857] text-[11px] font-bold font-mono uppercase tracking-wider">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF87] light:text-[#047857]" />
-                    <span>10,000 Simulations Complete</span>
-                  </div>
-                  <h3
-                    dir="rtl"
-                    className="text-2xl sm:text-3xl font-black text-white light:text-[#19001B] tracking-tight"
-                  >
-                    منصة التتويج
-                  </h3>
-                </div>
-
-                {/* Structured Glass Podium Box Container */}
-                <div className="bg-[#16181D] light:bg-white border border-white/[0.07] light:border-slate-200 rounded-xl p-2.5 sm:p-4 shadow-inner light:shadow-sm">
-                  <div className="grid grid-cols-3 gap-1.5 sm:gap-3.5 text-center items-end pt-2">
-                    {/* #2 Platform (Left - Arsenal Silver) */}
-                    {top3TitleTeams[1] && (
-                      <div className="flex flex-col items-center p-2 sm:p-3 rounded-xl bg-white/[0.02] light:bg-slate-50/80 border border-slate-400/30 light:border-slate-200 shadow-md light:shadow-sm relative">
-                        <div className="relative mb-1.5 sm:mb-2">
-                          <div className="p-1 sm:p-1.5 rounded-xl border border-slate-400/40 light:border-slate-300 bg-[#111317] light:bg-white light:shadow-xs">
-                            <TeamCrest team={top3TitleTeams[1].team} size={32} />
-                          </div>
-                          <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-200 text-slate-900 font-mono font-black text-[9px] sm:text-[10px] flex items-center justify-center border border-white shadow">
-                            2
-                          </span>
-                        </div>
-                        <span className="text-[11px] sm:text-sm font-bold text-white light:text-[#19001B] truncate max-w-[72px] sm:max-w-[90px]">
-                          {top3TitleTeams[1].team}
-                        </span>
-                        <span className="text-xs sm:text-base font-black text-slate-200 light:text-slate-800 font-mono mt-0.5">
-                          {top3TitleTeams[1].champion_pct.toFixed(1)}%
-                        </span>
-                        <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 light:text-slate-600 font-bold bg-white/5 light:bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-full border border-white/10 light:border-slate-200 mt-1">
-                          Silver
-                        </span>
-                      </div>
-                    )}
-
-                    {/* #1 Platform (Center - Man City Gold Favorite - Elevated) */}
-                    {top3TitleTeams[0] && (
-                      <div className="flex flex-col items-center p-2.5 sm:p-4 rounded-xl bg-gradient-to-b from-amber-500/15 via-amber-500/[0.04] to-transparent light:from-amber-50/90 light:via-amber-50/40 light:to-transparent border-2 border-amber-400/70 light:border-amber-400/80 shadow-[0_0_25px_rgba(251,191,36,0.2)] light:shadow-[0_4px_20px_rgba(245,158,11,0.12)] -translate-y-2 sm:-translate-y-3 z-10 relative">
-                        <div className="relative mb-1.5 sm:mb-2">
-                          <div className="p-1 sm:p-1.5 rounded-xl border border-amber-400/60 light:border-amber-400/80 bg-[#111317] light:bg-white shadow-[0_0_12px_rgba(251,191,36,0.3)] light:shadow-sm">
-                            <TeamCrest team={top3TitleTeams[0].team} size={40} />
-                          </div>
-                          <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-black font-mono font-black text-[9px] sm:text-[10px] flex items-center justify-center border border-white shadow">
-                            1
-                          </span>
-                        </div>
-                        <span className="text-[11px] sm:text-sm font-black text-white light:text-[#19001B] truncate max-w-[78px] sm:max-w-[95px]">
-                          {top3TitleTeams[0].team}
-                        </span>
-                        <span className="text-sm sm:text-lg font-black text-amber-300 light:text-amber-800 font-mono mt-0.5">
-                          {top3TitleTeams[0].champion_pct.toFixed(1)}%
-                        </span>
-                        <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-300 light:text-amber-800 font-black bg-amber-400/20 light:bg-amber-100 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-400/40 light:border-amber-300 mt-1">
-                          Favorite
-                        </span>
-                      </div>
-                    )}
-
-                    {/* #3 Platform (Right - Liverpool Bronze) */}
-                    {top3TitleTeams[2] && (
-                      <div className="flex flex-col items-center p-2 sm:p-3 rounded-xl bg-white/[0.02] light:bg-orange-50/40 border border-amber-700/40 light:border-amber-300/60 shadow-lg light:shadow-sm relative">
-                        <div className="relative mb-1.5 sm:mb-2">
-                          <div className="p-1 sm:p-1.5 rounded-xl border border-amber-700/50 light:border-amber-300 bg-[#111317] light:bg-white light:shadow-xs">
-                            <TeamCrest team={top3TitleTeams[2].team} size={32} />
-                          </div>
-                          <span className="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-amber-700 text-amber-100 font-mono font-black text-[9px] sm:text-[10px] flex items-center justify-center border border-amber-400/80 shadow">
-                            3
-                          </span>
-                        </div>
-                        <span className="text-[11px] sm:text-sm font-bold text-white light:text-[#19001B] truncate max-w-[72px] sm:max-w-[90px]">
-                          {top3TitleTeams[2].team}
-                        </span>
-                        <span className="text-xs sm:text-base font-black text-amber-200/90 light:text-amber-900 font-mono mt-0.5">
-                          {top3TitleTeams[2].champion_pct.toFixed(1)}%
-                        </span>
-                        <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-amber-400/80 light:text-amber-800 font-bold bg-white/5 light:bg-amber-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-white/10 light:border-amber-200 mt-1">
-                          Bronze
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Step 4 Trigger: Reveal Full Standings Button */}
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      await initAudio();
-                      handleRevealFullTable();
-                    }}
-                    className="w-full min-h-[52px] relative inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3.5 sm:py-4 rounded-xl font-black text-sm sm:text-base text-[#0B0E14] light:text-white bg-gradient-to-b from-[#00FF87] to-[#00D670] light:from-[#38003C] light:to-[#260029] border border-[#5CFFB0] light:border-[#4A0050] shadow-[0_4px_0_0_#009E52,0_5px_0_1px_#007A3E,inset_0_1px_0_0_rgba(255,255,255,0.4),0_10px_25px_rgba(0,255,135,0.3)] light:shadow-[0_4px_0_0_#1E0020,0_5px_0_1px_#140015,inset_0_1px_0_0_rgba(255,255,255,0.3),0_10px_25px_rgba(56,0,60,0.2)] hover:-translate-y-[1px] hover:brightness-105 light:hover:from-[#430048] light:hover:to-[#2B002E] active:translate-y-[2px] active:shadow-[0_1px_0_0_#009E52,0_1px_0_1px_#007A3E] light:active:shadow-[0_1px_0_0_#1E0020,0_1px_0_1px_#140015] transition-all cursor-pointer select-none"
-                  >
-                    <span>استكشف الجدول الكامل والترتيب ➔</span>
-                  </button>
-                </div>
-              </div>
+            {/* Step 3: Top 3 Broadcast Podium Preview (Isolated Component) */}
+            {phase === "podium" && (
+              <Top3PodiumPreview
+                top3Teams={top3TitleTeams}
+                onRevealTable={handleRevealFullTable}
+              />
             )}
           </div>
         </div>
